@@ -6,7 +6,6 @@
   input information about a client or owner.
 */
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.swing.*;
 
 public class VehicularCloudConsole {
     private JFrame frame;
@@ -27,9 +27,11 @@ public class VehicularCloudConsole {
     private JTextField clientIdField;
     private JTextField jobDurationField;
     private JTextField jobDeadlineField;
+    private JTextField subscriptionPlan;
     private JTextField ownerIdField;
     private JTextField vehicleField;
     private JTextField residencyField;
+    private JTextField availabilityField;
     private JButton submitButton;
     private ButtonGroup userTypeGroup;
    
@@ -61,6 +63,12 @@ public class VehicularCloudConsole {
         jobDeadlineField = new JTextField();
         clientPanel.add(jobDeadlineField);
 
+        clientPanel.add(new JLabel("Subscription Plan:")); // added
+        subscriptionPlan = new JTextField();
+        clientPanel.add(subscriptionPlan);
+
+        clientPanel.setBackground(new Color(128,128,128)); // added
+
         mainPanel.add(clientPanel, "Client");
 
         // Owner panel
@@ -74,6 +82,12 @@ public class VehicularCloudConsole {
         ownerPanel.add(new JLabel("Approximate Residency Time:"));
         residencyField = new JTextField();
         ownerPanel.add(residencyField);
+        ownerPanel.add(new JLabel("Available Computational Power:"));
+        availabilityField = new JTextField();
+        ownerPanel.add(availabilityField);
+
+        ownerPanel.setBackground(new Color(128,128,128)); // added
+
         mainPanel.add(ownerPanel, "Owner");
 
 
@@ -83,6 +97,9 @@ public class VehicularCloudConsole {
         userTypeGroup = new ButtonGroup();
         userTypeGroup.add(clientButton);
         userTypeGroup.add(ownerButton);
+
+         clientButton.setBackground(Color.gray);
+         ownerButton.setBackground(Color.gray);
 
         JPanel radioPanel = new JPanel();
         radioPanel.add(clientButton);
@@ -154,12 +171,16 @@ public class VehicularCloudConsole {
         clientIdField.setText("");
         jobDurationField.setText("");
         jobDeadlineField.setText("");
+        subscriptionPlan.setText("");
         ownerIdField.setText("");
         vehicleField.setText("");
         residencyField.setText("");
+        availabilityField.setText("");
+
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(VehicularCloudConsole::new);
+
     }
 }
