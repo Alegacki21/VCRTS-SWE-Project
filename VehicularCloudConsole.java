@@ -1,7 +1,7 @@
 /* Project: Project Milestone 2: GUI
 * Class: VehicularCloudConsole.java
 * Author: Albert Legacki, Allan Ilyasov, Thomas Javier Santos Yciano, Bryan Fung, Matthew Martinez 
-* Date: April 15, 2014
+* Date: October 7, 2024
 * This program is a GUI for the Vehicular Cloud Console. It allows the user to 
   input information about a client or owner.
 */
