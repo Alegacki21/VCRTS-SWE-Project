@@ -7,8 +7,6 @@
 */
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,9 +30,10 @@ public class VehicularCloudConsole {
     private JTextField vehicleField;
     private JTextField residencyField;
     private JTextField availabilityField;
-    private JButton submitButton;
-    private JButton logoutButton;
-   
+    private JButton clientSubmitButton;
+    private JButton clientLogoutButton;
+    private JButton ownerSubmitButton;
+    private JButton ownerLogoutButton;
 
     public VehicularCloudConsole() {
         //Frame Setup
@@ -80,18 +79,18 @@ public class VehicularCloudConsole {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            // Check if the username and password are correct for owne rand client
+            // Check if the username and password are correct for owner and client
             if (username.equals("usertype1") && password.equals("usertype1")) {
                 // Show a message to the Owner, then switch to the Owner panel
                 JOptionPane.showMessageDialog(frame, "Welcome Owner!");
                 cardLayout.show(mainPanel, "Owner");
-                submitButton.setVisible(true);
-                logoutButton.setVisible(true);
+                ownerSubmitButton.setVisible(true);
+                ownerLogoutButton.setVisible(true);
             } else if (username.equals("usertype2") && password.equals("usertype2")) {
                 JOptionPane.showMessageDialog(frame, "Welcome Client!");
                 cardLayout.show(mainPanel, "Client");
-                submitButton.setVisible(true);
-                logoutButton.setVisible(true);
+                clientSubmitButton.setVisible(true);
+                clientLogoutButton.setVisible(true);
             } else {
                 // Show invalid credentials message, prompt the user to try again
                 JOptionPane.showMessageDialog(frame, "Invalid username or password. Please try again.");
@@ -130,6 +129,16 @@ public class VehicularCloudConsole {
 
         clientPanel.setBackground(new Color(128,128,128));
 
+        // Create submit and logout buttons for client
+        clientSubmitButton = new JButton("Submit");
+        clientLogoutButton = new JButton("Logout");
+
+        // Add submit and logout buttons to client panel
+        JPanel clientButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        clientButtonPanel.add(clientSubmitButton);
+        clientButtonPanel.add(clientLogoutButton);
+        clientPanel.add(clientButtonPanel);
+
         mainPanel.add(clientPanel, "Client");
 
         // Owner panel
@@ -149,28 +158,21 @@ public class VehicularCloudConsole {
 
         ownerPanel.setBackground(new Color(128,128,128));
 
+        // Create submit and logout buttons for owner
+        ownerSubmitButton = new JButton("Submit");
+        ownerLogoutButton = new JButton("Logout");
+
+        // Add submit and logout buttons to owner panel
+        JPanel ownerButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        ownerButtonPanel.add(ownerSubmitButton);
+        ownerButtonPanel.add(ownerLogoutButton);
+        ownerPanel.add(ownerButtonPanel);
+
         mainPanel.add(ownerPanel, "Owner");
 
         // Add radio panel and main panel to frame
         frame.setLayout(new BorderLayout());
         frame.add(mainPanel, BorderLayout.CENTER);
-
-        // Create submit button
-        submitButton = new JButton("Submit");
-
-        // Create logout button
-        logoutButton = new JButton("Logout");
-
-        // Add submit and logout buttons to client and owner panels
-        JPanel clientButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        clientButtonPanel.add(submitButton);
-        clientButtonPanel.add(logoutButton);
-        clientPanel.add(clientButtonPanel);
-
-        JPanel ownerButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        ownerButtonPanel.add(submitButton);
-        ownerButtonPanel.add(logoutButton);
-        ownerPanel.add(ownerButtonPanel);
         
         // Set the home screen panel as the default panel
         cardLayout.show(mainPanel, "Home");
@@ -186,17 +188,23 @@ public class VehicularCloudConsole {
             frame.revalidate();
         });
 
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveInformation();
-            }
-        });
+        clientSubmitButton.addActionListener(e -> saveInformation());
+        ownerSubmitButton.addActionListener(e -> saveInformation());
 
-        logoutButton.addActionListener(e -> {
+        clientLogoutButton.addActionListener(e -> {
             cardLayout.show(mainPanel, "Home");
             frame.revalidate();
         });
+        ownerLogoutButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Home");
+            frame.revalidate();
+        });
+
+        // Initially hide all submit and logout buttons
+        clientSubmitButton.setVisible(false);
+        clientLogoutButton.setVisible(false);
+        ownerSubmitButton.setVisible(false);
+        ownerLogoutButton.setVisible(false);
     }
 
     private void saveInformation() {
