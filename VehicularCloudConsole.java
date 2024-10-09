@@ -19,11 +19,11 @@ import javax.swing.*;
 public class VehicularCloudConsole {
     private JFrame frame;
     private JPanel mainPanel;
+    private JPanel homeScreenPanel;
+    private JPanel loginScreenPanel;
     private JPanel clientPanel;
     private JPanel ownerPanel;
     private CardLayout cardLayout;
-    private JRadioButton clientButton;
-    private JRadioButton ownerButton;
     private JTextField clientIdField;
     private JTextField jobDurationField;
     private JTextField jobDeadlineField;
@@ -33,20 +33,81 @@ public class VehicularCloudConsole {
     private JTextField residencyField;
     private JTextField availabilityField;
     private JButton submitButton;
-    private ButtonGroup userTypeGroup;
+    private JButton logoutButton;
    
 
     public VehicularCloudConsole() {
+        //Frame Setup
         frame = new JFrame("Vehicular Cloud Console");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
 
+        //Icon Setup
         ImageIcon icon = new ImageIcon("images/cloudconsole.png");
         frame.setIconImage(icon.getImage());
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+
+        //Home Screen Setup
+        homeScreenPanel = new JPanel();
+        JLabel homeScreenLabel = new JLabel("Welcome to the VehiCloud - The Vehicular Cloud Real Time System");
+        homeScreenPanel.add(homeScreenLabel);
+
+        //Login & Register Buttons
+        JButton loginButton = new JButton("Login");
+
+        //Action Listeners for Login & Registration
+        loginButton.addActionListener(e -> {
+            frame.setTitle("VehiCloud - Login");
+            cardLayout.show(mainPanel, "Login");
+        });
+
+        // Login Screen Panel
+        loginScreenPanel = new JPanel();
+        loginScreenPanel.setLayout(new GridLayout(3, 2));
+        loginScreenPanel.add(new JLabel("Username:"));
+        JTextField usernameField = new JTextField();
+        loginScreenPanel.add(usernameField);
+        loginScreenPanel.add(new JLabel("Password:"));
+        JPasswordField passwordField = new JPasswordField();
+        loginScreenPanel.add(passwordField);
+        JButton loginSubmitButton = new JButton("Login");
+        loginSubmitButton.addActionListener(e -> {
+
+            // Get the username and password from the text fields
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+
+            // Check if the username and password are correct for owne rand client
+            if (username.equals("usertype1") && password.equals("usertype1")) {
+                // Show a message to the Owner, then switch to the Owner panel
+                JOptionPane.showMessageDialog(frame, "Welcome Owner!");
+                cardLayout.show(mainPanel, "Owner");
+                submitButton.setVisible(true);
+                logoutButton.setVisible(true);
+            } else if (username.equals("usertype2") && password.equals("usertype2")) {
+                JOptionPane.showMessageDialog(frame, "Welcome Client!");
+                cardLayout.show(mainPanel, "Client");
+                submitButton.setVisible(true);
+                logoutButton.setVisible(true);
+            } else {
+                // Show invalid credentials message, prompt the user to try again
+                JOptionPane.showMessageDialog(frame, "Invalid username or password. Please try again.");
+            }
+            }
+        );
+        loginScreenPanel.add(new JLabel()); // Empty label for spacing
+        loginScreenPanel.add(loginSubmitButton);
+
+        // Add login screen panel to main panel
+        mainPanel.add(loginScreenPanel, "Login");
+
+        homeScreenPanel.add(loginButton);
+
+        // Add the home screen panel to the main panel
+        mainPanel.add(homeScreenPanel, "Home");
 
         // Client panel
         clientPanel = new JPanel(new GridLayout(0, 2));
@@ -63,11 +124,11 @@ public class VehicularCloudConsole {
         jobDeadlineField = new JTextField();
         clientPanel.add(jobDeadlineField);
 
-        clientPanel.add(new JLabel("Subscription Plan:")); // added
+        clientPanel.add(new JLabel("Subscription Plan:"));
         subscriptionPlan = new JTextField();
         clientPanel.add(subscriptionPlan);
 
-        clientPanel.setBackground(new Color(128,128,128)); // added
+        clientPanel.setBackground(new Color(128,128,128));
 
         mainPanel.add(clientPanel, "Client");
 
@@ -86,38 +147,44 @@ public class VehicularCloudConsole {
         availabilityField = new JTextField();
         ownerPanel.add(availabilityField);
 
-        ownerPanel.setBackground(new Color(128,128,128)); // added
+        ownerPanel.setBackground(new Color(128,128,128));
 
         mainPanel.add(ownerPanel, "Owner");
 
-
-        // Create radio buttons for user type selection
-        clientButton = new JRadioButton("Client");
-        ownerButton = new JRadioButton("Owner");
-        userTypeGroup = new ButtonGroup();
-        userTypeGroup.add(clientButton);
-        userTypeGroup.add(ownerButton);
-
-         clientButton.setBackground(Color.gray);
-         ownerButton.setBackground(Color.gray);
-
-        JPanel radioPanel = new JPanel();
-        radioPanel.add(clientButton);
-        radioPanel.add(ownerButton);
-
         // Add radio panel and main panel to frame
         frame.setLayout(new BorderLayout());
-        frame.add(radioPanel, BorderLayout.NORTH);
         frame.add(mainPanel, BorderLayout.CENTER);
 
-        // Add submit button
+        // Create submit button
         submitButton = new JButton("Submit");
-        frame.add(submitButton, BorderLayout.SOUTH);
 
+        // Create logout button
+        logoutButton = new JButton("Logout");
+
+        // Add submit and logout buttons to client and owner panels
+        JPanel clientButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        clientButtonPanel.add(submitButton);
+        clientButtonPanel.add(logoutButton);
+        clientPanel.add(clientButtonPanel);
+
+        JPanel ownerButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        ownerButtonPanel.add(submitButton);
+        ownerButtonPanel.add(logoutButton);
+        ownerPanel.add(ownerButtonPanel);
+        
+        // Set the home screen panel as the default panel
+        cardLayout.show(mainPanel, "Home");
+
+        // Add the main panel to the frame
+        frame.add(mainPanel);
+
+        // Set the frame visible
         frame.setVisible(true);
 
-        clientButton.addActionListener(e -> cardLayout.show(mainPanel, "Client"));
-        ownerButton.addActionListener(e -> cardLayout.show(mainPanel, "Owner"));
+        loginButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Login");
+            frame.revalidate();
+        });
 
         submitButton.addActionListener(new ActionListener() {
             @Override
@@ -126,14 +193,15 @@ public class VehicularCloudConsole {
             }
         });
 
-        // Default to client panel
-        clientButton.setSelected(true);
-        cardLayout.show(mainPanel, "Client");
+        logoutButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Home");
+            frame.revalidate();
+        });
     }
 
     private void saveInformation() {
-        String userType = clientButton.isSelected() ? "Client" : "Owner";
-        String id = clientButton.isSelected() ? clientIdField.getText() : ownerIdField.getText();
+        String userType = mainPanel.getComponent(1) == clientPanel ? "Client" : "Owner";
+        String id = userType.equals("Client") ? clientIdField.getText() : ownerIdField.getText();
         String vehicleInfo = vehicleField.getText();
         String residencyTime = residencyField.getText();
         String availability = availabilityField.getText();
@@ -184,11 +252,9 @@ public class VehicularCloudConsole {
         vehicleField.setText("");
         residencyField.setText("");
         availabilityField.setText("");
-
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(VehicularCloudConsole::new);
-
     }
 }
