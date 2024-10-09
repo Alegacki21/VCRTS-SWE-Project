@@ -1,0 +1,14 @@
+Timestamp: 2024-10-09 11:25:24
+User Type: Owner
+ID: C-001
+Vehicle Information: lol
+Residency Time: lol
+Computational Power: lol
+
+Timestamp: 2024-10-09 11:25:38
+User Type: Client
+ID: O-001
+Job Duration: lol
+Job Deadline: lol
+Subscription Plan: lol
+
