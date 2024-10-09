@@ -136,8 +136,12 @@ public class VehicularCloudConsole {
         String id = clientButton.isSelected() ? clientIdField.getText() : ownerIdField.getText();
         String vehicleInfo = vehicleField.getText();
         String residencyTime = residencyField.getText();
+        String availability = availabilityField.getText();
+
         String jobDuration = jobDurationField.getText();
         String jobDeadline = jobDeadlineField.getText();
+        String subscription = subscriptionPlan.getText();
+
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("vehicular_cloud_data.txt", true))) {
@@ -152,10 +156,14 @@ public class VehicularCloudConsole {
                 writer.newLine();
                 writer.write("Residency Time: " + residencyTime);
                 writer.newLine();
+                writer.write("Computational Power: " + availability);
+                writer.newLine();
             } else {
                 writer.write("Job Duration: " + jobDuration);
                 writer.newLine();
                 writer.write("Job Deadline: " + jobDeadline);
+                writer.newLine();
+                writer.write("Subscription Plan: " + subscription);
                 writer.newLine();
             }
             writer.newLine();

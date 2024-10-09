@@ -120,8 +120,8 @@ public class Login extends Database implements ActionListener{
 		String user = typeUserName.getText();
 		String pass = typePassword.getText();
 		if(e.getSource() == login) {
-			if (Register.users.containsKey(user) && 
-			Register.users.get(user).equals(pass)) {
+			if (Database.users.containsKey(user) && 
+			Database.users.get(user).equals(pass)) {
 			success.setText("Login successful!");
 			success.setForeground(Color.GREEN);
 			frame.dispose();
@@ -129,12 +129,18 @@ public class Login extends Database implements ActionListener{
 		} 
 				else {
 					success.setText("Username or password is incorrect!");
+					clearFields();
 				}
 			} 
 			
 
 		}
-		public static void main(String[] args) { // // TO test the Login
+		private void clearFields() {
+			typeUserName.setText("");
+			typePassword.setText("");
+	
+		}
+		public static void main(String[] args) { // Start of the program!!!
 			Login l = new Login();
 		}
 	}

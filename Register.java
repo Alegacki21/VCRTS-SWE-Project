@@ -78,11 +78,11 @@ public class Register extends Database implements ActionListener {
             if (mail.isEmpty() || user.isEmpty() || pass.isEmpty()) {
                 success.setText("One or more fields are blank");
             } else {
-                if (users.containsKey(user)) {
+                if (Database.users.containsKey(user)) {
                     success.setText("Username already exists.");
                 } else {
                     // Add the new user to the system
-                    users.put(user, pass);
+                    Database.users.put(user, pass);
                     success.setForeground(Color.GREEN);
                     success.setText("Registration successful!");
 					window.dispose();
