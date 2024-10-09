@@ -1,11 +1,12 @@
 /* Project: Project Milestone 2: GUI
-* Class: VehicularCloudConsole.java
-* Author: Albert Legacki, Allan Ilyasov, Thomas Javier Santos Yciano, Bryan Fung, Matthew Martinez 
+* Class: vehicularCloudConsole.java
+* Author: Albert Legacki, Allan Ilyasov, Tomas Santos Yciano, Bryan Fung, Mathew Martinez 
 * Date: October 7, 2024
 * This program is a GUI for the Vehicular Cloud Console. It allows the user to 
   input information about a client or owner.
 */
 
+// Importing libraries
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -42,9 +43,9 @@ public class VehicularCloudConsole {
         frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
 
-        //Icon Setup
-        ImageIcon icon = new ImageIcon("images/cloudconsole.png");
-        frame.setIconImage(icon.getImage());
+        //Icon Setup (Image doesn't show up when running program, could implement in future)
+        //ImageIcon icon = new ImageIcon("images/cloudconsole.png");
+        //frame.setIconImage(icon.getImage());
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -54,10 +55,10 @@ public class VehicularCloudConsole {
         JLabel homeScreenLabel = new JLabel("Welcome to the VehiCloud - The Vehicular Cloud Real Time System");
         homeScreenPanel.add(homeScreenLabel);
 
-        //Login & Register Buttons
+        //Login Button
         JButton loginButton = new JButton("Login");
 
-        //Action Listeners for Login & Registration
+        //Action Listeners for Login
         loginButton.addActionListener(e -> {
             frame.setTitle("VehiCloud - Login");
             cardLayout.show(mainPanel, "Login");
@@ -79,7 +80,7 @@ public class VehicularCloudConsole {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            // Check if the username and password are correct for owner and client
+            // Check if the username and password are correct for owner and client (Hardcoded for simplicity)
             if (username.equals("usertype1") && password.equals("usertype1")) {
                 // Show a message to the Owner, then switch to the Owner panel
                 JOptionPane.showMessageDialog(frame, "Welcome Owner!");
@@ -251,6 +252,7 @@ public class VehicularCloudConsole {
         clearFields();
     }
 
+    // Clears the fields for the next input by user
     private void clearFields() {
         clientIdField.setText("");
         jobDurationField.setText("");
