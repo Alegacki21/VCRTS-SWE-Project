@@ -10,7 +10,7 @@ private String paymentAccount;
         this.paymentAccount = paymentAccount;
     }
 
-    public List getVehicleList() {
+    public List<Vehicle> getVehicleList() {
         return vehicleList;
     }
     public void setVehicleList(List<Vehicle> vehicleList) {
@@ -24,7 +24,7 @@ private String paymentAccount;
     }
 
     public void registerVehicle(Vehicle v) { // NEEDS TO BE IMPLEMENTED and stored in a file
-
+        vehicleList.add(new Vehicle());
     }
     public void specifyResources() {
 
