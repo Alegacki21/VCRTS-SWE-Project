@@ -1,4 +1,5 @@
 import java.util.*;
+import java.time.Duration;
 
 public class CloudController extends User {
 private int redundancyLevel;
@@ -51,9 +52,26 @@ private double availableCPUPower;
         this.availableCPUPower = availableCPUPower;
     }
 
-    public void calculateCompletionTime() { // NEEDS TO BE IMPLEMENTED 
+    public void calculateCompletionTime() {
+        // Sort jobs based on arrival time
+        List<Job> jobList = new ArrayList<>(jobQueue);
+        jobList.sort(Comparator.comparingInt(Job::getArrivalTime));
 
+        int currentTime = 0;
+        for (Job job : jobList) {
+            if (currentTime < job.getArrivalTime()) {
+                currentTime = job.getArrivalTime();
+            }
+            currentTime += job.getDuration();
+            job.setCompletionTime(currentTime);
+        }
+
+        // Print the completion times
+        for (Job job : jobList) {
+            System.out.println("Job with arrival time " + job.getArrivalTime() + " has completion time " + job.getCompletionTime());
+        }
     }
+
     public void assignJob(int numVehicles) {
 
     } 
