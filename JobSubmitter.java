@@ -13,7 +13,7 @@ private String paymentAccount;
         this.paymentAccount = paymentAccount;
 
     }
-    public List getJobList() {
+    public List<Job> getJobList() {
         return JobList;
     }
     public void setJobList(List<Job> JobList) {
