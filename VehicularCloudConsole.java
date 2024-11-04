@@ -1,19 +1,12 @@
 /* Project: Project Milestone 2: GUI
-* Class: VehicularCloudConsole.java
-* Author: Albert Legacki, Allan Ilyasov, Thomas Javier Santos Yciano, Bryan Fung, Matthew Martinez 
+* Class: vehicularCloudConsole.java
+* Author: Albert Legacki, Allan Ilyasov, Tomas Santos Yciano, Bryan Fung, Mathew Martinez 
 * Date: October 7, 2024
 * This program is a GUI for the Vehicular Cloud Console. It allows the user to 
   input information about a client or owner.
 */
 
-/* Project: Project Milestone 2: GUI
-* Class: VehicularCloudConsole.java
-* Author: Albert Legacki, Allan Ilyasov, Thomas Javier Santos Yciano, Bryan Fung, Matthew Martinez 
-* Date: October 7, 2024
-* This program is a GUI for the Vehicular Cloud Console. It allows the user to 
-  input information about a client or owner.
-*/
-
+// Importing libraries
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,11 +56,71 @@ public class VehicularCloudConsole {
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
 
-        ImageIcon icon = new ImageIcon("images/cloudconsole.png");
-        frame.setIconImage(icon.getImage());
+        //Icon Setup (Image doesn't show up when running program, could implement in future)
+        //ImageIcon icon = new ImageIcon("images/cloudconsole.png");
+        //frame.setIconImage(icon.getImage());
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+
+        //Home Screen Setup
+        homeScreenPanel = new JPanel();
+        JLabel homeScreenLabel = new JLabel("Welcome to the VehiCloud - The Vehicular Cloud Real Time System");
+        homeScreenPanel.add(homeScreenLabel);
+
+        //Login Button
+        JButton loginButton = new JButton("Login");
+
+        //Action Listeners for Login
+        loginButton.addActionListener(e -> {
+            frame.setTitle("VehiCloud - Login");
+            cardLayout.show(mainPanel, "Login");
+        });
+
+        // Login Screen Panel
+        loginScreenPanel = new JPanel();
+        loginScreenPanel.setLayout(new GridLayout(3, 2));
+        loginScreenPanel.add(new JLabel("Username:"));
+        JTextField usernameField = new JTextField();
+        loginScreenPanel.add(usernameField);
+        loginScreenPanel.add(new JLabel("Password:"));
+        JPasswordField passwordField = new JPasswordField();
+        loginScreenPanel.add(passwordField);
+        JButton loginSubmitButton = new JButton("Login");
+        loginSubmitButton.addActionListener(e -> {
+
+            // Get the username and password from the text fields
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+
+            // Check if the username and password are correct for owner and client (Hardcoded for simplicity)
+            if (username.equals("usertype1") && password.equals("usertype1")) {
+                // Show a message to the Owner, then switch to the Owner panel
+                JOptionPane.showMessageDialog(frame, "Welcome Owner!");
+                cardLayout.show(mainPanel, "Owner");
+                ownerSubmitButton.setVisible(true);
+                ownerLogoutButton.setVisible(true);
+            } else if (username.equals("usertype2") && password.equals("usertype2")) {
+                JOptionPane.showMessageDialog(frame, "Welcome Client!");
+                cardLayout.show(mainPanel, "Client");
+                clientSubmitButton.setVisible(true);
+                clientLogoutButton.setVisible(true);
+            } else {
+                // Show invalid credentials message, prompt the user to try again
+                JOptionPane.showMessageDialog(frame, "Invalid username or password. Please try again.");
+            }
+            }
+        );
+        loginScreenPanel.add(new JLabel()); // Empty label for spacing
+        loginScreenPanel.add(loginSubmitButton);
+
+        // Add login screen panel to main panel
+        mainPanel.add(loginScreenPanel, "Login");
+
+        homeScreenPanel.add(loginButton);
+
+        // Add the home screen panel to the main panel
+        mainPanel.add(homeScreenPanel, "Home");
 
         // Client panel
         clientPanel = new JPanel(new GridLayout(0, 2));
@@ -229,17 +282,9 @@ public class VehicularCloudConsole {
 
         JOptionPane.showMessageDialog(frame, "Information saved successfully!\nYour " + userType + " ID is: " + id);
         clearFields();
-/* */
-        // Reset current IDs to allow new entries 
-        if (userType.equals("Client")) {
-            currentClientId = null;
-            clientIdLabel.setText("0000");
-        } else {
-            currentOwnerId = null;
-            ownerIdLabel.setText("0000");
-        }
     }
 
+    // Clears the fields for the next input by user
     private void clearFields() {
         if (clientButton.isSelected()) {
             jobDurationField.setText("");
