@@ -8,52 +8,39 @@
 
 // Importing libraries
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Set;
 import javax.swing.*;
 
 public class VehicularCloudConsole {
     private JFrame frame;
     private JPanel mainPanel;
+    private JPanel homeScreenPanel;
+    private JPanel loginScreenPanel;
     private JPanel clientPanel;
     private JPanel ownerPanel;
     private CardLayout cardLayout;
-    private JRadioButton clientButton;
-    private JRadioButton ownerButton;
-    private JLabel clientIdLabel;
-    private JLabel jobDurationLabel;
+    private JTextField clientIdField;
     private JTextField jobDurationField;
-    private JLabel jobDeadlineLabel;
     private JTextField jobDeadlineField;
-    private JLabel ownerIdLabel;
-    private JLabel vehicleLabel;
+    private JTextField subscriptionPlan;
+    private JTextField ownerIdField;
     private JTextField vehicleField;
-    private JLabel residencyLabel;
     private JTextField residencyField;
-    private JLabel availabilityLabel;
     private JTextField availabilityField;
-    private JButton submitButton;
-    private ButtonGroup userTypeGroup;
-
-    private int clientIdCounter = 0;
-    private int ownerIdCounter = 0;
-
-    private String currentClientId = null;
-    private String currentOwnerId = null;
-
-    // Sets to keep track of used IDs
-    private Set<String> clientIds = new HashSet<>();
-    private Set<String> ownerIds = new HashSet<>();
+    private JButton clientSubmitButton;
+    private JButton clientLogoutButton;
+    private JButton ownerSubmitButton;
+    private JButton ownerLogoutButton;
 
     public VehicularCloudConsole() {
+        //Frame Setup
         frame = new JFrame("Vehicular Cloud Console");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
 
         //Icon Setup (Image doesn't show up when running program, could implement in future)
@@ -124,11 +111,10 @@ public class VehicularCloudConsole {
 
         // Client panel
         clientPanel = new JPanel(new GridLayout(0, 2));
-        clientPanel.setBorder(BorderFactory.createTitledBorder("Client Information"));
 
         clientPanel.add(new JLabel("Client ID:"));
-        clientIdLabel = new JLabel("0000");
-        clientPanel.add(clientIdLabel);
+        clientIdField = new JTextField();
+        clientPanel.add(clientIdField);
 
         clientPanel.add(new JLabel("Approximate Job Duration:"));
         jobDurationField = new JTextField();
@@ -138,128 +124,111 @@ public class VehicularCloudConsole {
         jobDeadlineField = new JTextField();
         clientPanel.add(jobDeadlineField);
 
+        clientPanel.add(new JLabel("Subscription Plan:"));
+        subscriptionPlan = new JTextField();
+        clientPanel.add(subscriptionPlan);
+
+        clientPanel.setBackground(new Color(128,128,128));
+
+        // Create submit and logout buttons for client
+        clientSubmitButton = new JButton("Submit");
+        clientLogoutButton = new JButton("Logout");
+
+        // Add submit and logout buttons to client panel
+        JPanel clientButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        clientButtonPanel.add(clientSubmitButton);
+        clientButtonPanel.add(clientLogoutButton);
+        clientPanel.add(clientButtonPanel);
+
         mainPanel.add(clientPanel, "Client");
 
         // Owner panel
         ownerPanel = new JPanel(new GridLayout(0, 2));
-        ownerPanel.setBorder(BorderFactory.createTitledBorder("Owner Information"));
-
         ownerPanel.add(new JLabel("Owner ID:"));
-        ownerIdLabel = new JLabel("0000");
-        ownerPanel.add(ownerIdLabel);
-
+        ownerIdField = new JTextField();
+        ownerPanel.add(ownerIdField);
         ownerPanel.add(new JLabel("Vehicle Information:"));
         vehicleField = new JTextField();
         ownerPanel.add(vehicleField);
-
         ownerPanel.add(new JLabel("Approximate Residency Time:"));
         residencyField = new JTextField();
         ownerPanel.add(residencyField);
-
         ownerPanel.add(new JLabel("Available Computational Power:"));
         availabilityField = new JTextField();
         ownerPanel.add(availabilityField);
 
+        ownerPanel.setBackground(new Color(128,128,128));
+
+        // Create submit and logout buttons for owner
+        ownerSubmitButton = new JButton("Submit");
+        ownerLogoutButton = new JButton("Logout");
+
+        // Add submit and logout buttons to owner panel
+        JPanel ownerButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        ownerButtonPanel.add(ownerSubmitButton);
+        ownerButtonPanel.add(ownerLogoutButton);
+        ownerPanel.add(ownerButtonPanel);
+
         mainPanel.add(ownerPanel, "Owner");
-
-        // Create radio buttons for user type selection
-        clientButton = new JRadioButton("Client");
-        ownerButton = new JRadioButton("Owner");
-        userTypeGroup = new ButtonGroup();
-        userTypeGroup.add(clientButton);
-        userTypeGroup.add(ownerButton);
-
-        JPanel radioPanel = new JPanel();
-        radioPanel.add(new JLabel("Select User Type:"));
-        radioPanel.add(clientButton);
-        radioPanel.add(ownerButton);
 
         // Add radio panel and main panel to frame
         frame.setLayout(new BorderLayout());
-        frame.add(radioPanel, BorderLayout.NORTH);
         frame.add(mainPanel, BorderLayout.CENTER);
+        
+        // Set the home screen panel as the default panel
+        cardLayout.show(mainPanel, "Home");
 
-        // Add submit button
-        submitButton = new JButton("Submit");
-        frame.add(submitButton, BorderLayout.SOUTH);
+        // Add the main panel to the frame
+        frame.add(mainPanel);
 
-        // Add action listeners
-        clientButton.addActionListener(e -> {
-            cardLayout.show(mainPanel, "Client");
-            if (currentClientId == null) {
-                currentClientId = generateNextId("Client");
-            }
-            clientIdLabel.setText(currentClientId);
-            clearFieldsExceptId("Client");
-        });
-
-        ownerButton.addActionListener(e -> {
-            cardLayout.show(mainPanel, "Owner");
-            if (currentOwnerId == null) {
-                currentOwnerId = generateNextId("Owner");
-            }
-            ownerIdLabel.setText(currentOwnerId);
-            clearFieldsExceptId("Owner");
-        });
-
-        submitButton.addActionListener(e -> saveInformation());
-
-        // Default to client panel
-        clientButton.setSelected(true);
-        clientButton.doClick();
-
+        // Set the frame visible
         frame.setVisible(true);
-    }
 
-    private String generateNextId(String userType) {
-        String nextId = "0000";
-        Set<String> usedIds = userType.equals("Client") ? clientIds : ownerIds;
+        loginButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Login");
+            frame.revalidate();
+        });
 
-        for (int i = 1; i <= 500; i++) {
-            String id = String.format("%04d", i);
-            if (!usedIds.contains(id)) {
-                usedIds.add(id);
-                nextId = id;
-                break;
-            }
-        }
-        return nextId;
+        clientSubmitButton.addActionListener(e -> saveInformation());
+        ownerSubmitButton.addActionListener(e -> saveInformation());
+
+        clientLogoutButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Home");
+            frame.revalidate();
+        });
+        ownerLogoutButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "Home");
+            frame.revalidate();
+        });
+
+        // Initially hide all submit and logout buttons
+        clientSubmitButton.setVisible(false);
+        clientLogoutButton.setVisible(false);
+        ownerSubmitButton.setVisible(false);
+        ownerLogoutButton.setVisible(false);
     }
 
     private void saveInformation() {
-        String userType = clientButton.isSelected() ? "Client" : "Owner";
-        String id = userType.equals("Client") ? currentClientId : currentOwnerId;
+        String userType = mainPanel.getComponent(1) == clientPanel ? "Client" : "Owner";
+        String id = userType.equals("Client") ? clientIdField.getText() : ownerIdField.getText();
+        String vehicleInfo = vehicleField.getText();
+        String residencyTime = residencyField.getText();
+        String availability = availabilityField.getText();
 
-        String vehicleInfo = vehicleField.getText().trim();
-        String residencyTime = residencyField.getText().trim();
-        String availability = availabilityField.getText().trim();
-
-        String jobDuration = jobDurationField.getText().trim();
-        String jobDeadline = jobDeadlineField.getText().trim();
+        String jobDuration = jobDurationField.getText();
+        String jobDeadline = jobDeadlineField.getText();
+        String subscription = subscriptionPlan.getText();
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        // Basic validation
-        if (userType.equals("Owner")) {
-            if (vehicleInfo.isEmpty() || residencyTime.isEmpty() || availability.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please fill in all fields.");
-                return;
-            }
-        } else {
-            if (jobDuration.isEmpty() || jobDeadline.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please fill in all fields.");
-                return;
-            }
-        }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("vehicular_cloud_data.txt", true))) {
             writer.write("Timestamp: " + timestamp);
             writer.newLine();
             writer.write("User Type: " + userType);
             writer.newLine();
+            writer.write("ID: " + id);
+            writer.newLine();
             if (userType.equals("Owner")) {
-                writer.write("OwnerID: " + id);
-                writer.newLine();
                 writer.write("Vehicle Information: " + vehicleInfo);
                 writer.newLine();
                 writer.write("Residency Time: " + residencyTime);
@@ -267,12 +236,11 @@ public class VehicularCloudConsole {
                 writer.write("Computational Power: " + availability);
                 writer.newLine();
             } else {
-                writer.write("ClientID: " + id);
-                writer.newLine();
                 writer.write("Job Duration: " + jobDuration);
                 writer.newLine();
                 writer.write("Job Deadline: " + jobDeadline);
                 writer.newLine();
+                writer.write("Subscription Plan: " + subscription);
                 writer.newLine();
             }
             writer.newLine();
@@ -280,31 +248,20 @@ public class VehicularCloudConsole {
             e.printStackTrace();
         }
 
-        JOptionPane.showMessageDialog(frame, "Information saved successfully!\nYour " + userType + " ID is: " + id);
+        JOptionPane.showMessageDialog(frame, "Information saved successfully!");
         clearFields();
     }
 
     // Clears the fields for the next input by user
     private void clearFields() {
-        if (clientButton.isSelected()) {
-            jobDurationField.setText("");
-            jobDeadlineField.setText("");
-        } else {
-            vehicleField.setText("");
-            residencyField.setText("");
-            availabilityField.setText("");
-        }
-    }
-
-    private void clearFieldsExceptId(String userType) {
-        if (userType.equals("Client")) {
-            jobDurationField.setText("");
-            jobDeadlineField.setText("");
-        } else {
-            vehicleField.setText("");
-            residencyField.setText("");
-            availabilityField.setText("");
-        }
+        clientIdField.setText("");
+        jobDurationField.setText("");
+        jobDeadlineField.setText("");
+        subscriptionPlan.setText("");
+        ownerIdField.setText("");
+        vehicleField.setText("");
+        residencyField.setText("");
+        availabilityField.setText("");
     }
 
     public static void main(String[] args) {
