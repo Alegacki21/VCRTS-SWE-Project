@@ -3,12 +3,16 @@ public class VehicleOwner extends User {
 private List<Vehicle> vehicleList;
 private String paymentAccount;
 
+    //Constructor
+
     public VehicleOwner(String userId, String email, String username, String name, String password, double balance, 
     String paymentMethod, List<Vehicle> vehicleList, String paymentAccount) {
         super(userId, email, username, name, password, balance, paymentMethod);
         this.vehicleList = vehicleList;
         this.paymentAccount = paymentAccount;
     }
+
+    //Getters and Setters
 
     public List<Vehicle> getVehicleList() {
         return vehicleList;
@@ -22,6 +26,8 @@ private String paymentAccount;
     public void setPaymentAccount(String paymentAccount) {
         this.paymentAccount = paymentAccount;
     }
+
+    //Methods
 
     public void registerVehicle(Vehicle v) { // NEEDS TO BE IMPLEMENTED and stored in a file
         vehicleList.add(new Vehicle());
