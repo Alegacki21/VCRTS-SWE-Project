@@ -39,6 +39,8 @@ public class Vehicle {
         this.departureTime = departureTime;
         this.isAvailable = isAvailable;
     }
+
+    //Getters and Setters
     
     public String getName() {
         return name;

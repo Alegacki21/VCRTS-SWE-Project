@@ -20,6 +20,9 @@ private double availableCPUPower;
         this.availableCPUPower = availableCPUPower;
 
     }
+
+    //Getter and Setter Methods, Job Queue, and vehicle list
+
     public int getRedundancyLevel() {
         return redundancyLevel;
     }
@@ -50,6 +53,8 @@ private double availableCPUPower;
     public void setAvailableCPUPower(double availableCPUPower) {
         this.availableCPUPower = availableCPUPower;
     }
+
+    //<summary> Calculate the completion time of jobs that have been submitted 
 
     public void calculateCompletionTime() {
         // Sort jobs based on arrival time

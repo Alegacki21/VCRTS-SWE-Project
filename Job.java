@@ -27,6 +27,8 @@ public class Job {
         this.duration = duration;
     }
 
+    //Getters and Setters
+
     public String getJobID() {
         return jobID;
     }
