@@ -32,10 +32,16 @@ private String paymentAccount;
 
     //Methods
 
+    //Add vehicle to List - vehicleList
+    //Param - Vehicle object
+
     public void registerVehicle(Vehicle v) {
         vehicleList.add(v);
         saveVehicle(v);
     }
+
+    //Write vehicle info to file 
+    //Param - vehicle object
 
     private void saveVehicle(Vehicle vehicle) {
         String fileName = "registered_vehicles.txt"; 
