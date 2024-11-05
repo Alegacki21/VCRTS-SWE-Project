@@ -1,10 +1,14 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 public class JobSubmitter extends User {
 
 private List <Job> JobList;
 private String subscriptionPlan;
 private String paymentAccount;
-
+private CloudController cloudController;
     public JobSubmitter(String userId, String email, String username, String name, String password, double balance, String paymentMethod,
     List<Job> JobList, String subscriptionPlan, String paymentAccount) {
         super(userId,email, username,name,password,balance,paymentMethod);
@@ -13,6 +17,10 @@ private String paymentAccount;
         this.paymentAccount = paymentAccount;
 
     }
+    public void setCloudController(CloudController cloudController) {
+         this.cloudController = cloudController; 
+        }
+
     public List<Job> getJobList() {
         return JobList;
     }
@@ -32,9 +40,17 @@ private String paymentAccount;
         this.paymentAccount = paymentAccount;
     }
 
-
-    public void submitJob() { // NEEDS TO BE IMPLEMENTED and info stored in file
-
+    public void submitJob( String jobSubmitterID, double storageNeeded, double computationalPowerNeeded, Duration estimatedDuration, String reason) { 
+        Job newJob = new Job( jobSubmitterID, storageNeeded, computationalPowerNeeded, estimatedDuration, reason);
+        if(cloudController!=null) {
+         cloudController.getJobQueue().add(newJob); 
+         this.JobList.add(newJob);
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter("jobDetails.txt", true))) {
+            writer.write("Job ID: " + newJob.getJobID() + ", Job Submitter ID: " + jobSubmitterID + ", Storage Needed: " + storageNeeded + ", Computational Power Needed: " + computationalPowerNeeded + ", Estimated Duration: " + estimatedDuration + "\n"); 
+            System.out.println("Successfully wrote job details on text file");
+            } catch (IOException e) { 
+                e.printStackTrace(); } 
+        }
     }
     public void cancelJob() {
 

@@ -45,7 +45,6 @@ private String paymentAccount;
 
     private void saveVehicle(Vehicle vehicle) {
         String fileName = "registered_vehicles.txt"; 
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) { // Append mode
             writer.write(formatVehicleData(vehicle));
             writer.newLine();

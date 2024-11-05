@@ -1,6 +1,7 @@
 import java.time.Duration;
 
 public class Job {
+    public static int jobIdCounter =0;
     private String jobID;
     private String jobSubmitterID;
     private String status;
@@ -12,10 +13,26 @@ public class Job {
     private int arrivalTime;
     private int duration;
     private int completionTime;
+    private String reason;
 
-    public Job(String jobID, String jobSubmitterID, String status, Duration jobRunTime, int assignedVehicles,
-               double computationalPowerNeeded, double storageNeeded, Duration estimatedDuration, int arrivalTime, int duration) {
-        this.jobID = jobID;
+    public Job(String jobSubmitterID, double storageNeeded, double computationalPowerNeeded, Duration estimatedDuration, String reason) {
+        this.jobID = generateJobID();
+        this.jobSubmitterID = jobSubmitterID;
+        this.storageNeeded = storageNeeded;
+        this.computationalPowerNeeded = computationalPowerNeeded;
+        this.estimatedDuration = estimatedDuration;
+        this.reason = reason;
+        this.status = "Pending"; 
+        this.jobRunTime = Duration.ofMinutes(0); 
+        this.assignedVehicles = 0; 
+        this.arrivalTime = 0; 
+        this.duration = 0;
+        this.completionTime = 0;
+    
+    }
+    public Job( String jobSubmitterID, String status, Duration jobRunTime, int assignedVehicles,
+               double computationalPowerNeeded, double storageNeeded, Duration estimatedDuration, int arrivalTime, int duration, String reason) {
+        this.jobID = generateJobID();
         this.jobSubmitterID = jobSubmitterID;
         this.status = status;
         this.jobRunTime = jobRunTime;
@@ -25,10 +42,13 @@ public class Job {
         this.estimatedDuration = estimatedDuration;
         this.arrivalTime = arrivalTime;
         this.duration = duration;
+        this.reason = reason;
     }
-
+    private static String generateJobID() {
+        return "JOB" + (++jobIdCounter);
+   }
     //Getters and Setters
-
+    
     public String getJobID() {
         return jobID;
     }
