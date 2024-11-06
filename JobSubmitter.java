@@ -9,6 +9,8 @@ private List <Job> JobList;
 private String subscriptionPlan;
 private String paymentAccount;
 private CloudController cloudController;
+   
+
     public JobSubmitter(String userId, String email, String username, String name, String password, double balance, String paymentMethod,
     List<Job> JobList, String subscriptionPlan, String paymentAccount) {
         super(userId,email, username,name,password,balance,paymentMethod);
@@ -40,7 +42,10 @@ private CloudController cloudController;
         this.paymentAccount = paymentAccount;
     }
 
-    public void submitJob( String jobSubmitterID, double storageNeeded, double computationalPowerNeeded, Duration estimatedDuration, String reason) { 
+    //Methods
+
+    //Jobsubmitter submits new job
+     public void submitJob( String jobSubmitterID, double storageNeeded, double computationalPowerNeeded, Duration estimatedDuration, String reason) { 
         Job newJob = new Job( jobSubmitterID, storageNeeded, computationalPowerNeeded, estimatedDuration, reason);
         if(cloudController!=null) {
          cloudController.getJobQueue().add(newJob); 

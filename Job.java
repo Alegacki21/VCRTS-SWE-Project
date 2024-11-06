@@ -97,10 +97,13 @@ public class Job {
         this.completionTime = completionTime;
     }
 
+    //Methods
+
     public void execute() {
         
     }
 
+    //Update Status of job
     public void updateStatus(String newStatus) {
         this.status = newStatus;
     }

@@ -126,6 +126,8 @@ public class Vehicle {
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
+
+    //Methods
        
     public void startJob(Job j) {
     
