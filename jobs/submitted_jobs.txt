@@ -1,8 +1,27 @@
-Timestamp: 2024-11-06 12:45:32
+Timestamp: 2024-11-06 13:01:07
 Client ID: 1
 Job ID: 000
 Duration: 1
-Arrival Time: 1730915132
+Arrival Time: 1730916067
 Computational Power Needed: 0.0
-Status: Pending
+Estimated Completion Time: 5 minutes
+Status: Scheduled
+------------------------
+Timestamp: 2024-11-06 13:01:19
+Client ID: 1
+Job ID: 001
+Duration: 2
+Arrival Time: 1730916079
+Computational Power Needed: 0.0
+Estimated Completion Time: 10 minutes
+Status: Scheduled
+------------------------
+Timestamp: 2024-11-06 13:01:23
+Client ID: 1
+Job ID: 002
+Duration: 2
+Arrival Time: 1730916083
+Computational Power Needed: 0.0
+Estimated Completion Time: 15 minutes
+Status: Scheduled
 ------------------------
