@@ -1,7 +1,0 @@
-Timestamp: 2024-10-08 23:18:28
-User Type: Owner
-ID: C-001
-Vehicle Information: Tesla Cybetruck
-Residency Time: 10 hours, 0 minutes, 0 seconds
-Computational Power: 20 TFLOPS
-

@@ -1,0 +1,8 @@
+Timestamp: 2024-11-06 12:45:32
+Client ID: 1
+Job ID: 000
+Duration: 1
+Arrival Time: 1730915132
+Computational Power Needed: 0.0
+Status: Pending
+------------------------

@@ -1,84 +1,63 @@
 import java.util.*;
+import java.util.stream.Collectors;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import javax.swing.JOptionPane;
+import java.nio.file.Files;
 
-public class CloudController extends User {
-private int redundancyLevel;
-private List <Vehicle> vehicleList;
-private Queue<Job> jobQueue;
-//Removed resourcemanagement and billing
-// private dashboard NOT IMPLEMENTED YET
-// private authentication NOT IMPLEMENTED YET
-private int availableVehicles;
-private double availableCPUPower;
-
-    public CloudController(String userId, String email, String username, String name, String password, double balance, String paymentMethod,
-    int redundancyLevel,List <Vehicle> vehicleList, Queue<Job> jobQueue, int availableVehicles, double availableCPUPower) {
-        super(userId,email,username,name,password,balance,paymentMethod);
-        this.redundancyLevel = redundancyLevel;
-        this.vehicleList = vehicleList;
-        this.jobQueue = jobQueue;
-        this.availableVehicles = availableVehicles;
-        this.availableCPUPower = availableCPUPower;
-
+public class CloudController {
+    private static CloudController instance;
+    private List<Vehicle> vehicleList = new ArrayList<>();
+    private Queue<Job> jobQueue = new LinkedList<>();
+    
+    
+    public static CloudController getInstance() {
+        if (instance == null) {
+            instance = new CloudController();
+        }
+        return instance;
     }
-
-    //Getter and Setter Methods, Job Queue, and vehicle list
-
-    public int getRedundancyLevel() {
-        return redundancyLevel;
-    }
-    public void setRedundancyLevel(int redundancyLevel) {
-        this.redundancyLevel = redundancyLevel;
-    }
-    public List<Vehicle> getVehicleList() {
-        return vehicleList;
-    }
-    public void setVehicleList(List<Vehicle> vehicleList) {
-        this.vehicleList = vehicleList;
-    }
-    public Queue<Job> getJobQueue() {
-        return jobQueue;
-    }
-    public void setJobQueue(Queue<Job> jobQueue) {
-        this.jobQueue = jobQueue;
-    }
-    public int getAvailableVehicles() {
-        return availableVehicles;
-    }
-    public void setAvailableVehicles(int availableVehicles) {
-        this.availableVehicles = availableVehicles;
-    }
-    public double getAvailableCPUPower() {
-        return availableCPUPower;
-    }
-    public void setAvailableCPUPower(double availableCPUPower) {
-        this.availableCPUPower = availableCPUPower;
-    }
-
-    //<summary> Calculate the completion time of jobs that have been submitted 
-
+    
     public void calculateCompletionTime() {
-        // Sort jobs based on arrival time
-        List<Job> jobList = new ArrayList<>(jobQueue);
-        jobList.sort(Comparator.comparingInt(Job::getArrivalTime));
-
-        int currentTime = 0;
-        for (Job job : jobList) {
-            if (currentTime < job.getArrivalTime()) {
-                currentTime = job.getArrivalTime();
+        try {
+            File jobsFile = new File("jobs/submitted_jobs.txt");
+            List<String> lines = Files.readAllLines(jobsFile.toPath());
+            List<String> updatedLines = new ArrayList<>();
+            
+            for (String line : lines) {
+                updatedLines.add(line);
+                if (line.startsWith("JobID:")) {
+                    String jobId = line.substring(line.indexOf(":") + 2).trim();
+                    int completionTime = new Random().nextInt(10) + 1;
+                    updatedLines.add("Estimated Completion Time: " + completionTime + " minutes");
+                    updatedLines.add("Status: In Progress");
+                }
             }
-            currentTime += job.getDuration();
-            job.setCompletionTime(currentTime);
-        }
-
-        // Print the completion times
-        for (Job job : jobList) {
-            System.out.println("Job with arrival time " + job.getArrivalTime() + " has completion time " + job.getCompletionTime());
+            
+            Files.write(jobsFile.toPath(), updatedLines);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void assignJob(int numVehicles) {
+    public void assignJob(Job job) {
+        List<Vehicle> availableVehicleList = vehicleList.stream()
+            .filter(Vehicle::isAvailable)
+            .collect(Collectors.toList());
+            
+        if (!availableVehicleList.isEmpty()) {
+            Vehicle vehicle = availableVehicleList.get(0);
+            vehicle.startJob(job);
+            vehicle.setAvailable(false);
+            job.setStatus("Running");
+        }
+    }
 
-    } 
     public void authenticateUser(User u ) {
 
     }
@@ -98,21 +77,39 @@ private double availableCPUPower;
 
     }
     public void chargeUser(double amount) {
-        System.out.println(getUserId() + amount);
+       //System.out.println(getUserId() + amount);
+       //Implement this later
     }
     public void payOwner(double amount) {
-        System.out.println(getUserId() + amount);
+        //System.out.println(getUserId() + amount);
+        //Implement this later
     }
     public void returnReceipt(int transactioID) {
-
+        //Implement this later
     }
     public void allocateResources(Job j) {
-
+        //Implement this later
     }
     public void redistributeJob(Job j) {
-
+        //Implement this later
     }
     public void monitorVehicles() {
+        //Implement this later
+    }
 
+    public void submitJob(Job job) {
+        job.setStatus("Pending");
+        jobQueue.offer(job);
+        writeJobToFile(job);
+    }
+
+    private void writeJobToFile(Job job) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("jobs/submitted_jobs.txt", true))) {
+            writer.write("JobID: " + job.getJobId() + "\n");
+            writer.write("Status: Pending\n");
+            // Add other job details as needed
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
