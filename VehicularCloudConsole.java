@@ -1386,7 +1386,7 @@ public class VehicularCloudConsole extends JFrame {
         submittedPanel.setBackground(Color.WHITE);
 
         // Title
-        JLabel titleLabel = new JLabel("Resources Submitted");
+        JLabel titleLabel = new JLabel("Registered Vehicles");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

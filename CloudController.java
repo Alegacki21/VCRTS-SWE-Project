@@ -25,10 +25,8 @@ public class CloudController {
     }
     
     public void calculateCompletionTime() {
-        System.out.println("Calculate method called");
         try {
             File jobsFile = new File("jobs/submitted_jobs.txt");
-            System.out.println("Looking for file at: " + jobsFile.getAbsolutePath());
             
             if (!jobsFile.exists()) {
                 System.out.println("File does not exist!");
@@ -36,78 +34,44 @@ public class CloudController {
             }
             
             List<String> lines = Files.readAllLines(jobsFile.toPath());
-            System.out.println("Read " + lines.size() + " lines");
-            
-            // Print each line for debugging
-            System.out.println("File contents:");
-            for (String line : lines) {
-                System.out.println("Line: " + line);
-            }
-            
-            // Check if all jobs are already scheduled
-            boolean allScheduled = true;
-            boolean hasJobs = false;
-            
-            for (String line : lines) {
-                if (line.startsWith("Job ID:")) {
-                    hasJobs = true;
-                    System.out.println("Found job: " + line);
-                }
-                if (line.startsWith("Status:") && !line.contains("Scheduled")) {
-                    allScheduled = false;
-                    System.out.println("Found unscheduled job");
-                }
-            }
-            
-            System.out.println("Has jobs: " + hasJobs);
-            System.out.println("All scheduled: " + allScheduled);
-            
-            if (!hasJobs) {
-                JOptionPane.showMessageDialog(null, 
-                    "No jobs found to calculate.",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            
-            if (allScheduled) {
-                JOptionPane.showMessageDialog(null, 
-                    "All jobs have already been scheduled and calculated.",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            
             List<String> updatedLines = new ArrayList<>();
-            int totalWaitTime = 0;
-            boolean processingJob = false;
+            
+            int totalTime = 0;  // Running total of completion times
+            Job currentJob = null;
             
             for (String line : lines) {
                 if (line.startsWith("Job ID:")) {
-                    processingJob = true;
+                    currentJob = new Job(
+                        line.split(":")[1].trim(),  // Job ID
+                        0,  // Duration will be set when we find it
+                        0   // Arrival time not needed for this calculation
+                    );
                     updatedLines.add(line);
-                    System.out.println("Processing job: " + line);
-                    int processingTime = 5;
-                    int completionTime = totalWaitTime + processingTime;
-                    totalWaitTime = completionTime;
-                    continue;
+                }
+                else if (line.startsWith("Duration:")) {
+                    if (currentJob != null) {
+                        int duration = Integer.parseInt(line.split(":")[1].trim().split(" ")[0]);
+                        currentJob.setDuration(duration);
+                        
+                        // Calculate completion time based on FIFO
+                        totalTime += duration;
+                        
+                        updatedLines.add(line);
+                        updatedLines.add("Estimated Completion Time: " + totalTime + " minutes");
+                        updatedLines.add("Status: Scheduled");
+                    }
+                }
+                else if (!line.startsWith("Estimated") && !line.startsWith("Status:")) {
+                    updatedLines.add(line);
                 }
                 
                 if (line.equals("------------------------")) {
-                    processingJob = false;
-                    updatedLines.add("Estimated Completion Time: " + totalWaitTime + " minutes");
-                    updatedLines.add("Status: Scheduled");
-                    updatedLines.add(line);
-                    continue;
-                }
-                
-                if (!processingJob || (!line.startsWith("Estimated") && !line.startsWith("Status:"))) {
+                    currentJob = null;
                     updatedLines.add(line);
                 }
             }
             
             Files.write(jobsFile.toPath(), updatedLines);
-            System.out.println("File updated with new times");
             
             JOptionPane.showMessageDialog(null, 
                 "Job completion times have been calculated successfully!",
@@ -137,21 +101,23 @@ public class CloudController {
     }
 
     public void authenticateUser(User u ) {
-
+        //Implement this later
     }
     public void scheduleJobs() {
-
+        //Implement this later
     }
     public void monitorResources() { // Dont know if we need this
-
+        //Implement this later
     }
     public void handleVehicleDeparture(Vehicle v) {
-
+        //Implement this later
     }
     public void generateReports() {
+        //Implement this later
 
     }
     public void assignCheckpoint(Vehicle v) {
+        //Implement this later
 
     }
     public void chargeUser(double amount) {
