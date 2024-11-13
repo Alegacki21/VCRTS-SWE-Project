@@ -36,7 +36,7 @@ private String paymentAccount;
         this.paymentAccount = paymentAccount;
     }
 
-
+    
     public void submitJob(Job job) {
         // Add job to list
         JobList.add(job);

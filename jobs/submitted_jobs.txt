@@ -43,3 +43,24 @@ Computational Power Needed: 0.0
 ------------------------
 ------------------------
 ------------------------
+Timestamp: 2024-11-13 08:15:32
+Client ID: 10
+Job ID: 000
+Duration: 12 minutes
+Computational Power Needed: 0.0
+Status: Pending
+------------------------
+Timestamp: 2024-11-13 08:17:01
+Client ID: 23
+Job ID: 000
+Duration: 23 minutes
+Computational Power Needed: 0.0
+Status: Pending
+------------------------
+Timestamp: 2024-11-13 08:17:46
+Client ID: 6t
+Job ID: 000
+Duration: 2 minutes
+Computational Power Needed: 0.0
+Status: Pending
+------------------------

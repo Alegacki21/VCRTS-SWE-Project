@@ -1,10 +1,10 @@
 // Importing necessary libraries for GUI and file operations
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.*;
 
 public class VehicularCloudConsole extends JFrame {
     private JPanel mainPanel;
@@ -672,7 +672,6 @@ public class VehicularCloudConsole extends JFrame {
 
                 // Registering the vehicle (this will write to the file)
                 owner.registerVehicle(vehicle);
-
                 // Clearing old file content and rewriting with correct format
                 File resourcesFile = new File("resources/vehicle_resources.txt");
                 if (resourcesFile.exists()) {
@@ -804,8 +803,15 @@ public class VehicularCloudConsole extends JFrame {
                     if (!directory.exists()) {
                         directory.mkdir();
                     }
+                    
+                    //Before writing to file, waits for response from server/cloud controller
+                    JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                    JDialog dialog = optionPane.createDialog(ownerPanel, "Processing"); 
+                  //  dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); //COMMENTED OUT FOR TESTING PURPOSES
+                    dialog.setVisible(true);
 
-                    // Add timestamp
+
+                    // If Cloud Controller Accepts then writes info to file, Add timestamp
                     String timestamp = java.time.LocalDateTime.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                     
@@ -818,7 +824,7 @@ public class VehicularCloudConsole extends JFrame {
                     writer.write("Notes: " + fields[4].getText() + "\n");
                     writer.write("------------------------\n");
                     writer.close();
-
+                    //Shows message saying Cloud Controller accepted their vehicle
                     JOptionPane.showMessageDialog(ownerPanel,
                         "Vehicle resource submitted and saved successfully!",
                         "Success",
@@ -827,6 +833,10 @@ public class VehicularCloudConsole extends JFrame {
                     for (JTextField field : fields) {
                         field.setText("");
                     }
+                    // Message for Cloud Controller rejecting their vehicle
+                    //EX: sysout("Get OUT")
+
+                    
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(ownerPanel,
                         "Error saving resource information: " + ex.getMessage(),
@@ -988,7 +998,18 @@ public class VehicularCloudConsole extends JFrame {
                     // Submit the job
                     jobSubmitter.submitJob(newJob);
 
+                    
+                     // After submitting, Client has to wait for Cloud Controller/server to either accept or reject it
+                     // But doesn't work as of now, after submitJob method is called it writes the info to file even before cloud controller can respond :(
+                    JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null); 
+                    JDialog dialog = optionPane.createDialog(clientPanel, "Processing");
+                    // dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); COMMENTED OUT FOR TESTING PURPOSES
+                     dialog.setVisible(true);
+
+                     
+
                     // Show success message
+                    // something like if Cloud Controller says yes then - 
                     JOptionPane.showMessageDialog(clientPanel,
                         "Job submitted and saved successfully!",
                         "Success",
@@ -998,6 +1019,9 @@ public class VehicularCloudConsole extends JFrame {
                     for (JTextField field : fields) {
                         field.setText("");
                     }
+                    // something like else Cloud Controller says reject
+                    //system.out.print("Server rejected your job, try again")
+
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(clientPanel,

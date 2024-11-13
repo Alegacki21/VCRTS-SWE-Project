@@ -1,7 +1,23 @@
-Timestamp: 2024-11-10 16:24:45
-Owner ID: 001
-Vehicle Info: lol
-Residency Time: lol
-Computational Power: lol
-Notes: lol
+Timestamp: 2024-11-13 07:53:58
+Owner ID: OWNER_1731502438121
+VIN: 1
+Make: 1
+Model: 1
+Year: 1
+Computational Power: 1.0
+Storage Capacity: 1.0
+------------------------
+Timestamp: 2024-11-13 07:54:05
+Owner ID: 23
+Vehicle Info: 23
+Residency Time: 23
+Computational Power: 23
+Notes: 23
+------------------------
+Timestamp: 2024-11-13 08:17:23
+Owner ID: 11
+Vehicle Info: 111
+Residency Time: 11
+Computational Power: 11
+Notes: 11
 ------------------------
