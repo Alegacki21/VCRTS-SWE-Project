@@ -3,6 +3,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 public class JobSubmitter extends User {
 
 private List <Job> JobList;
@@ -67,6 +71,13 @@ private String paymentAccount;
             System.err.println("Error saving job information: " + ex.getMessage());
         }
     }
+    public static void jobServerResponse(JPanel clientPanel) {
+        JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+        JDialog dialog = optionPane.createDialog(clientPanel, "Processing"); 
+        //  dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); //COMMENTED OUT FOR TESTING PURPOSES
+        dialog.setVisible(true);
+    }
+    
     public void cancelJob() {
 
     }

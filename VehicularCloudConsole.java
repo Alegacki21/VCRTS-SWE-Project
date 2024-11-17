@@ -804,17 +804,14 @@ public class VehicularCloudConsole extends JFrame {
                         directory.mkdir();
                     }
                     
-                    //Before writing to file, waits for response from server/cloud controller
-                    JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-                    JDialog dialog = optionPane.createDialog(ownerPanel, "Processing"); 
-                  //  dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); //COMMENTED OUT FOR TESTING PURPOSES
-                    dialog.setVisible(true);
-
+                  //Before writing to file, waits for response from server/cloud controller
+                    //dialog.setVisible(true);
+                    VehicleOwner.vehicleServerResponse(ownerPanel);
 
                     // If Cloud Controller Accepts then writes info to file, Add timestamp
                     String timestamp = java.time.LocalDateTime.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    
+                    String ownerId = fields[0].getText();
                     FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
                     writer.write("Timestamp: " + timestamp + "\n");
                     writer.write("Owner ID: " + fields[0].getText() + "\n");
@@ -824,7 +821,12 @@ public class VehicularCloudConsole extends JFrame {
                     writer.write("Notes: " + fields[4].getText() + "\n");
                     writer.write("------------------------\n");
                     writer.close();
+
+                    //Trying to save the values the vehicleowner submits to be used in the Cloudcontroller popup later but not working :(
+                    //   CloudController.handleCollectedValues(fields[0].getText(), fields[1].getText(), fields[2].getText(), fields[3].getText(), fields[4].getText());
+
                     //Shows message saying Cloud Controller accepted their vehicle
+                 
                     JOptionPane.showMessageDialog(ownerPanel,
                         "Vehicle resource submitted and saved successfully!",
                         "Success",
@@ -998,13 +1000,11 @@ public class VehicularCloudConsole extends JFrame {
                     // Submit the job
                     jobSubmitter.submitJob(newJob);
 
-                    
+
                      // After submitting, Client has to wait for Cloud Controller/server to either accept or reject it
                      // But doesn't work as of now, after submitJob method is called it writes the info to file even before cloud controller can respond :(
-                    JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null); 
-                    JDialog dialog = optionPane.createDialog(clientPanel, "Processing");
-                    // dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); COMMENTED OUT FOR TESTING PURPOSES
-                     dialog.setVisible(true);
+                     //dialog.setVisible(true);
+                    JobSubmitter.jobServerResponse(clientPanel);
 
                      
 
@@ -1098,7 +1098,6 @@ public class VehicularCloudConsole extends JFrame {
         JPanel jobsListPanel = new JPanel();
         jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
         jobsListPanel.setBackground(Color.WHITE);
-
         try {
             File jobsFile = new File("jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
@@ -1260,6 +1259,7 @@ public class VehicularCloudConsole extends JFrame {
             mainPanel.add(createCloudControllerHomePanel(username));
             mainPanel.revalidate();
             mainPanel.repaint();
+            CloudController.showPopup(controllerPanel,"Joe Mama" , "Toyota Corolla", "30", "500", "Trying to get paid with my Toytoa Corolla");
         });
 
         buttonPanel.add(refreshButton);
@@ -1272,12 +1272,12 @@ public class VehicularCloudConsole extends JFrame {
         controllerPanel.add(columnsPanel);
         controllerPanel.add(buttonPanel);
         controllerPanel.add(Box.createVerticalStrut(20));
-
         // Add calculate button functionality
         calculateAllButton.addActionListener(e -> {
             System.out.println("Button clicked"); // Debug print
             CloudController controller = CloudController.getInstance(); // Use getInstance instead of new
             controller.calculateCompletionTime();
+
             // Refresh the panel to show updated times
             mainPanel.removeAll();
             mainPanel.add(createCloudControllerHomePanel(username));
