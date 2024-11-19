@@ -1,0 +1,28 @@
+Timestamp: 2024-11-18 23:41:36
+Owner ID: 001
+Vehicle Info: lol
+Residency Time: lol
+Computational Power: lol
+Notes: lol
+------------------------
+Timestamp: 2024-11-19 00:20:18
+Owner ID: 001
+Vehicle Info: lol
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------
+Timestamp: 2024-11-19 00:20:22
+Owner ID: 001
+Vehicle Info: 1
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------
+Timestamp: 2024-11-19 00:20:31
+Owner ID: 1
+Vehicle Info: 1
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------

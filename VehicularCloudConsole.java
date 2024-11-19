@@ -893,7 +893,7 @@ public class VehicularCloudConsole extends JFrame {
         String[] labels = {
             "Client ID:",
             "Subscription Plan:",
-            "Approximate Job Duration:",
+            "Approximate Job Duration (Minutes):",
             "Job Deadline:",
             "Purpose/Reason:"
         };
@@ -1155,44 +1155,52 @@ public class VehicularCloudConsole extends JFrame {
             File resourcesFile = new File("resources/vehicle_resources.txt");
             if (resourcesFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
-                JPanel currentResourceItem = null;
+                //StringBuilder currentContent = new StringBuilder();
                 
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     
                     if (line.startsWith("Timestamp:")) {
-                        currentResourceItem = new JPanel();
-                        currentResourceItem.setLayout(new BoxLayout(currentResourceItem, BoxLayout.Y_AXIS));
-                        currentResourceItem.setBackground(Color.WHITE);
-                        currentResourceItem.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                        ));
-                        currentResourceItem.setPreferredSize(new Dimension(400, 150));
-                        currentResourceItem.setMaximumSize(new Dimension(400, 150));
+                        // Create new resource panel with adjusted height
+                        JPanel resourceItemPanel = new JPanel(new BorderLayout());
+                        resourceItemPanel.setPreferredSize(new Dimension(400, 120));
+                        resourceItemPanel.setMaximumSize(new Dimension(400, 120));
+                        resourceItemPanel.setBackground(new Color(230, 230, 230));
                         
-                        // Center-aligned info panel
-                        JPanel infoPanel = new JPanel();
-                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-                        infoPanel.setBackground(Color.WHITE);
-                        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        currentResourceItem.add(infoPanel);
+                        // Create info panel with GridBagLayout for centering
+                        JPanel infoPanel = new JPanel(new GridBagLayout());
+                        infoPanel.setBackground(new Color(230, 230, 230));
                         
-                        resourcesListPanel.add(currentResourceItem);
-                        resourcesListPanel.add(Box.createVerticalStrut(5));
-                    }
-                    
-                    if (currentResourceItem != null && !line.equals("------------------------")) {
+                        // Create text panel with vertical BoxLayout
+                        JPanel textPanel = new JPanel();
+                        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+                        textPanel.setBackground(new Color(230, 230, 230));
+                        
+                        // Add the timestamp with center alignment
                         JLabel infoLabel = new JLabel(line);
                         infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                         infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        // Add to the info panel instead of directly to currentResourceItem
-                        ((JPanel)currentResourceItem.getComponent(0)).add(infoLabel);
-                        ((JPanel)currentResourceItem.getComponent(0)).add(Box.createVerticalStrut(5));
-                    }
-                    
-                    if (line.equals("------------------------")) {
-                        currentResourceItem = null;
+                        textPanel.add(infoLabel);
+                        
+                        // Add textPanel to infoPanel for centering
+                        infoPanel.add(textPanel);
+                        
+                        // Add panel to resource item
+                        resourceItemPanel.add(infoPanel, BorderLayout.CENTER);
+                        resourcesListPanel.add(resourceItemPanel);
+                        resourcesListPanel.add(Box.createVerticalStrut(10));
+                        
+                        //currentContent = new StringBuilder();  // Reset for next item
+                    } else if (!line.equals("------------------------")) {
+                        // Add content to the current resource panel
+                        JPanel currentPanel = (JPanel)((JPanel)resourcesListPanel.getComponent(
+                            resourcesListPanel.getComponentCount() - 2)).getComponent(0);
+                        JPanel textPanel = (JPanel)currentPanel.getComponent(0);
+                        
+                        JLabel contentLabel = new JLabel(line);
+                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        contentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        textPanel.add(contentLabel);
                     }
                 }
                 scanner.close();
@@ -1306,46 +1314,68 @@ public class VehicularCloudConsole extends JFrame {
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            // Read from jobs file
             File jobsFile = new File("jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
-                JPanel currentJobItem = null;
                 
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    System.out.println("Read line: " + line);
                     
-                    if (line.startsWith("Client ID:")) {
-                        // Create new job panel with larger height
-                        currentJobItem = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                        currentJobItem.setPreferredSize(new Dimension(400, 150));
-                        currentJobItem.setMaximumSize(new Dimension(400, 150));
-                        currentJobItem.setBackground(new Color(230, 230, 230));
+                    if (line.startsWith("Timestamp:")) {
+                        // Create new job panel with adjusted height
+                        JPanel jobItemPanel = new JPanel(new BorderLayout());
+                        jobItemPanel.setPreferredSize(new Dimension(400, 120));
+                        jobItemPanel.setMaximumSize(new Dimension(400, 120));
+                        jobItemPanel.setBackground(new Color(230, 230, 230));
                         
                         // Create info panel with vertical layout
                         JPanel infoPanel = new JPanel();
                         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
                         infoPanel.setBackground(new Color(230, 230, 230));
+                        infoPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
                         
-                        // Add some padding to the info panel
-                        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                        
-                        // Add timestamp and job details
-                        currentJobItem.add(infoPanel);
-                        jobsListPanel.add(currentJobItem);
-                        jobsListPanel.add(Box.createVerticalStrut(10));
-                    }
-                    
-                    if (currentJobItem != null) {
+                        // Add the client ID
                         JLabel infoLabel = new JLabel(line);
                         infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        ((JPanel)currentJobItem.getComponent(0)).add(infoLabel);
-                        ((JPanel)currentJobItem.getComponent(0)).add(Box.createVerticalStrut(5)); // Add spacing between lines
-                    }
-                    
-                    if (line.equals("------------------------")) {
-                        currentJobItem = null;
+                        infoPanel.add(infoLabel);
+                        
+                        // Create button panel with GridBagLayout
+                        JPanel buttonPanel = new JPanel(new GridBagLayout());
+                        buttonPanel.setBackground(new Color(230, 230, 230));
+                        
+                        // Add View Status button
+                        JButton viewStatusButton = createStyledButton("View Status");
+                        viewStatusButton.setPreferredSize(new Dimension(120, 30));
+                        
+                        // Add the action listener
+                        final String jobDetails = line;
+                        viewStatusButton.addActionListener(e -> {
+                            String status = "Pending";
+                            JOptionPane.showMessageDialog(
+                                jobItemPanel,
+                                "Job Status: " + status + "\n\n" +
+                                "Waiting for Cloud Controller assignment.\n" +
+                                jobDetails,
+                                "Job Status",
+                                JOptionPane.INFORMATION_MESSAGE
+                            );
+                        });
+                        
+                        buttonPanel.add(viewStatusButton);
+                        
+                        // Add panels to job item
+                        jobItemPanel.add(infoPanel, BorderLayout.CENTER);
+                        jobItemPanel.add(buttonPanel, BorderLayout.EAST);
+                        jobsListPanel.add(jobItemPanel);
+                        jobsListPanel.add(Box.createVerticalStrut(10));
+                        
+                    } else if (!line.equals("------------------------")) {
+                        // Add content to the current job panel
+                        JPanel currentPanel = (JPanel)((JPanel)jobsListPanel.getComponent(
+                            jobsListPanel.getComponentCount() - 2)).getComponent(0);
+                        JLabel contentLabel = new JLabel(line);
+                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        currentPanel.add(contentLabel);
                     }
                 }
                 scanner.close();
@@ -1425,39 +1455,53 @@ public class VehicularCloudConsole extends JFrame {
             
             if (resourcesFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
-                JPanel currentResourceItem = null;
+                StringBuilder currentContent = new StringBuilder();
                 
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     System.out.println("Processing line: " + line);
                     
                     if (line.startsWith("Timestamp:")) {
-                        // Create new resource panel with larger height
-                        currentResourceItem = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                        currentResourceItem.setPreferredSize(new Dimension(400, 150));
-                        currentResourceItem.setMaximumSize(new Dimension(400, 150));
-                        currentResourceItem.setBackground(new Color(230, 230, 230));
+                        // Create new resource panel with adjusted height
+                        JPanel resourceItemPanel = new JPanel(new BorderLayout());
+                        resourceItemPanel.setPreferredSize(new Dimension(400, 120));
+                        resourceItemPanel.setMaximumSize(new Dimension(400, 120));
+                        resourceItemPanel.setBackground(new Color(230, 230, 230));
                         
-                        // Create info panel with vertical layout
-                        JPanel infoPanel = new JPanel();
-                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                        // Create info panel with GridBagLayout for centering
+                        JPanel infoPanel = new JPanel(new GridBagLayout());
                         infoPanel.setBackground(new Color(230, 230, 230));
-                        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                         
-                        currentResourceItem.add(infoPanel);
-                        resourcesListPanel.add(currentResourceItem);
-                        resourcesListPanel.add(Box.createVerticalStrut(10));
-                    }
-                    
-                    if (currentResourceItem != null) {
+                        // Create text panel with vertical BoxLayout
+                        JPanel textPanel = new JPanel();
+                        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+                        textPanel.setBackground(new Color(230, 230, 230));
+                        
+                        // Add the timestamp with center alignment
                         JLabel infoLabel = new JLabel(line);
                         infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        ((JPanel)currentResourceItem.getComponent(0)).add(infoLabel);
-                        ((JPanel)currentResourceItem.getComponent(0)).add(Box.createVerticalStrut(5));
-                    }
-                    
-                    if (line.equals("------------------------")) {
-                        currentResourceItem = null;
+                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        textPanel.add(infoLabel);
+                        
+                        // Add textPanel to infoPanel for centering
+                        infoPanel.add(textPanel);
+                        
+                        // Add panel to resource item
+                        resourceItemPanel.add(infoPanel, BorderLayout.CENTER);
+                        resourcesListPanel.add(resourceItemPanel);
+                        resourcesListPanel.add(Box.createVerticalStrut(10));
+                        
+                        currentContent = new StringBuilder();  // Reset for next item
+                    } else if (!line.equals("------------------------")) {
+                        // Add content to the current resource panel
+                        JPanel currentPanel = (JPanel)((JPanel)resourcesListPanel.getComponent(
+                            resourcesListPanel.getComponentCount() - 2)).getComponent(0);
+                        JPanel textPanel = (JPanel)currentPanel.getComponent(0);
+                        
+                        JLabel contentLabel = new JLabel(line);
+                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        contentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        textPanel.add(contentLabel);
                     }
                 }
                 scanner.close();
