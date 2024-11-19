@@ -1,27 +1,47 @@
-Timestamp: 2024-11-06 13:01:07
-Client ID: 1
+Timestamp: 2024-11-10 16:25:30
+Client ID: 001
 Job ID: 000
-Duration: 1
-Arrival Time: 1730916067
-Computational Power Needed: 0.0
+Duration: 5 minutes
 Estimated Completion Time: 5 minutes
 Status: Scheduled
+Computational Power Needed: 0.0
 ------------------------
-Timestamp: 2024-11-06 13:01:19
-Client ID: 1
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+Timestamp: 2024-11-10 16:25:41
+Client ID: 001
 Job ID: 001
-Duration: 2
-Arrival Time: 1730916079
-Computational Power Needed: 0.0
-Estimated Completion Time: 10 minutes
+Duration: 2 minutes
+Estimated Completion Time: 7 minutes
 Status: Scheduled
+Computational Power Needed: 0.0
 ------------------------
-Timestamp: 2024-11-06 13:01:23
-Client ID: 1
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+Timestamp: 2024-11-10 16:25:53
+Client ID: 001
 Job ID: 002
-Duration: 2
-Arrival Time: 1730916083
-Computational Power Needed: 0.0
-Estimated Completion Time: 15 minutes
+Duration: 9 minutes
+Estimated Completion Time: 16 minutes
 Status: Scheduled
+Computational Power Needed: 0.0
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
+------------------------
 ------------------------
