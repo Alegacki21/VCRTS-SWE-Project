@@ -1,11 +1,16 @@
-// Importing Libraries
+// Importing necessary libraries for GUI and file operations
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class VehicularCloudConsole extends JFrame {
     private JPanel mainPanel;
+    private Integer jobCounter = 0;
     
-    //Constants for login credentials
+    // Hardcoded login credentials for different user types
     private static final String OWNER_USERNAME = "owner123";
     private static final String OWNER_PASSWORD = "password123";
     private static final String CLIENT_USERNAME = "client123";
@@ -13,26 +18,26 @@ public class VehicularCloudConsole extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
     
-    // Main frame
+    // Constructor for the main application window
     public VehicularCloudConsole() {
-        // Set up the main frame
+        // Setting up the main frame properties
         setTitle("Vehicular Cloud Real-Time System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         
-        // Main panel with vertical BoxLayout
+        // Creating and configuring the main panel
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(Color.WHITE);
         
-        // Title
+        // Adding title and description to the main panel
         JLabel titleLabel = new JLabel("<html><div style='text-align: center; width: 800px;'>Vehicular Cloud Real-Time System</div></html>");
         titleLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
-        // Description of VCRTS (from Requirements Specification)
+        // Description of VCRTS from the requirements specification
         String description = "<html><div style='text-align: center; width: 800px;'>The Vehicular Cloud Real-Time System (VCRTS) is vehicular cloud system<br>" +
                            "that leverages the computational resources of parked vehicles in parking<br>" +
                            "lots to execute computational jobs and create a static cloud computing<br>" +
@@ -42,19 +47,19 @@ public class VehicularCloudConsole extends JFrame {
         descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         descLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
-        // Button panel
+        // Creating a panel for buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(Color.WHITE);
         
-        // User type labels and buttons
+        // Adding user type labels and buttons
         JLabel newUserLabel = new JLabel("New User?");
         JLabel existingUserLabel = new JLabel("Existing User?");
         
         JButton registerButton = createStyledButton("Register");
         JButton loginButton = createStyledButton("Login");
         
-        // Register button action listener
+        // Setting up action for the register button
         registerButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createRegistrationTypePanel());
@@ -62,7 +67,7 @@ public class VehicularCloudConsole extends JFrame {
             mainPanel.repaint();
         });
         
-        // Login button action listener
+        // Setting up action for the login button
         loginButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createAccountTypePanel());
@@ -70,14 +75,14 @@ public class VehicularCloudConsole extends JFrame {
             mainPanel.repaint();
         });
         
-        // Components to button panel
+        // Adding components to the button panel
         buttonPanel.add(newUserLabel);
         buttonPanel.add(registerButton);
         buttonPanel.add(Box.createHorizontalStrut(20));
         buttonPanel.add(existingUserLabel);
         buttonPanel.add(loginButton);
         
-        // Components to main panel with spacing
+        // Adding all components to the main panel with spacing
         mainPanel.add(Box.createVerticalStrut(50));
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createVerticalStrut(30));
@@ -85,25 +90,25 @@ public class VehicularCloudConsole extends JFrame {
         mainPanel.add(Box.createVerticalStrut(50));
         mainPanel.add(buttonPanel);
         
-        // Main panel to frame
+        // Adding the main panel to the frame
         add(mainPanel);
         
     }
     
-    // Account type panel
+    // Method to create the account type selection panel
     private JPanel createAccountTypePanel() {
         JPanel accountTypePanel = new JPanel();
         accountTypePanel.setLayout(new BoxLayout(accountTypePanel, BoxLayout.Y_AXIS));
         accountTypePanel.setBackground(Color.WHITE);
         
-        // Main title
+        // Adding main title
         JLabel titleLabel = createTitleLabel();
         
         JLabel subtitleLabel = new JLabel("Choose Account Type to Login:");
         subtitleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        // Radio panel
+        // Creating radio button panel
         JPanel radioPanel = new JPanel(new GridBagLayout());
         radioPanel.setBackground(Color.WHITE);
 
@@ -111,18 +116,17 @@ public class VehicularCloudConsole extends JFrame {
         radioButtonsContainer.setLayout(new BoxLayout(radioButtonsContainer, BoxLayout.Y_AXIS));
         radioButtonsContainer.setBackground(Color.WHITE);
 
-        // Creating Radio buttons
+        // Creating and styling radio buttons
         JRadioButton ownerButton = new JRadioButton("Owner");
         JRadioButton clientButton = new JRadioButton("Client");
         JRadioButton controllerButton = new JRadioButton("Cloud Controller");
 
-        // Styling radio buttons
         Font radioFont = new Font("Arial", Font.PLAIN, 18);
         ownerButton.setFont(radioFont);
         clientButton.setFont(radioFont);
         controllerButton.setFont(radioFont);
 
-        // Adding buttons to button group
+        // Grouping radio buttons
         ButtonGroup accountGroup = new ButtonGroup();
         accountGroup.add(ownerButton);
         accountGroup.add(clientButton);
@@ -136,6 +140,7 @@ public class VehicularCloudConsole extends JFrame {
 
         radioPanel.add(radioButtonsContainer);
 
+        // Creating button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -144,7 +149,7 @@ public class VehicularCloudConsole extends JFrame {
         JButton backButton = createStyledButton("Back");
         JButton nextButton = createStyledButton("Next");
         
-        // Back button action listener
+        // Setting up back button action
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             VehicularCloudConsole newFrame = new VehicularCloudConsole();
@@ -157,6 +162,7 @@ public class VehicularCloudConsole extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(nextButton);
         
+        // Adding components to the account type panel
         accountTypePanel.add(Box.createVerticalStrut(10));
         accountTypePanel.add(titleLabel);
         accountTypePanel.add(Box.createVerticalStrut(50));
@@ -167,6 +173,7 @@ public class VehicularCloudConsole extends JFrame {
         accountTypePanel.add(buttonPanel);
         accountTypePanel.add(Box.createVerticalStrut(200));
         
+        // Setting up next button action
         nextButton.addActionListener(e -> {
             if (controllerButton.isSelected()) {
                 mainPanel.removeAll();
@@ -189,13 +196,13 @@ public class VehicularCloudConsole extends JFrame {
         return accountTypePanel;
     }
     
-    // Login for all user types
+    // Method to create login panel for all user types
     private JPanel createLoginPanel(String userType) {
         JPanel loginPanel = new JPanel();
         loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
         loginPanel.setBackground(Color.WHITE);
         
-        // Using consistent title
+        // Adding title
         JLabel titleLabel = createTitleLabel();
         
         // Welcome message based on user type
@@ -203,7 +210,7 @@ public class VehicularCloudConsole extends JFrame {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        // Username field
+        // Creating username and password fields
         JTextField usernameField = new JTextField();
         usernameField.setMaximumSize(new Dimension(300, 40));
         usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -211,7 +218,6 @@ public class VehicularCloudConsole extends JFrame {
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         
-        // Password field
         JPasswordField passwordField = new JPasswordField();
         passwordField.setMaximumSize(new Dimension(300, 40));
         passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -219,13 +225,13 @@ public class VehicularCloudConsole extends JFrame {
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         
-        // Field labels
+        // Adding labels for fields
         JLabel usernameLabel = new JLabel("Username");
         JLabel passwordLabel = new JLabel("Password");
         usernameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        // Button panel for login and back buttons
+        // Creating button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -234,7 +240,7 @@ public class VehicularCloudConsole extends JFrame {
         JButton loginButton = createStyledButton("Login");
         JButton backButton = createStyledButton("Back");
         
-        // Back button functionality
+        // Setting up back button action
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createAccountTypePanel());
@@ -245,11 +251,12 @@ public class VehicularCloudConsole extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(loginButton);
         
-        // Add login button functionality
+        // Setting up login button action
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             
+            // Validating input
             if (username.trim().isEmpty() || password.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(loginPanel, 
                     "Username and password are required", 
@@ -258,6 +265,7 @@ public class VehicularCloudConsole extends JFrame {
                 return;
             }
             
+            // Checking credentials and redirecting to appropriate home panel
             if (userType.equals("Owner")) {
                 if (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD)) {
                     mainPanel.removeAll();
@@ -285,7 +293,7 @@ public class VehicularCloudConsole extends JFrame {
             } else if (userType.equals("Cloud Controller")) {
                 if (username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
                     mainPanel.removeAll();
-                    mainPanel.add(createCloudControllerHomePanel());
+                    mainPanel.add(createCloudControllerHomePanel(CONTROLLER_USERNAME));
                     mainPanel.revalidate();
                     mainPanel.repaint();
                 } else {
@@ -297,6 +305,7 @@ public class VehicularCloudConsole extends JFrame {
             }
         });
         
+        // Adding components to the login panel
         loginPanel.add(Box.createVerticalStrut(10));
         loginPanel.add(titleLabel);
         loginPanel.add(Box.createVerticalStrut(30));
@@ -315,31 +324,31 @@ public class VehicularCloudConsole extends JFrame {
         return loginPanel;
     }
 
-    // Cloud Controller login
+    // Method to create Cloud Controller login panel
     private JPanel createCloudControllerLoginPanel() {
         return createLoginPanel("Cloud Controller");
     }
 
-    // User login
+    // Method to create user login panel
     private JPanel createUserLoginPanel(String userType) {
         return createLoginPanel(userType);
     }
     
-    // Registration type panel
+    // Method to create registration type selection panel
     private JPanel createRegistrationTypePanel() {
         JPanel registrationTypePanel = new JPanel();
         registrationTypePanel.setLayout(new BoxLayout(registrationTypePanel, BoxLayout.Y_AXIS));
         registrationTypePanel.setBackground(Color.WHITE);
         
-        // Add main title
+        // Adding main title
         JLabel titleLabel = createTitleLabel();
         
-        // Add registration type title
+        // Adding registration type title
         JLabel subtitleLabel = new JLabel("Choose Account Type to Register:");
         subtitleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        // Create radio panel with minimal spacing
+        // Creating radio button panel
         JPanel radioPanel = new JPanel(new GridBagLayout());
         radioPanel.setBackground(Color.WHITE);
 
@@ -347,28 +356,27 @@ public class VehicularCloudConsole extends JFrame {
         radioButtonsContainer.setLayout(new BoxLayout(radioButtonsContainer, BoxLayout.Y_AXIS));
         radioButtonsContainer.setBackground(Color.WHITE);
 
-        // Create and style radio buttons (only Owner and Client for registration)
+        // Creating and styling radio buttons (only Owner and Client for registration)
         JRadioButton ownerButton = new JRadioButton("Owner");
         JRadioButton clientButton = new JRadioButton("Client");
 
-        // Style radio buttons
         Font radioFont = new Font("Arial", Font.PLAIN, 18);
         ownerButton.setFont(radioFont);
         clientButton.setFont(radioFont);
 
-        // Add buttons to button group
+        // Grouping radio buttons
         ButtonGroup accountGroup = new ButtonGroup();
         accountGroup.add(ownerButton);
         accountGroup.add(clientButton);
 
-        // Add buttons to container with minimal spacing
+        // Adding buttons to container
         radioButtonsContainer.add(ownerButton);
         radioButtonsContainer.add(Box.createVerticalStrut(5));
         radioButtonsContainer.add(clientButton);
 
         radioPanel.add(radioButtonsContainer);
 
-        // Create button panel
+        // Creating button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -377,7 +385,7 @@ public class VehicularCloudConsole extends JFrame {
         JButton backButton = createStyledButton("Back");
         JButton nextButton = createStyledButton("Next");
         
-        // Add back button functionality
+        // Setting up back button action
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             VehicularCloudConsole newFrame = new VehicularCloudConsole();
@@ -389,6 +397,7 @@ public class VehicularCloudConsole extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(nextButton);
 
+        // Adding components to the registration type panel
         registrationTypePanel.add(Box.createVerticalStrut(20));
         registrationTypePanel.add(titleLabel);
         registrationTypePanel.add(Box.createVerticalStrut(30));
@@ -399,7 +408,7 @@ public class VehicularCloudConsole extends JFrame {
         registrationTypePanel.add(buttonPanel);
         registrationTypePanel.add(Box.createVerticalStrut(200));
         
-        // Add next button functionality
+        // Setting up next button action
         nextButton.addActionListener(e -> {
             if (ownerButton.isSelected()) {
                 mainPanel.removeAll();
@@ -417,7 +426,7 @@ public class VehicularCloudConsole extends JFrame {
         return registrationTypePanel;
     }
 
-    // Every button is universally styled the same way
+    // Method to create styled buttons with custom background color
     private JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
         button.setPreferredSize(new Dimension(120, 40));
@@ -427,12 +436,12 @@ public class VehicularCloudConsole extends JFrame {
         return button;
     }
 
-    // Add overloaded method for default color
+    // Overloaded method for creating styled buttons with default color
     private JButton createStyledButton(String text) {
         return createStyledButton(text, new Color(51, 122, 183));
     }
 
-    // Add utility method for creating consistent title
+    // Utility method for creating consistent title
     private JLabel createTitleLabel() {
         JLabel titleLabel = new JLabel("Vehicular Cloud Real-Time System");
         titleLabel.setFont(new Font("Arial", Font.PLAIN, 24));
@@ -440,21 +449,13 @@ public class VehicularCloudConsole extends JFrame {
         return titleLabel;
     }
     
-    // Main method to run the program
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            VehicularCloudConsole frame = new VehicularCloudConsole();
-            frame.setVisible(true);
-        });
-    }
-
-    // Registration panel for Owner and Client registration
+    // Method to create registration panel for Owner and Client
     private JPanel createRegistrationPanel(String userType) {
         JPanel registrationPanel = new JPanel();
         registrationPanel.setLayout(new BoxLayout(registrationPanel, BoxLayout.Y_AXIS));
         registrationPanel.setBackground(Color.WHITE);
 
-        // Title
+        // Adding title
         JLabel titleLabel = new JLabel(userType + " Registration");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -463,19 +464,19 @@ public class VehicularCloudConsole extends JFrame {
         subtitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Create form panel
+        // Creating form panel
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Create and use form fields
+        // Creating form fields
         final String[] labels = {"Name:", "Email:", "Create Password:", "Confirm Password:", 
                           "Address:", "State/Territory:", "Country:", "Phone Number:"};
         JTextField[] fields = new JTextField[labels.length];
         
-        // Add labels and fields
+        // Adding labels and fields to the form
         for (int i = 0; i < labels.length; i++) {
             JLabel label = new JLabel(labels[i]);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -483,7 +484,7 @@ public class VehicularCloudConsole extends JFrame {
             fields[i] = new JTextField(20);
             fields[i].setPreferredSize(new Dimension(300, 30));
             
-            // Make password fields secure
+            // Making password fields secure
             if (i == 2 || i == 3) {
                 fields[i] = new JPasswordField(20);
             }
@@ -498,7 +499,7 @@ public class VehicularCloudConsole extends JFrame {
             formPanel.add(fields[i], gbc);
         }
 
-        // Button panel
+        // Creating button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -506,7 +507,7 @@ public class VehicularCloudConsole extends JFrame {
         JButton backButton = createStyledButton("Back");
         JButton actionButton = createStyledButton(userType.equals("Owner") ? "Next" : "Submit");
 
-        // Back button functionality
+        // Setting up back button action
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createRegistrationTypePanel());
@@ -517,7 +518,7 @@ public class VehicularCloudConsole extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(actionButton);
 
-        // Add all components to the panel
+        // Adding components to the registration panel
         registrationPanel.add(Box.createVerticalStrut(20));
         registrationPanel.add(titleLabel);
         registrationPanel.add(Box.createVerticalStrut(10));
@@ -528,8 +529,9 @@ public class VehicularCloudConsole extends JFrame {
         registrationPanel.add(buttonPanel);
         registrationPanel.add(Box.createVerticalStrut(20));
 
+        // Setting up action button functionality
         actionButton.addActionListener(e -> {
-            // Validate all fields
+            // Validating all fields
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getText().trim().isEmpty()) {
                     JOptionPane.showMessageDialog(registrationPanel,
@@ -540,20 +542,20 @@ public class VehicularCloudConsole extends JFrame {
                 }
             }
             
-            // If validation passes
+            // Handling different user types
             if (userType.equals("Owner")) {
                 mainPanel.removeAll();
                 mainPanel.add(createVehicleRegistrationPanel());
                 mainPanel.revalidate();
                 mainPanel.repaint();
             } else {
-                // Show success message
+                // Showing success message for client registration
                 JOptionPane.showMessageDialog(registrationPanel,
                     "Registration successful!",
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
                     
-                // Redirect to appropriate home page
+                // Redirecting to client home page
                 mainPanel.removeAll();
                 if (userType.equals("Client")) {
                     mainPanel.add(createClientHomePanel(fields[0].getText())); // Using Name field as username
@@ -566,13 +568,13 @@ public class VehicularCloudConsole extends JFrame {
         return registrationPanel;
     }
 
-    // Vehicle registration panel for Owners
+    // Method to create vehicle registration panel for Owners
     private JPanel createVehicleRegistrationPanel() {
         JPanel vehiclePanel = new JPanel();
         vehiclePanel.setLayout(new BoxLayout(vehiclePanel, BoxLayout.Y_AXIS));
         vehiclePanel.setBackground(Color.WHITE);
 
-        // Title
+        // Adding title
         JLabel titleLabel = new JLabel("Owner Registration");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -581,14 +583,14 @@ public class VehicularCloudConsole extends JFrame {
         subtitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Create form panel
+        // Creating form panel
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Create and use form fields
+        // Creating form fields
         final String[] labels = {
             "VIN:", 
             "Model:", 
@@ -599,7 +601,7 @@ public class VehicularCloudConsole extends JFrame {
         };
         JTextField[] fields = new JTextField[labels.length];
         
-        // Add labels and fields
+        // Adding labels and fields to the form
         for (int i = 0; i < labels.length; i++) {
             JLabel label = new JLabel(labels[i]);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -617,7 +619,7 @@ public class VehicularCloudConsole extends JFrame {
             formPanel.add(fields[i], gbc);
         }
 
-        // Button panel
+        // Creating button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -625,7 +627,7 @@ public class VehicularCloudConsole extends JFrame {
         JButton backButton = createStyledButton("Back");
         JButton submitButton = createStyledButton("Submit");
 
-        // Back button functionality
+        // Setting up back button action
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createRegistrationPanel("Owner"));
@@ -636,7 +638,7 @@ public class VehicularCloudConsole extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(submitButton);
 
-        // Add all components to the panel
+        // Adding components to the vehicle panel
         vehiclePanel.add(Box.createVerticalStrut(20));
         vehiclePanel.add(titleLabel);
         vehiclePanel.add(Box.createVerticalStrut(10));
@@ -647,46 +649,74 @@ public class VehicularCloudConsole extends JFrame {
         vehiclePanel.add(buttonPanel);
         vehiclePanel.add(Box.createVerticalStrut(20));
 
+        // Setting up submit button action
         submitButton.addActionListener(e -> {
-            // Validating all fields
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(vehiclePanel,
-                        "All fields are required. Please fill in " + labels[i],
-                        "Validation Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
+            try {
+                // Creating Vehicle object using builder pattern
+                Vehicle vehicle = new Vehicle.VehicleBuilder(
+                    fields[0].getText(),  // VIN
+                    fields[1].getText(),  // Model 
+                    fields[2].getText()   // Make
+                )
+                .year(Integer.parseInt(fields[3].getText()))
+                .computationalPower(Double.parseDouble(fields[4].getText()))
+                .storageCapacity(Double.parseDouble(fields[5].getText()))
+                .build();
+
+                // Creating VehicleOwner and registering vehicle
+                VehicleOwner owner = new VehicleOwner(
+                    "OWNER_" + System.currentTimeMillis(),
+                    "", "", "Owner", "", 0.0, "",
+                    new ArrayList<>(), ""
+                );
+
+                // Registering the vehicle (this will write to the file)
+                owner.registerVehicle(vehicle);
+
+                // Clearing old file content and rewriting with correct format
+                File resourcesFile = new File("resources/vehicle_resources.txt");
+                if (resourcesFile.exists()) {
+                    resourcesFile.delete();
                 }
-            }
-            
-            // If validation passes
-            JOptionPane.showMessageDialog(vehiclePanel,
-                "Registration successful!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
                 
-            // Redirecting to owner home page
-            mainPanel.removeAll();
-            mainPanel.add(createOwnerHomePanel("Owner")); // You might want to store and pass the actual username
-            mainPanel.revalidate();
-            mainPanel.repaint();
+                // Registering the vehicle again to create a new file with correct format
+                owner.registerVehicle(vehicle);
+
+                // Showing success message
+                JOptionPane.showMessageDialog(vehiclePanel,
+                    "Vehicle registered successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    
+                // Redirecting to owner home
+                mainPanel.removeAll();
+                mainPanel.add(createOwnerHomePanel("Owner")); 
+                mainPanel.revalidate();
+                mainPanel.repaint();
+                
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(vehiclePanel,
+                    "Please enter valid numbers for Year, Computational Power, and Storage Capacity",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         return vehiclePanel;
     }
 
-    // Owner home panel (post login & registration)
+    // Method to create Owner home panel (post login & registration)
     private JPanel createOwnerHomePanel(String ownerName) {
         JPanel ownerPanel = new JPanel();
         ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
         ownerPanel.setBackground(Color.WHITE);
 
-        // Welcome header
+        // Adding welcome header
         JLabel welcomeLabel = new JLabel("Welcome Home, " + ownerName + "!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Submission form title
+        // Adding submission form title
         JLabel submissionTitle = new JLabel("Vehicle Resource Submission");
         submissionTitle.setFont(new Font("Arial", Font.BOLD, 20));
         submissionTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -699,7 +729,7 @@ public class VehicularCloudConsole extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Form fields
+        // Creating form fields
         String[] labels = {
             "Owner ID:",
             "Vehicle Information:",
@@ -710,7 +740,7 @@ public class VehicularCloudConsole extends JFrame {
 
         JTextField[] fields = new JTextField[labels.length];
 
-        // Labels and fields
+        // Adding labels and fields to the form
         for (int i = 0; i < labels.length; i++) {
             JLabel label = new JLabel(labels[i]);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -768,13 +798,40 @@ public class VehicularCloudConsole extends JFrame {
             }
 
             if (allFilled) {
-                JOptionPane.showMessageDialog(ownerPanel,
-                    "Vehicle resource submitted successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                // Clear fields after successful submission
-                for (JTextField field : fields) {
-                    field.setText("");
+                try {
+                    // Create resources directory if it doesn't exist
+                    File directory = new File("resources");
+                    if (!directory.exists()) {
+                        directory.mkdir();
+                    }
+
+                    // Add timestamp
+                    String timestamp = java.time.LocalDateTime.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    
+                    FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
+                    writer.write("Timestamp: " + timestamp + "\n");
+                    writer.write("Owner ID: " + fields[0].getText() + "\n");
+                    writer.write("Vehicle Info: " + fields[1].getText() + "\n");
+                    writer.write("Residency Time: " + fields[2].getText() + "\n");
+                    writer.write("Computational Power: " + fields[3].getText() + "\n");
+                    writer.write("Notes: " + fields[4].getText() + "\n");
+                    writer.write("------------------------\n");
+                    writer.close();
+
+                    JOptionPane.showMessageDialog(ownerPanel,
+                        "Vehicle resource submitted and saved successfully!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    // Clear fields after successful submission
+                    for (JTextField field : fields) {
+                        field.setText("");
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(ownerPanel,
+                        "Error saving resource information: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(ownerPanel,
@@ -893,23 +950,60 @@ public class VehicularCloudConsole extends JFrame {
         });
 
         submitButton.addActionListener(e -> {
-            // Validate fields
             boolean allFilled = true;
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getText().trim().isEmpty()) {
+            for (JTextField field : fields) {
+                if (field.getText().trim().isEmpty()) {
                     allFilled = false;
                     break;
                 }
             }
 
             if (allFilled) {
-                JOptionPane.showMessageDialog(clientPanel,
-                    "Job submitted successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                // Clear fields after successful submission
-                for (JTextField field : fields) {
-                    field.setText("");
+                try {
+                    // Job ID counter, if null it is initialized to 0
+                    if (jobCounter == null) {
+                        jobCounter = 0;
+                    }
+                    
+                    // Create a new Job object
+                    String jobId = String.format("%03d", jobCounter++);
+                    int duration = Integer.parseInt(fields[2].getText()); // Approximate Job Duration field
+                    int arrivalTime = (int)(System.currentTimeMillis() / 1000); // Current time in seconds
+                    Job newJob = new Job(jobId, duration, arrivalTime);
+                    
+                    // JobSubmitter instance
+                    JobSubmitter jobSubmitter = new JobSubmitter(
+                        fields[0].getText(), // Client ID
+                        "", // email
+                        "", // username
+                        "", // name
+                        "", // password
+                        0.0, // balance
+                        fields[1].getText(), // subscription plan as payment method
+                        new ArrayList<>(), // empty job list
+                        fields[1].getText(), // subscription plan
+                        "" // payment account
+                    );
+
+                    // Submit the job
+                    jobSubmitter.submitJob(newJob);
+
+                    // Show success message
+                    JOptionPane.showMessageDialog(clientPanel,
+                        "Job submitted and saved successfully!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                    // Clear fields after successful submission
+                    for (JTextField field : fields) {
+                        field.setText("");
+                    }
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(clientPanel,
+                        "Error submitting job: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(clientPanel,
@@ -946,105 +1040,189 @@ public class VehicularCloudConsole extends JFrame {
     }
 
     // Cloud controller home panel (post registration)
-    private JPanel createCloudControllerHomePanel() {
+    private JPanel createCloudControllerHomePanel(String username) {
         JPanel controllerPanel = new JPanel();
         controllerPanel.setLayout(new BoxLayout(controllerPanel, BoxLayout.Y_AXIS));
-        controllerPanel.setBackground(Color.LIGHT_GRAY);
+        controllerPanel.setBackground(Color.WHITE);
 
-        // Dashboard Title
-        JLabel dashboardTitle = new JLabel("Admin Dashboard");
-        dashboardTitle.setFont(new Font("Arial", Font.BOLD, 28));
-        dashboardTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Title
+        JLabel titleLabel = new JLabel("Cloud Controller Dashboard");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Main content panel (split view)
-        JPanel contentPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        contentPanel.setBackground(Color.LIGHT_GRAY);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Resources Panel
-        JPanel resourcesPanel = new JPanel();
-        resourcesPanel.setLayout(new BoxLayout(resourcesPanel, BoxLayout.Y_AXIS));
-        resourcesPanel.setBackground(Color.WHITE);
-        resourcesPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel resourcesTitle = new JLabel("Available Resources");
-        resourcesTitle.setFont(new Font("Arial", Font.BOLD, 20));
-        resourcesTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Create two columns panel
+        JPanel columnsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        columnsPanel.setBackground(Color.WHITE);
+        columnsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        columnsPanel.setMaximumSize(new Dimension(900, 500));
 
         // Jobs Panel
         JPanel jobsPanel = new JPanel();
         jobsPanel.setLayout(new BoxLayout(jobsPanel, BoxLayout.Y_AXIS));
-        jobsPanel.setBackground(Color.WHITE);
-        jobsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        jobsPanel.setBackground(new Color(240, 240, 240));
+        jobsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel jobsTitle = new JLabel("Submitted Jobs");
-        jobsTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        JLabel jobsTitle = new JLabel("Jobs Queue");
+        jobsTitle.setFont(new Font("Arial", Font.BOLD, 18));
         jobsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Resource and Job listings (placeholder for now)
-        JPanel[] resourceItems = new JPanel[5];
-        JPanel[] jobItems = new JPanel[5];
+        // Add Calculate Time button at the top
+        JButton calculateAllButton = createStyledButton("Calculate Completion Times");
+        calculateAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        // Jobs List Panel with scroll
+        JPanel jobsListPanel = new JPanel();
+        jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
+        jobsListPanel.setBackground(Color.WHITE);
 
-        for (int i = 0; i < 5; i++) {
-            // Resource items
-            resourceItems[i] = new JPanel();
-            resourceItems[i].setPreferredSize(new Dimension(300, 50));
-            resourceItems[i].setBackground(new Color(230, 230, 230));
-            JLabel resourceLabel = new JLabel("Resource #" + (i + 1));
-            resourceLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            resourceItems[i].add(resourceLabel);
-
-            // Job items
-            jobItems[i] = new JPanel();
-            jobItems[i].setPreferredSize(new Dimension(300, 50));
-            jobItems[i].setBackground(new Color(230, 230, 230));
-            JLabel jobLabel = new JLabel("Job #" + (i + 1));
-            jobLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            jobItems[i].add(jobLabel);
+        try {
+            File jobsFile = new File("jobs/submitted_jobs.txt");
+            if (jobsFile.exists()) {
+                java.util.Scanner scanner = new java.util.Scanner(jobsFile);
+                JPanel currentJobItem = null;
+                
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    
+                    if (line.startsWith("Timestamp:")) {
+                        currentJobItem = new JPanel();
+                        currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
+                        currentJobItem.setBackground(Color.WHITE);
+                        currentJobItem.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                        ));
+                        
+                        // Center-aligned info panel
+                        JPanel infoPanel = new JPanel();
+                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                        infoPanel.setBackground(Color.WHITE);
+                        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        currentJobItem.add(infoPanel);
+                        
+                        // Add assign button (centered)
+                        JButton assignButton = createStyledButton("Assign Job");
+                        assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        
+                        // Add button to a panel to maintain centering
+                        JPanel buttonPanel = new JPanel();
+                        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+                        buttonPanel.setBackground(Color.WHITE);
+                        buttonPanel.add(Box.createHorizontalGlue());
+                        buttonPanel.add(assignButton);
+                        buttonPanel.add(Box.createHorizontalGlue());
+                        
+                        currentJobItem.add(buttonPanel);
+                        jobsListPanel.add(currentJobItem);
+                        jobsListPanel.add(Box.createVerticalStrut(5));
+                    }
+                    
+                    if (currentJobItem != null && !line.equals("------------------------")) {
+                        JLabel infoLabel = new JLabel(line);
+                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        // Add to the info panel instead of directly to currentJobItem
+                        ((JPanel)currentJobItem.getComponent(0)).add(infoLabel);
+                    }
+                }
+                scanner.close();
+            }
+        } catch (IOException ex) {
+            System.err.println("Error reading jobs: " + ex.getMessage());
         }
 
-        // Navigation buttons panels
-        JPanel resourceButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        resourceButtonPanel.setBackground(Color.WHITE);
-        resourceButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        JButton resourcePrevButton = createStyledButton("Previous");
-        JButton resourceNextButton = createStyledButton("Next Page");
-        resourceButtonPanel.add(resourcePrevButton);
-        resourceButtonPanel.add(resourceNextButton);
-
-        JPanel jobButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        jobButtonPanel.setBackground(Color.WHITE);
-        jobButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        JButton computeButton = createStyledButton("Compute", new Color(40, 167, 69));
-        jobButtonPanel.add(computeButton);
-        JButton jobNextButton = createStyledButton("Next Page");
-        jobButtonPanel.add(jobNextButton);
-
-        // Adding components to resource panel
-        resourcesPanel.add(resourcesTitle);
-        resourcesPanel.add(Box.createVerticalStrut(20));
-        for (JPanel resourceItem : resourceItems) {
-            resourcesPanel.add(resourceItem);
-            resourcesPanel.add(Box.createVerticalStrut(10));
-        }
-        resourcesPanel.add(resourceButtonPanel);
-
-        // Adding components to jobs panel
+        // Add components to jobs panel
         jobsPanel.add(jobsTitle);
-        jobsPanel.add(Box.createVerticalStrut(20));
-        for (JPanel jobItem : jobItems) {
-            jobsPanel.add(jobItem);
-            jobsPanel.add(Box.createVerticalStrut(10));
+        jobsPanel.add(Box.createVerticalStrut(10));
+        jobsPanel.add(calculateAllButton);
+        jobsPanel.add(Box.createVerticalStrut(10));
+        jobsPanel.add(new JScrollPane(jobsListPanel));
+
+        // Resources Panel
+        JPanel resourcesPanel = new JPanel();
+        resourcesPanel.setLayout(new BoxLayout(resourcesPanel, BoxLayout.Y_AXIS));
+        resourcesPanel.setBackground(new Color(240, 240, 240));
+        resourcesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel resourcesTitle = new JLabel("Available Resources");
+        resourcesTitle.setFont(new Font("Arial", Font.BOLD, 18));
+        resourcesTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Resources List Panel with scroll
+        JPanel resourcesListPanel = new JPanel();
+        resourcesListPanel.setLayout(new BoxLayout(resourcesListPanel, BoxLayout.Y_AXIS));
+        resourcesListPanel.setBackground(Color.WHITE);
+
+        try {
+            File resourcesFile = new File("resources/vehicle_resources.txt");
+            if (resourcesFile.exists()) {
+                java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
+                JPanel currentResourceItem = null;
+                
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    
+                    if (line.startsWith("Timestamp:")) {
+                        currentResourceItem = new JPanel();
+                        currentResourceItem.setLayout(new BoxLayout(currentResourceItem, BoxLayout.Y_AXIS));
+                        currentResourceItem.setBackground(Color.WHITE);
+                        currentResourceItem.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                        ));
+                        currentResourceItem.setPreferredSize(new Dimension(400, 150));
+                        currentResourceItem.setMaximumSize(new Dimension(400, 150));
+                        
+                        // Center-aligned info panel
+                        JPanel infoPanel = new JPanel();
+                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                        infoPanel.setBackground(Color.WHITE);
+                        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        currentResourceItem.add(infoPanel);
+                        
+                        resourcesListPanel.add(currentResourceItem);
+                        resourcesListPanel.add(Box.createVerticalStrut(5));
+                    }
+                    
+                    if (currentResourceItem != null && !line.equals("------------------------")) {
+                        JLabel infoLabel = new JLabel(line);
+                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        // Add to the info panel instead of directly to currentResourceItem
+                        ((JPanel)currentResourceItem.getComponent(0)).add(infoLabel);
+                        ((JPanel)currentResourceItem.getComponent(0)).add(Box.createVerticalStrut(5));
+                    }
+                    
+                    if (line.equals("------------------------")) {
+                        currentResourceItem = null;
+                    }
+                }
+                scanner.close();
+            }
+        } catch (IOException ex) {
+            System.err.println("Error reading resources: " + ex.getMessage());
         }
-        jobsPanel.add(jobButtonPanel);
 
-        // Adding panels to content panel
-        contentPanel.add(resourcesPanel);
-        contentPanel.add(jobsPanel);
+        JScrollPane resourcesScrollPane = new JScrollPane(resourcesListPanel);
+        resourcesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        resourcesScrollPane.setPreferredSize(new Dimension(400, 400));
 
-        // Logout button
+        // Add components to resources panel
+        resourcesPanel.add(resourcesTitle);
+        resourcesPanel.add(Box.createVerticalStrut(10));
+        resourcesPanel.add(new JScrollPane(resourcesListPanel));
+
+        // Add both panels to the columns panel
+        columnsPanel.add(jobsPanel);
+        columnsPanel.add(resourcesPanel);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setBackground(Color.WHITE);
+        
         JButton logoutButton = createStyledButton("Logout");
-        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton refreshButton = createStyledButton("Refresh");
+
         logoutButton.addActionListener(e -> {
             mainPanel.removeAll();
             VehicularCloudConsole newFrame = new VehicularCloudConsole();
@@ -1053,41 +1231,34 @@ public class VehicularCloudConsole extends JFrame {
             mainPanel.repaint();
         });
 
-        controllerPanel.add(Box.createVerticalStrut(20));
-        controllerPanel.add(dashboardTitle);
-        controllerPanel.add(Box.createVerticalStrut(20));
-        controllerPanel.add(contentPanel);
-        controllerPanel.add(Box.createVerticalStrut(20));
-        controllerPanel.add(logoutButton);
-        controllerPanel.add(Box.createVerticalStrut(20));
-
-        // Add button functionality
-        computeButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(controllerPanel,
-                "No jobs available to compute at this time.",
-                "No Jobs",
-                JOptionPane.INFORMATION_MESSAGE);
+        refreshButton.addActionListener(e -> {
+            mainPanel.removeAll();
+            mainPanel.add(createCloudControllerHomePanel(username));
+            mainPanel.revalidate();
+            mainPanel.repaint();
         });
 
-        resourceNextButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(controllerPanel,
-                "No more resources to display.",
-                "End of List",
-                JOptionPane.INFORMATION_MESSAGE);
-        });
+        buttonPanel.add(refreshButton);
+        buttonPanel.add(logoutButton);
 
-        jobNextButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(controllerPanel,
-                "No more jobs to display.",
-                "End of List",
-                JOptionPane.INFORMATION_MESSAGE);
-        });
+        // Add all components to main panel
+        controllerPanel.add(Box.createVerticalStrut(20));
+        controllerPanel.add(titleLabel);
+        controllerPanel.add(Box.createVerticalStrut(20));
+        controllerPanel.add(columnsPanel);
+        controllerPanel.add(buttonPanel);
+        controllerPanel.add(Box.createVerticalStrut(20));
 
-        resourcePrevButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(controllerPanel,
-                "This is the first page.",
-                "First Page",
-                JOptionPane.INFORMATION_MESSAGE);
+        // Add calculate button functionality
+        calculateAllButton.addActionListener(e -> {
+            System.out.println("Button clicked"); // Debug print
+            CloudController controller = CloudController.getInstance(); // Use getInstance instead of new
+            controller.calculateCompletionTime();
+            // Refresh the panel to show updated times
+            mainPanel.removeAll();
+            mainPanel.add(createCloudControllerHomePanel(username));
+            mainPanel.revalidate();
+            mainPanel.repaint();
         });
 
         return controllerPanel;
@@ -1104,23 +1275,71 @@ public class VehicularCloudConsole extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Jobs list panel
+        // Jobs list panel (now wrapped in a scroll pane)
         JPanel jobsListPanel = new JPanel();
         jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
         jobsListPanel.setBackground(Color.WHITE);
         jobsListPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Add sample jobs (replace with actual submitted jobs later)
-        for (int i = 1; i <= 3; i++) {
-            JPanel jobItem = new JPanel();
-            jobItem.setPreferredSize(new Dimension(400, 50));
-            jobItem.setMaximumSize(new Dimension(400, 50));
-            jobItem.setBackground(new Color(230, 230, 230));
-            JLabel jobLabel = new JLabel("Job #" + i);
-            jobLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            jobItem.add(jobLabel);
-            jobsListPanel.add(jobItem);
-            jobsListPanel.add(Box.createVerticalStrut(10));
+        // Create scroll pane
+        JScrollPane scrollPane = new JScrollPane(jobsListPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        
+        // Set preferred size for scroll pane
+        scrollPane.setPreferredSize(new Dimension(450, 400));
+        scrollPane.setMaximumSize(new Dimension(450, 400));
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        try {
+            // Read from jobs file
+            File jobsFile = new File("jobs/submitted_jobs.txt");
+            if (jobsFile.exists()) {
+                java.util.Scanner scanner = new java.util.Scanner(jobsFile);
+                JPanel currentJobItem = null;
+                
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    System.out.println("Read line: " + line);
+                    
+                    if (line.startsWith("Client ID:")) {
+                        // Create new job panel with larger height
+                        currentJobItem = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                        currentJobItem.setPreferredSize(new Dimension(400, 150));
+                        currentJobItem.setMaximumSize(new Dimension(400, 150));
+                        currentJobItem.setBackground(new Color(230, 230, 230));
+                        
+                        // Create info panel with vertical layout
+                        JPanel infoPanel = new JPanel();
+                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                        infoPanel.setBackground(new Color(230, 230, 230));
+                        
+                        // Add some padding to the info panel
+                        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                        
+                        // Add timestamp and job details
+                        currentJobItem.add(infoPanel);
+                        jobsListPanel.add(currentJobItem);
+                        jobsListPanel.add(Box.createVerticalStrut(10));
+                    }
+                    
+                    if (currentJobItem != null) {
+                        JLabel infoLabel = new JLabel(line);
+                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        ((JPanel)currentJobItem.getComponent(0)).add(infoLabel);
+                        ((JPanel)currentJobItem.getComponent(0)).add(Box.createVerticalStrut(5)); // Add spacing between lines
+                    }
+                    
+                    if (line.equals("------------------------")) {
+                        currentJobItem = null;
+                    }
+                }
+                scanner.close();
+            }
+        } catch (IOException ex) {
+            System.err.println("Error reading jobs: " + ex.getMessage());
         }
 
         // Button panel
@@ -1153,7 +1372,7 @@ public class VehicularCloudConsole extends JFrame {
         submittedPanel.add(Box.createVerticalStrut(20));
         submittedPanel.add(titleLabel);
         submittedPanel.add(Box.createVerticalStrut(20));
-        submittedPanel.add(jobsListPanel);
+        submittedPanel.add(scrollPane);  // Add scrollPane instead of jobsListPanel
         submittedPanel.add(buttonPanel);
         submittedPanel.add(Box.createVerticalStrut(20));
 
@@ -1177,25 +1396,75 @@ public class VehicularCloudConsole extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
         resourcesListPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Add sample resource (replace with actual submitted resources later)
-        JPanel resourceItem = new JPanel();
-        resourceItem.setPreferredSize(new Dimension(400, 50));
-        resourceItem.setMaximumSize(new Dimension(400, 50));
-        resourceItem.setBackground(new Color(230, 230, 230));
-        JLabel resourceLabel = new JLabel("Resource #1");
-        resourceLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        resourceItem.add(resourceLabel);
-        resourcesListPanel.add(resourceItem);
+        // Create scroll pane
+        JScrollPane scrollPane = new JScrollPane(resourcesListPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        
+        scrollPane.setPreferredSize(new Dimension(450, 400));
+        scrollPane.setMaximumSize(new Dimension(450, 400));
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        try {
+            File resourcesFile = new File("resources/vehicle_resources.txt");
+            System.out.println("Reading resources file: " + resourcesFile.getAbsolutePath());
+            
+            if (resourcesFile.exists()) {
+                java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
+                JPanel currentResourceItem = null;
+                
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    System.out.println("Processing line: " + line);
+                    
+                    if (line.startsWith("Timestamp:")) {
+                        // Create new resource panel with larger height
+                        currentResourceItem = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                        currentResourceItem.setPreferredSize(new Dimension(400, 150));
+                        currentResourceItem.setMaximumSize(new Dimension(400, 150));
+                        currentResourceItem.setBackground(new Color(230, 230, 230));
+                        
+                        // Create info panel with vertical layout
+                        JPanel infoPanel = new JPanel();
+                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                        infoPanel.setBackground(new Color(230, 230, 230));
+                        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                        
+                        currentResourceItem.add(infoPanel);
+                        resourcesListPanel.add(currentResourceItem);
+                        resourcesListPanel.add(Box.createVerticalStrut(10));
+                    }
+                    
+                    if (currentResourceItem != null) {
+                        JLabel infoLabel = new JLabel(line);
+                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                        ((JPanel)currentResourceItem.getComponent(0)).add(infoLabel);
+                        ((JPanel)currentResourceItem.getComponent(0)).add(Box.createVerticalStrut(5));
+                    }
+                    
+                    if (line.equals("------------------------")) {
+                        currentResourceItem = null;
+                    }
+                }
+                scanner.close();
+            } else {
+                System.out.println("Resources file does not exist!");
+            }
+        } catch (IOException ex) {
+            System.err.println("Error reading resources: " + ex.getMessage());
+            ex.printStackTrace();
+        }
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         
         JButton logoutButton = createStyledButton("Logout");
         JButton backButton = createStyledButton("Back");
 
-        // Add button functionality
+        // Button functionality
         logoutButton.addActionListener(e -> {
             mainPanel.removeAll();
             VehicularCloudConsole newFrame = new VehicularCloudConsole();
@@ -1206,7 +1475,7 @@ public class VehicularCloudConsole extends JFrame {
 
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
-            mainPanel.add(createOwnerHomePanel("Owner")); // Pass actual username
+            mainPanel.add(createOwnerHomePanel("Owner"));
             mainPanel.revalidate();
             mainPanel.repaint();
         });
@@ -1218,10 +1487,18 @@ public class VehicularCloudConsole extends JFrame {
         submittedPanel.add(Box.createVerticalStrut(20));
         submittedPanel.add(titleLabel);
         submittedPanel.add(Box.createVerticalStrut(20));
-        submittedPanel.add(resourcesListPanel);
+        submittedPanel.add(scrollPane);
         submittedPanel.add(buttonPanel);
         submittedPanel.add(Box.createVerticalStrut(20));
 
         return submittedPanel;
+    }
+
+     // Main method to run the program
+     public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            VehicularCloudConsole frame = new VehicularCloudConsole();
+            frame.setVisible(true);
+        });
     }
 }

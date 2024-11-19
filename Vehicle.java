@@ -21,23 +21,60 @@ public class Vehicle {
         name = "Toyota Corolla";
         
     }
-    public Vehicle(String name, String vehicleID, VehicleOwner owner, String model, int year, String make, String vIN,
-            double computationalPower, double storageCapacity, String status, String location, LocalTime arrivalTime,
-            LocalTime departureTime, boolean isAvailable) {
-        this.name = name;
-        this.vehicleID = vehicleID;
-        this.owner = owner;
-        this.model = model;
-        this.year = year;
-        this.make = make;
-        VIN = vIN;
-        this.computationalPower = computationalPower;
-        this.storageCapacity = storageCapacity;
-        this.status = status;
-        this.location = location;
-        this.arrivalTime = arrivalTime;
-        this.departureTime = departureTime;
-        this.isAvailable = isAvailable;
+    public Vehicle(VehicleBuilder builder) {
+        this.name = builder.name;
+        this.vehicleID = builder.vehicleID;
+        this.owner = builder.owner;
+        this.model = builder.model;
+        this.year = builder.year;
+        this.make = builder.make;
+        this.VIN = builder.VIN;
+        this.computationalPower = builder.computationalPower;
+        this.storageCapacity = builder.storageCapacity;
+        this.status = builder.status != null ? builder.status : "Available";
+        this.location = builder.location;
+        this.arrivalTime = builder.arrivalTime;
+        this.departureTime = builder.departureTime;
+        this.isAvailable = builder.isAvailable;
+    }
+
+    public static class VehicleBuilder {
+        private String name;
+        private String vehicleID;
+        private VehicleOwner owner;
+        private String model;
+        private int year;
+        private String make;
+        private String VIN;
+        private double computationalPower;
+        private double storageCapacity;
+        private String status = "Available";
+        private String location;
+        private LocalTime arrivalTime;
+        private LocalTime departureTime;
+        private boolean isAvailable = true;
+
+        public VehicleBuilder(String VIN, String model, String make) {
+            this.VIN = VIN;
+            this.model = model;
+            this.make = make;
+        }
+
+        public VehicleBuilder name(String name) { this.name = name; return this; }
+        public VehicleBuilder vehicleID(String vehicleID) { this.vehicleID = vehicleID; return this; }
+        public VehicleBuilder owner(VehicleOwner owner) { this.owner = owner; return this; }
+        public VehicleBuilder year(int year) { this.year = year; return this; }
+        public VehicleBuilder computationalPower(double power) { this.computationalPower = power; return this; }
+        public VehicleBuilder storageCapacity(double capacity) { this.storageCapacity = capacity; return this; }
+        public VehicleBuilder status(String status) { this.status = status; return this; }
+        public VehicleBuilder location(String location) { this.location = location; return this; }
+        public VehicleBuilder arrivalTime(LocalTime time) { this.arrivalTime = time; return this; }
+        public VehicleBuilder departureTime(LocalTime time) { this.departureTime = time; return this; }
+        public VehicleBuilder isAvailable(boolean available) { this.isAvailable = available; return this; }
+
+        public Vehicle build() {
+            return new Vehicle(this);
+        }
     }
 
     //Getters and Setters

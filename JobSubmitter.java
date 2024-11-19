@@ -1,8 +1,5 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
+
 public class JobSubmitter extends User {
 
 private List <Job> JobList;
@@ -42,20 +39,9 @@ private CloudController cloudController;
         this.paymentAccount = paymentAccount;
     }
 
-    //Methods
 
-    //Jobsubmitter submits new job
-     public void submitJob( String jobSubmitterID, double storageNeeded, double computationalPowerNeeded, Duration estimatedDuration, String reason) { 
-        Job newJob = new Job( jobSubmitterID, storageNeeded, computationalPowerNeeded, estimatedDuration, reason);
-        if(cloudController!=null) {
-         cloudController.getJobQueue().add(newJob); 
-         this.JobList.add(newJob);
-         try (BufferedWriter writer = new BufferedWriter(new FileWriter("jobDetails.txt", true))) {
-            writer.write("Job ID: " + newJob.getJobID() + ", Job Submitter ID: " + jobSubmitterID + ", Storage Needed: " + storageNeeded + ", Computational Power Needed: " + computationalPowerNeeded + ", Estimated Duration: " + estimatedDuration + "\n"); 
-            System.out.println("Successfully wrote job details on text file");
-            } catch (IOException e) { 
-                e.printStackTrace(); } 
-        }
+    public void submitJob() { // NEEDS TO BE IMPLEMENTED and info stored in file
+
     }
     public void cancelJob() {
 
