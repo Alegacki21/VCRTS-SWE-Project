@@ -3,8 +3,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 public class VehicleOwner extends User {
 private List<Vehicle> vehicleList;
 private String paymentAccount;
@@ -34,6 +32,13 @@ private String paymentAccount;
     }
 
     //Methods
+
+     public static void vehicleServerResponse(JPanel ownerPanel) {
+        JOptionPane optionPane = new JOptionPane("Please wait for the server response...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                    JDialog dialog = optionPane.createDialog(ownerPanel, "Processing"); 
+                  //  dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); //COMMENTED OUT FOR TESTING PURPOSES
+                    dialog.setVisible(true);
+    }
 
     public void registerVehicle(Vehicle vehicle) {
         vehicleList.add(vehicle);
