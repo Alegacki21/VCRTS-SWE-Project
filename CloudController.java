@@ -1,55 +1,29 @@
 import java.util.*;
-import java.time.Duration;
+import java.util.stream.Collectors;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import java.nio.file.Files;
 
-public class CloudController extends User {
-private int redundancyLevel;
-private List <Vehicle> vehicleList;
-private Queue<Job> jobQueue;
-//Removed resourcemanagement and billing
-// private dashboard NOT IMPLEMENTED YET
-// private authentication NOT IMPLEMENTED YET
-private int availableVehicles;
-private double availableCPUPower;
-
-    public CloudController(String userId, String email, String username, String name, String password, double balance, String paymentMethod,
-    int redundancyLevel,List <Vehicle> vehicleList, Queue<Job> jobQueue, int availableVehicles, double availableCPUPower) {
-        super(userId,email,username,name,password,balance,paymentMethod);
-        this.redundancyLevel = redundancyLevel;
-        this.vehicleList = vehicleList;
-        this.jobQueue = jobQueue;
-        this.availableVehicles = availableVehicles;
-        this.availableCPUPower = availableCPUPower;
-
-    }
-    public int getRedundancyLevel() {
-        return redundancyLevel;
-    }
-    public void setRedundancyLevel(int redundancyLevel) {
-        this.redundancyLevel = redundancyLevel;
-    }
-    public List<Vehicle> getVehicleList() {
-        return vehicleList;
-    }
-    public void setVehicleList(List<Vehicle> vehicleList) {
-        this.vehicleList = vehicleList;
-    }
-    public Queue<Job> getJobQueue() {
-        return jobQueue;
-    }
-    public void setJobQueue(Queue<Job> jobQueue) {
-        this.jobQueue = jobQueue;
-    }
-    public int getAvailableVehicles() {
-        return availableVehicles;
-    }
-    public void setAvailableVehicles(int availableVehicles) {
-        this.availableVehicles = availableVehicles;
-    }
-    public double getAvailableCPUPower() {
-        return availableCPUPower;
-    }
-    public void setAvailableCPUPower(double availableCPUPower) {
-        this.availableCPUPower = availableCPUPower;
+public class CloudController {
+    private static CloudController instance;
+    private List<Vehicle> vehicleList = new ArrayList<>();
+    private Queue<Job> jobQueue = new LinkedList<>();
+    
+    // Private constructor to ensure singleton pattern 
+    private CloudController() {}
+    
+    public static CloudController getInstance() {
+        if (instance == null) {
+            instance = new CloudController();
+        }
+        return instance;
     }
 
     public void calculateCompletionTime() {
@@ -72,9 +46,18 @@ private double availableCPUPower;
         }
     }
 
-    public void assignJob(int numVehicles) {
-
-    } 
+    public static void showPopup(JPanel parentFrame, String ID, String vehicleInformation, String time, String power,  String requestDetails) { 
+        String message = "UserID  " +ID +"\n" + "Wants to register:  " + vehicleInformation + "\n" +"Approximate Residency Time:  "
+         + time + "\n" + "Available Computational Power:  "+ power + "\n" + "Notes:  " + requestDetails; 
+        int response = JOptionPane.showOptionDialog(null, message, "User Request", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Accept", "Reject"}, "Accept"); 
+            if (response == JOptionPane.YES_OPTION) { // Handle acceptance logic here 
+                System.out.println("Request Accepted"); 
+            } 
+            else if (response == JOptionPane.NO_OPTION) { 
+                System.out.println("Request Rejected");
+               
+             }
+    }
     public void authenticateUser(User u ) {
 
     }
