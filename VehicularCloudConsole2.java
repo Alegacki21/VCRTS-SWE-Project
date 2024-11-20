@@ -1,5 +1,4 @@
 // Importing necessary libraries for GUI and file operations
-import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.*;
 
 public class VehicularCloudConsole2 extends JFrame {
     private JPanel mainPanel;
@@ -1776,4 +1776,3 @@ public class VehicularCloudConsole2 extends JFrame {
         });
     }
 }
-
