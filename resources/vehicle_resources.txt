@@ -1,0 +1,72 @@
+Timestamp: 2024-11-19 20:29:21
+Owner ID: OWNER_1732066161255
+VIN: Wa
+Make: Cool
+Model: swa
+Year: 235
+Computational Power: 342.0
+Storage Capacity: 123.0
+------------------------
+Timestamp: 2024-11-19 20:32:11
+Owner ID: 32
+Vehicle Info: 12
+Residency Time: 42
+Computational Power: 12
+Notes: 53
+------------------------
+Timestamp: 2024-11-19 20:45:16
+Owner ID: 321
+Vehicle Info: 5423
+Residency Time: 12
+Computational Power: 41
+Notes: 53
+------------------------
+Timestamp: 2024-11-19 20:50:44
+Owner ID: 34
+Vehicle Info: 23
+Residency Time: 12
+Computational Power: 53
+Notes: 1241
+------------------------
+Timestamp: 2024-11-19 20:55:47
+Owner ID: 32
+Vehicle Info: 121
+Residency Time: 13
+Computational Power: 53
+Notes: 23
+------------------------
+Timestamp: 2024-11-19 21:07:03
+Owner ID: 42312
+Vehicle Info: 31
+Residency Time: 412
+Computational Power: 1412
+Notes: 12141
+------------------------
+Timestamp: 2024-11-19 21:18:49
+Owner ID: 5353
+Vehicle Info: 124
+Residency Time: 234
+Computational Power: 53
+Notes: 6464
+------------------------
+Timestamp: 2024-11-19 21:44:12
+Owner ID: 9000
+Vehicle Info: Toyota Corolla
+Residency Time: 300 
+Computational Power: 69
+Notes: Hi I like money
+------------------------
+Timestamp: 2024-11-19 21:50:26
+Owner ID: 900
+Vehicle Info: Toyota Corolla
+Residency Time: 300
+Computational Power: 69
+Notes: I like Money
+------------------------
+Timestamp: 2024-11-19 21:55:01
+Owner ID: 800
+Vehicle Info: Chevy
+Residency Time: 39
+Computational Power: 69
+Notes: Hi please take care of my chevy
+------------------------
