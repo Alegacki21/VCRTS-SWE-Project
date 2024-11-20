@@ -35,6 +35,17 @@ Residency Time: 13
 Computational Power: 53
 Notes: 23
 ------------------------
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+Timestamp: 2024-11-13 08:17:23
+Owner ID: 11
+Vehicle Info: 111
+Residency Time: 11
+Computational Power: 11
+Notes: 11
+=======
+>>>>>>> Stashed changes
 Timestamp: 2024-11-19 21:07:03
 Owner ID: 42312
 Vehicle Info: 31
@@ -69,6 +80,7 @@ Vehicle Info: Chevy
 Residency Time: 39
 Computational Power: 69
 Notes: Hi please take care of my chevy
+<<<<<<< Updated upstream
 ------------------------
 
 Timestamp: 2024-11-19 22:55:58
@@ -77,4 +89,20 @@ Vehicle Info: 12
 Residency Time: 43
 Computational Power: 657
 Notes: 354
+=======
+------------------------Timestamp: 2024-11-20 00:33:44
+Owner ID: 23252
+Vehicle Info: 346
+Residency Time: 46
+Computational Power: 345
+Notes: 23
+------------------------
+Timestamp: 2024-11-20 00:36:23
+Owner ID: 4353
+Vehicle Info: 3634
+Residency Time: 34
+Computational Power: 53
+Notes: 634
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 ------------------------

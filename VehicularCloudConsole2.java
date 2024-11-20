@@ -1257,11 +1257,19 @@ public class VehicularCloudConsole2 extends JFrame {
                         while ((line = input.readLine()) != null && !line.equalsIgnoreCase("END")) { 
                             clientMessages.append(line).append("\n"); 
                         } 
-                        System.out.println("Received from client:\n" + clientMessages.toString());
+                        // Show message in a pop-up dialog 
+                        String message = clientMessages.toString(); 
+                        int option = JOptionPane.showOptionDialog(controllerPanel, "Received from client:\n" + message, "Client Message",
+                         JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Accept", "Reject"}, "Accept");
     
-                        // Respond to the client
-                        String serverResponse = scanner.nextLine();
+                         String serverResponse;
+
+                        if (option == JOptionPane.YES_OPTION) { // User chose "Accept" 
+                        serverResponse = "Accepted"; 
                         output.println(serverResponse);
+                    } else { // User chose "Reject" or closed the dialog 
+                    serverResponse = "Rejected"; } // Respond to the client 
+                    output.println(serverResponse);
                     }
                 }
             } catch (IOException ex) {
