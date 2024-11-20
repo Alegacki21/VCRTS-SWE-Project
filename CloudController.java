@@ -29,6 +29,10 @@ public class CloudController {
             File jobsFile = new File("jobs/submitted_jobs.txt");
             
             if (!jobsFile.exists()) {
+                JOptionPane.showMessageDialog(null, 
+                    "No jobs in queue!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
                 System.out.println("File does not exist!");
                 return;
             }

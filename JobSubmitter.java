@@ -38,12 +38,11 @@ private String paymentAccount;
 
 
     public void submitJob(Job job) {
-        // Add job to list
         JobList.add(job);
         
         try {
-            // Create jobs directory if it doesn't exist
-            File directory = new File("jobs");
+            // Create pendingJobs directory if it doesn't exist
+            File directory = new File("pendingJobs");
             if (!directory.exists()) {
                 directory.mkdir();
             }
@@ -52,8 +51,8 @@ private String paymentAccount;
             String timestamp = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            // Write to file using FileWriter
-            FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
+            // Write to pendingJobs directory instead
+            FileWriter writer = new FileWriter("pendingJobs/pending_jobs.txt", true);
             writer.write("Timestamp: " + timestamp + "\n");
             writer.write("Client ID: " + this.getUserId() + "\n");
             writer.write("Job ID: " + job.getJobId() + "\n");

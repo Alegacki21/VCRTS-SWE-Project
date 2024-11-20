@@ -36,7 +36,7 @@ private String paymentAccount;
         vehicleList.add(vehicle);
         
         try {
-            File directory = new File("resources");
+            File directory = new File("pendingResources");
             if (!directory.exists()) {
                 directory.mkdir();
             }
@@ -44,7 +44,7 @@ private String paymentAccount;
             String timestamp = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
+            FileWriter writer = new FileWriter("pendingResources/pending_vehicles.txt", true);
             writer.write("Timestamp: " + timestamp + "\n");
             writer.write("Owner ID: " + this.getUserId() + "\n");
             writer.write("VIN: " + vehicle.getVIN() + "\n");
@@ -56,13 +56,8 @@ private String paymentAccount;
             writer.write("------------------------\n");
             writer.close();
             
-            // Debug logging
-            System.out.println("Writing vehicle to file:");
-            System.out.println("Owner ID: " + this.getUserId());
-            System.out.println("VIN: " + vehicle.getVIN());
         } catch (IOException ex) {
             System.err.println("Error saving vehicle information: " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
     public void specifyResources() {

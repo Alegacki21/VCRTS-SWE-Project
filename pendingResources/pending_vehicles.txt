@@ -1,0 +1,21 @@
+Timestamp: 2024-11-19 19:58:12
+Owner ID: 1
+Vehicle Info: 1
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------
+Timestamp: 2024-11-19 20:00:02
+Owner ID: 1
+Vehicle Info: 1
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------
+Timestamp: 2024-11-19 20:00:07
+Owner ID: 1
+Vehicle Info: 1
+Residency Time: 1
+Computational Power: 1
+Notes: 1
+------------------------
