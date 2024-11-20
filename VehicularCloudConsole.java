@@ -805,108 +805,87 @@ public class VehicularCloudConsole extends JFrame {
 
             if (allFilled) {
                 try {
-<<<<<<< Updated upstream
-                    // Create resources directory if it doesn't exist
-=======
                     String timestamp = java.time.LocalDateTime.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                     // Ask the user for input
-        Thread owner = new Thread(() -> {
-            
-            // Connect to the server
-            try (Socket socket = new Socket("127.0.0.1", 5000);
-                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-    
-                // Send the user input to the server
-                String userInput2 ="Timestamp: " + timestamp + "\n" + "Owner ID: " + fields[0].getText() + "\n" + "Vehicle Info: " + fields[1].getText() + "\n" +
-                "Residency Time: " + fields[2].getText() + "\n" + "Computational Power: " + fields[3].getText() + "\n" + "Notes: " + fields[4].getText() + "\n"
-                + "\nEND";
-                output.println(userInput2);
-                System.out.println("Message sent to the server: " + userInput2);
-              //  JDialog j = VehicleOwner.vehicleServerResponse(ownerPanel);
-                // Wait for the server's response
-                String serverResponse = input.readLine();
-                System.out.println("Response from the server: " + serverResponse);
-              //  j.dispose();
-                    if(serverResponse.equals("Accepted")) {
-                        // Create resources directory if it doesn't exist
->>>>>>> Stashed changes
-                    File directory = new File("resources");
-                    if (!directory.exists()) {
-                        directory.mkdir();
-                    }
-<<<<<<< Updated upstream
+                    Thread owner = new Thread(() -> {
+                        // Show "Please wait" dialog
+                       // JDialog j = VehicleOwner.vehicleServerResponse(ownerPanel);
                     
-                  //Before writing to file, waits for response from server/cloud controller
-                    //dialog.setVisible(true);
-                    VehicleOwner.vehicleServerResponse(ownerPanel);
-
-                    // If Cloud Controller Accepts then writes info to file, Add timestamp
-                    String timestamp = java.time.LocalDateTime.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    String ownerId = fields[0].getText();
-=======
->>>>>>> Stashed changes
-                    FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
-                    writer.write("Timestamp: " + timestamp + "\n");
-                    writer.write("Owner ID: " + fields[0].getText() + "\n");
-                    writer.write("Vehicle Info: " + fields[1].getText() + "\n");
-                    writer.write("Residency Time: " + fields[2].getText() + "\n");
-                    writer.write("Computational Power: " + fields[3].getText() + "\n");
-                    writer.write("Notes: " + fields[4].getText() + "\n");
-                    writer.write("------------------------\n");
-                    writer.close();
-<<<<<<< Updated upstream
-
-                    //Trying to save the values the vehicleowner submits to be used in the Cloudcontroller popup later but not working :(
-                    //   CloudController.handleCollectedValues(fields[0].getText(), fields[1].getText(), fields[2].getText(), fields[3].getText(), fields[4].getText());
-
-                    //Shows message saying Cloud Controller accepted their vehicle
-                 
-=======
->>>>>>> Stashed changes
-                    JOptionPane.showMessageDialog(ownerPanel,
-                        "Vehicle resource submitted and saved successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                    // Clear fields after successful submission
-                    for (JTextField field : fields) {
-                        field.setText("");
-                    }
-<<<<<<< Updated upstream
-                    // Message for Cloud Controller rejecting their vehicle
-                    //EX: sysout("Get OUT")
-
+                        // Connect to the server
+                        try (Socket socket = new Socket("127.0.0.1", 5000);
+                             PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+                             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                     
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(ownerPanel,
-                        "Error saving resource information: " + ex.getMessage(),
-=======
-
-                    } else if(serverResponse.equals("Rejected")) {
-                      //  j.dispose();
-                        JOptionPane.showMessageDialog(ownerPanel,
-                        "Vehicle resource was rejected and failed to submit",
->>>>>>> Stashed changes
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    }
-                    else {
-                      //  j.dispose();
-                        JOptionPane.showMessageDialog(ownerPanel,
-                    "Please fill in all fields",
-                    "Validation Error",
-                    JOptionPane.ERROR_MESSAGE);
-                    }
-            } catch (IOException ex) {
-                System.err.println("Error: Unable to connect to the server.");
-                ex.printStackTrace();
-            }
-        }); 
-        owner.start(); }
+                            // Send the user input to the server
+                            String userInput2 = "Timestamp: " + timestamp + "\n" +
+                                                "Owner ID: " + fields[0].getText() + "\n" +
+                                                "Vehicle Info: " + fields[1].getText() + "\n" +
+                                                "Residency Time: " + fields[2].getText() + "\n" +
+                                                "Computational Power: " + fields[3].getText() + "\n" +
+                                                "Notes: " + fields[4].getText() + "\nEND";
+                            output.println(userInput2);
+                            System.out.println("Message sent to the server: " + userInput2);
+                    
+                            // Wait for the server's response
+                            String serverResponse = input.readLine();
+                            System.out.println("Response from the server: " + serverResponse);
+                    
+                            // Dispose of the "Please wait" dialog
+                           //
+                    
+                            if (serverResponse.equals("Accepted")) {
+                                // Create resources directory if it doesn't exist
+                                File directory = new File("resources");
+                                if (!directory.exists()) {
+                                    directory.mkdir();
+                                }
+                    
+                                // Write info to file
+                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
+                                writer.write("Timestamp: " + timestamp + "\n");
+                                writer.write("Owner ID: " + fields[0].getText() + "\n");
+                                writer.write("Vehicle Info: " + fields[1].getText() + "\n");
+                                writer.write("Residency Time: " + fields[2].getText() + "\n");
+                                writer.write("Computational Power: " + fields[3].getText() + "\n");
+                                writer.write("Notes: " + fields[4].getText() + "\n");
+                                writer.write("------------------------\n");
+                                writer.close();
+                    
+                                JOptionPane.showMessageDialog(ownerPanel,
+                                    "Vehicle resource submitted and saved successfully!",
+                                    "Success",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                                // Clear fields after successful submission
+                                for (JTextField field : fields) {
+                                    field.setText("");
+                                }
+                    
+                            } else if (serverResponse.equals("Rejected")) {
+                                JOptionPane.showMessageDialog(ownerPanel,
+                                    "Vehicle resource was rejected and failed to submit.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(ownerPanel,
+                                    "Please fill in all fields.",
+                                    "Validation Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            }
+                    
+                        } catch (IOException ex) {
+                            // Dispose of the "Please wait" dialog in case of error
+                           // SwingUtilities.invokeLater(j::dispose);
+                            JOptionPane.showMessageDialog(ownerPanel,
+                                "Error connecting to the server: " + ex.getMessage(),
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    });
+                    owner.start(); }
+                    
         finally {
-
         }
     }
     }
@@ -1829,4 +1808,3 @@ public class VehicularCloudConsole extends JFrame {
         });
     }
 }
-
