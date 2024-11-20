@@ -738,7 +738,7 @@ public class VehicularCloudConsole extends JFrame {
         String[] labels = {
             "Owner ID:",
             "Vehicle Information:",
-            "Approximate Residency Time:",
+            "Approximate Residency Time (hh:mm):",
             "Available Computational Power:",
             "Notes:"
         };
@@ -820,7 +820,7 @@ public class VehicularCloudConsole extends JFrame {
                             String userInput2 = "Timestamp: " + timestamp + "\n" +
                                                 "Owner ID: " + fields[0].getText() + "\n" +
                                                 "Vehicle Info: " + fields[1].getText() + "\n" +
-                                                "Residency Time: " + fields[2].getText() + "\n" +
+                                                "Residency Time (hh:mm): " + fields[2].getText() + "\n" +
                                                 "Computational Power: " + fields[3].getText() + "\n" +
                                                 "Notes: " + fields[4].getText() + "\nEND";
                             output.println(userInput2);
@@ -841,7 +841,7 @@ public class VehicularCloudConsole extends JFrame {
                                 // }
                     
                                 // Write info to file
-                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/resources/vehicle_resources.txt", true);
+                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Owner ID: " + fields[0].getText() + "\n");
                                 writer.write("Vehicle Info: " + fields[1].getText() + "\n");
@@ -944,7 +944,7 @@ public class VehicularCloudConsole extends JFrame {
         String[] labels = {
             "Client ID:",
             "Subscription Plan:",
-            "Approximate Job Duration (Minutes):",
+            "Approximate Job Duration (hh:mm):",
             "Job Deadline:",
             "Purpose/Reason:"
         };
@@ -1009,83 +1009,82 @@ public class VehicularCloudConsole extends JFrame {
 
             if (allFilled) {
                 try {
-                        Scanner scanner = new Scanner(System.in);
-                        Thread submitter = new Thread(() -> {
-                            System.out.print(" Enter your message to the server: ");
-                            String userInput = scanner.nextLine();
-                    
-                            // Connect to the server
-                            try (Socket socket = new Socket("127.0.0.1", 5000);
-                                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-                                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                    
-                                // Send the user input to the server
-                                output.println(userInput);
-                                System.out.println("Message sent to the server: " + userInput);
-                    
-                                // Wait for the server's response
-                                String serverResponse = input.readLine();
-                                System.out.println("Response from the server: " + serverResponse);
-                    
-                            } catch (IOException ex) {
-                                System.err.println("Error: Unable to connect to the server.");
-                                ex.printStackTrace();
+                    String timestamp = java.time.LocalDateTime.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    // Ask the user for input
+                    Thread submitter = new Thread(() -> {
+                        // Show "Please wait" dialog
+                        // JDialog j = JobSubmitter.jobServerResponse(clientPanel);
+            
+                        // Connect to the server
+                        try (Socket socket = new Socket("127.0.0.1", 5000);
+                             PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+                             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            
+                            // Send the user input to the server
+                            String userInput = "Timestamp: " + timestamp + "\n" +
+                            "Client ID: " + fields[0].getText() + "\n" +
+                            "Subscription Plan: " + fields[1].getText() + "\n" +
+                            "Approximate Job Duration (in hh:mm): " + fields[2].getText() + "\n" +
+                            "Job Deadline (mm/dd/yyyy): " + fields[3].getText() + "\n" +
+                            "Purpose/Reason: " + fields[4].getText() + "\nEND";
+                            output.println(userInput);
+                            System.out.println("Message sent to the server: " + userInput);
+            
+                            // Wait for the server's response
+                            String serverResponse = input.readLine();
+                            System.out.println("Response from the server: " + serverResponse);
+            
+                            // Dispose of the "Please wait" dialog
+                            // SwingUtilities.invokeLater(j::dispose);
+            
+                            if (serverResponse.equals("Accepted")) {
+                                // Create jobs directory if it doesn't exist
+                                File directory = new File("jobs");
+                                if (!directory.exists()) {
+                                    directory.mkdir();
+                                }
+ 
+                                // Write info to file
+                                FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
+                                writer.write("Timestamp: " + timestamp + "\n");
+                                writer.write("Client ID: " + fields[0].getText() + "\n");
+                                writer.write("Job ID: " + String.format("%03d", jobCounter - 1) + "\n");
+                                writer.write("Duration (hh:mm): " + fields[2].getText() + "\n");
+                                writer.write("Computational Power Needed: " + fields[3].getText() + "\n");
+                                writer.write("Status: Pending\n");
+                                writer.write("------------------------\n");
+                                writer.close();
+
+                                JOptionPane.showMessageDialog(clientPanel,
+                                    "Job submitted and saved successfully!",
+                                    "Success",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                                // Clear fields after successful submission
+                                for (JTextField field : fields) {
+                                    field.setText("");
+                                }
+                            } else if (serverResponse.equals("Rejected")) {
+                                JOptionPane.showMessageDialog(clientPanel,
+                                    "Job submission was rejected.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                             }
-                        }); 
-                        submitter.start();
-    
-                    // Job ID counter, if null it is initialized to 0
-                    if (jobCounter == null) {
-                        jobCounter = 0;
-                    }
-                    
-                    // Create a new Job object
-                    String jobId = String.format("%03d", jobCounter++);
-                    int duration = Integer.parseInt(fields[2].getText()); // Approximate Job Duration field
-                    int arrivalTime = (int)(System.currentTimeMillis() / 1000); // Current time in seconds
-                    Job newJob = new Job(jobId, duration, arrivalTime);
-                    
-                    // JobSubmitter instance
-                    JobSubmitter jobSubmitter = new JobSubmitter(
-                        fields[0].getText(), // Client ID
-                        "", // email
-                        "", // username
-                        "", // name
-                        "", // password
-                        0.0, // balance
-                        fields[1].getText(), // subscription plan as payment method
-                        new ArrayList<>(), // empty job list
-                        fields[1].getText(), // subscription plan
-                        "" // payment account
-                    );
-
-                    // Submit the job
-                    jobSubmitter.submitJob(newJob);
-
-                    // Show success message
-                    JOptionPane.showMessageDialog(clientPanel,
-                        "Job submitted and saved successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                    // Clear fields after successful submission
-                    for (JTextField field : fields) {
-                        field.setText("");
-                    }
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(clientPanel,
-                        "Error submitting job: " + ex.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                        } catch (IOException ex) {
+                            // Dispose of the "Please wait" dialog in case of error
+                            // SwingUtilities.invokeLater(j::dispose);
+                            JOptionPane.showMessageDialog(clientPanel,
+                                "Error connecting to the server: " + ex.getMessage(),
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    });
+                    submitter.start();
+                } finally {
                 }
-             } else {
-                JOptionPane.showMessageDialog(clientPanel,
-                    "Please fill in all fields",
-                    "Validation Error",
-                    JOptionPane.ERROR_MESSAGE);
             }
-        });
+            });
 
         // Add button functionality
         viewJobsButton.addActionListener(e -> {
