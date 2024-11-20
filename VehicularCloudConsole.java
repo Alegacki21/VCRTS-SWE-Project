@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.*;
 
 public class VehicularCloudConsole extends JFrame {
@@ -841,7 +840,7 @@ public class VehicularCloudConsole extends JFrame {
                                 // }
                     
                                 // Write info to file
-                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
+                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/resources/vehicle_resources.txt", true);
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Owner ID: " + fields[0].getText() + "\n");
                                 writer.write("Vehicle Info: " + fields[1].getText() + "\n");
@@ -865,6 +864,9 @@ public class VehicularCloudConsole extends JFrame {
                                     "Vehicle resource was rejected and failed to submit.",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
+                                    for (JTextField field : fields) {
+                                        field.setText("");
+                                    }
                             } else {
                                 JOptionPane.showMessageDialog(ownerPanel,
                                     "Please fill in all fields.",
@@ -1040,13 +1042,13 @@ public class VehicularCloudConsole extends JFrame {
             
                             if (serverResponse.equals("Accepted")) {
                                 // Create jobs directory if it doesn't exist
-                                File directory = new File("jobs");
-                                if (!directory.exists()) {
-                                    directory.mkdir();
-                                }
+                                // File directory = new File("jobs");
+                                // if (!directory.exists()) {
+                                //     directory.mkdir();
+                                // }
  
                                 // Write info to file
-                                FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
+                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/jobs/submitted_jobs.txt", true);
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Client ID: " + fields[0].getText() + "\n");
                                 writer.write("Job ID: " + String.format("%03d", jobCounter - 1) + "\n");
@@ -1069,6 +1071,9 @@ public class VehicularCloudConsole extends JFrame {
                                     "Job submission was rejected.",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
+                                    for (JTextField field : fields) {
+                                        field.setText("");
+                                    }
                             }
                         } catch (IOException ex) {
                             // Dispose of the "Please wait" dialog in case of error

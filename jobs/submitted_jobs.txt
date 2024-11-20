@@ -68,3 +68,17 @@ Computational Power Needed: 0.0
 Status: Pending
 ------------------------
 
+Timestamp: 2024-11-20 13:29:15
+Client ID: test
+Job ID: -01
+Duration (hh:mm): 12
+Computational Power Needed: test
+Status: Pending
+------------------------
+Timestamp: 2024-11-20 13:29:24
+Client ID: 212
+Job ID: -01
+Duration (hh:mm): 12
+Computational Power Needed: 15
+Status: Pending
+------------------------

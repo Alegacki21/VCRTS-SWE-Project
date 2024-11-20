@@ -70,3 +70,23 @@ Residency Time: 39
 Computational Power: 69
 Notes: Hi please take care of my chevy
 ------------------------
+Timestamp: 2024-11-20 09:21:15
+Owner ID: 999
+Vehicle Info: Toyota Corolla
+Residency Time: 300
+Computational Power: 69
+Notes: You just got Toyota Corolla'd
+------------------------Timestamp: 2024-11-20 13:28:24
+Owner ID: test
+Vehicle Info: test
+Residency Time: 12
+Computational Power: test
+Notes: test
+------------------------
+Timestamp: 2024-11-20 13:28:41
+Owner ID: test2
+Vehicle Info: test2
+Residency Time: 54
+Computational Power: test
+Notes: test
+------------------------
