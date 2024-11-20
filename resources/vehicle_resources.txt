@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Timestamp: 2024-11-19 20:29:21
 Owner ID: OWNER_1732066161255
 VIN: Wa
@@ -70,28 +69,12 @@ Vehicle Info: Chevy
 Residency Time: 39
 Computational Power: 69
 Notes: Hi please take care of my chevy
-=======
-Timestamp: 2024-11-13 07:53:58
-Owner ID: OWNER_1731502438121
-VIN: 1
-Make: 1
-Model: 1
-Year: 1
-Computational Power: 1.0
-Storage Capacity: 1.0
 ------------------------
-Timestamp: 2024-11-13 07:54:05
-Owner ID: 23
-Vehicle Info: 23
-Residency Time: 23
-Computational Power: 23
-Notes: 23
-------------------------
-Timestamp: 2024-11-13 08:17:23
-Owner ID: 11
-Vehicle Info: 111
-Residency Time: 11
-Computational Power: 11
-Notes: 11
->>>>>>> main
+
+Timestamp: 2024-11-19 22:55:58
+Owner ID: 432
+Vehicle Info: 12
+Residency Time: 43
+Computational Power: 657
+Notes: 354
 ------------------------

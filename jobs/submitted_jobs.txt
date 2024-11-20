@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 Timestamp: 2024-11-19 00:25:51
-=======
-Timestamp: 2024-11-10 16:25:30
->>>>>>> main
 Client ID: 001
 Job ID: 000
 Duration: 5 minutes
@@ -17,7 +13,6 @@ Computational Power Needed: 0.0
 ------------------------
 ------------------------
 ------------------------
-<<<<<<< HEAD
 ------------------------
 ------------------------
 ------------------------
@@ -27,9 +22,6 @@ Computational Power Needed: 0.0
 ------------------------
 ------------------------
 Timestamp: 2024-11-19 00:26:44
-=======
-Timestamp: 2024-11-10 16:25:41
->>>>>>> main
 Client ID: 001
 Job ID: 001
 Duration: 2 minutes
@@ -44,7 +36,6 @@ Computational Power Needed: 0.0
 ------------------------
 ------------------------
 ------------------------
-<<<<<<< HEAD
 ------------------------
 ------------------------
 ------------------------
@@ -58,18 +49,10 @@ Client ID: 21
 Job ID: 000
 Duration: 12 minutes
 Estimated Completion Time: 19 minutes
-=======
-Timestamp: 2024-11-10 16:25:53
-Client ID: 001
-Job ID: 002
-Duration: 9 minutes
-Estimated Completion Time: 16 minutes
->>>>>>> main
 Status: Scheduled
 Computational Power Needed: 0.0
 ------------------------
 ------------------------
-<<<<<<< HEAD
 Timestamp: 2024-11-19 21:23:46
 Client ID: eq221
 Job ID: 001
@@ -83,13 +66,4 @@ Job ID: 000
 Duration: 24 minutes
 Computational Power Needed: 0.0
 Status: Pending
-=======
-------------------------
-------------------------
-------------------------
-------------------------
-------------------------
-------------------------
-------------------------
->>>>>>> main
 ------------------------
