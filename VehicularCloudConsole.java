@@ -1,5 +1,4 @@
 // Importing necessary libraries for GUI and file operations
-import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,10 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.*;
 
 public class VehicularCloudConsole extends JFrame {
     private JPanel mainPanel;
@@ -680,7 +679,7 @@ public class VehicularCloudConsole extends JFrame {
 
                 owner.registerVehicle(vehicle);
 
-                File resourcesFile = new File("resources/vehicle_resources.txt");
+                File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
                 if (resourcesFile.exists()) {
                     resourcesFile.delete();
                 }
@@ -836,13 +835,13 @@ public class VehicularCloudConsole extends JFrame {
                     
                             if (serverResponse.equals("Accepted")) {
                                 // Create resources directory if it doesn't exist
-                                File directory = new File("resources");
-                                if (!directory.exists()) {
-                                    directory.mkdir();
-                                }
+                                // File directory = new File("resources");
+                                // if (!directory.exists()) {
+                                //     directory.mkdir();
+                                // }
                     
                                 // Write info to file
-                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
+                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/resources/vehicle_resources.txt", true);
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Owner ID: " + fields[0].getText() + "\n");
                                 writer.write("Vehicle Info: " + fields[1].getText() + "\n");
@@ -1151,7 +1150,7 @@ public class VehicularCloudConsole extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try {
-            File jobsFile = new File("jobs/submitted_jobs.txt");
+            File jobsFile = new File("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
                 JPanel currentJobItem = null;
@@ -1229,7 +1228,7 @@ public class VehicularCloudConsole extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
 
         try { // Move this to a back-end class
-            File resourcesFile = new File("resources/vehicle_resources.txt");
+            File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
             if (resourcesFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
                 //StringBuilder currentContent = new StringBuilder();
@@ -1393,7 +1392,7 @@ public class VehicularCloudConsole extends JFrame {
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            File jobsFile = new File("jobs/submitted_jobs.txt");
+            File jobsFile = new File("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
                 
@@ -1529,7 +1528,7 @@ public class VehicularCloudConsole extends JFrame {
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            File resourcesFile = new File("resources/vehicle_resources.txt");
+            File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
             System.out.println("Reading resources file: " + resourcesFile.getAbsolutePath());
             
             if (resourcesFile.exists()) {
