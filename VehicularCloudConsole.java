@@ -677,8 +677,8 @@ public class VehicularCloudConsole extends JFrame {
                 // Registering the vehicle (this will write to the file)
 
                 owner.registerVehicle(vehicle);
-
-                File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+                // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+                File resourcesFile = new File("resources/vehicle_resources.txt");
                 if (resourcesFile.exists()) {
                     resourcesFile.delete();
                 }
@@ -840,7 +840,7 @@ public class VehicularCloudConsole extends JFrame {
                                 // }
                     
                                 // Write info to file
-                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/resources/vehicle_resources.txt", true);
+                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true); // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Owner ID: " + fields[0].getText() + "\n");
                                 writer.write("Vehicle Info: " + fields[1].getText() + "\n");
@@ -1047,8 +1047,8 @@ public class VehicularCloudConsole extends JFrame {
                                 //     directory.mkdir();
                                 // }
  
-                                // Write info to file
-                                FileWriter writer = new FileWriter("VCRTS-SWE-Project/jobs/submitted_jobs.txt", true);
+                                // Write info to file // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
+                                FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
                                 writer.write("Timestamp: " + timestamp + "\n");
                                 writer.write("Client ID: " + fields[0].getText() + "\n");
                                 writer.write("Job ID: " + String.format("%03d", jobCounter - 1) + "\n");
@@ -1154,7 +1154,7 @@ public class VehicularCloudConsole extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try {
-            File jobsFile = new File("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
+            File jobsFile = new File("jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
                 JPanel currentJobItem = null;
@@ -1231,8 +1231,8 @@ public class VehicularCloudConsole extends JFrame {
         resourcesListPanel.setLayout(new BoxLayout(resourcesListPanel, BoxLayout.Y_AXIS));
         resourcesListPanel.setBackground(Color.WHITE);
 
-        try { // Move this to a back-end class
-            File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+        try { // Move this to a back-end class // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+            File resourcesFile = new File("resources/vehicle_resources.txt");
             if (resourcesFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
                 //StringBuilder currentContent = new StringBuilder();
@@ -1396,7 +1396,7 @@ public class VehicularCloudConsole extends JFrame {
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            File jobsFile = new File("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
+            File jobsFile = new File("jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
                 
@@ -1531,8 +1531,8 @@ public class VehicularCloudConsole extends JFrame {
         scrollPane.setMaximumSize(new Dimension(450, 400));
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        try {
-            File resourcesFile = new File("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+        try { // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
+            File resourcesFile = new File("resources/vehicle_resources.txt");
             System.out.println("Reading resources file: " + resourcesFile.getAbsolutePath());
             
             if (resourcesFile.exists()) {
