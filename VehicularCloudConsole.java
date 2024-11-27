@@ -36,7 +36,7 @@ public class VehicularCloudConsole extends JFrame {
         mainPanel.setBackground(Color.WHITE);
         
         // Adding title and description to the main panel
-        JLabel titleLabel = new JLabel("<html><div style='text-align: center; width: 800px;'>Vehicular Cloud Real-Time System</div></html>");
+        JLabel titleLabel = new JLabel("<html><div style='text-align: center; width: 800px;'>(Client Side) Vehicular Cloud Real-Time System</div></html>");
         titleLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -141,6 +141,8 @@ public class VehicularCloudConsole extends JFrame {
         radioButtonsContainer.add(clientButton);
         radioButtonsContainer.add(Box.createVerticalStrut(5));
         radioButtonsContainer.add(controllerButton);
+        
+        controllerButton.setVisible(false);
 
         radioPanel.add(radioButtonsContainer);
 
@@ -830,14 +832,14 @@ public class VehicularCloudConsole extends JFrame {
                             System.out.println("Response from the server: " + serverResponse);
                     
                             // Dispose of the "Please wait" dialog
-                           //
+                           
                     
                             if (serverResponse.equals("Accepted")) {
-                                // Create resources directory if it doesn't exist
-                                // File directory = new File("resources");
-                                // if (!directory.exists()) {
-                                //     directory.mkdir();
-                                // }
+                              //  Create resources directory if it doesn't exist
+                                File directory = new File("resources");
+                                if (!directory.exists()) {
+                                    directory.mkdir();
+                                }
                     
                                 // Write info to file
                                 FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true); // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
@@ -1041,11 +1043,11 @@ public class VehicularCloudConsole extends JFrame {
                             // SwingUtilities.invokeLater(j::dispose);
             
                             if (serverResponse.equals("Accepted")) {
-                                // Create jobs directory if it doesn't exist
-                                // File directory = new File("jobs");
-                                // if (!directory.exists()) {
-                                //     directory.mkdir();
-                                // }
+                                //Create jobs directory if it doesn't exist
+                                File directory = new File("jobs");
+                                if (!directory.exists()) {
+                                    directory.mkdir();
+                                }
  
                                 // Write info to file // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
                                 FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);

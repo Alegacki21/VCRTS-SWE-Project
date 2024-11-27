@@ -40,7 +40,7 @@ public class VehicularCloudConsole2 extends JFrame {
 
         // Adding title and description to the main panel
         JLabel titleLabel = new JLabel(
-                "<html><div style='text-align: center; width: 800px;'>Vehicular Cloud Real-Time System</div></html>");
+                "<html><div style='text-align: center; width: 800px;'>(Server Side) Vehicular Cloud Real-Time System</div></html>");
         titleLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
