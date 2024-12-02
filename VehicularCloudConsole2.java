@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.*;
 
 public class VehicularCloudConsole2 extends JFrame {
@@ -1189,7 +1188,8 @@ public class VehicularCloudConsole2 extends JFrame {
         JButton viewPendingButton = createStyledButton("View Pending Jobs & Resources");
         viewPendingButton.setPreferredSize(new Dimension(250, 40));
 
-        Scanner scanner = new Scanner(System.in);
+        //Scanner scanner = new Scanner(System.in);
+        if(isPortAvailable(5000)) {
         Thread serverThread = new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(5000)) {
                 System.out.println("Server is running on port 5000...");
@@ -1229,6 +1229,7 @@ public class VehicularCloudConsole2 extends JFrame {
             }
         });
         serverThread.start();
+    }
 
         logoutButton.addActionListener(e -> {
             mainPanel.removeAll();
@@ -1281,7 +1282,14 @@ public class VehicularCloudConsole2 extends JFrame {
 
         return controllerPanel;
     }
-
+    // Used when refresh button is clicked + makes sure it doesnt try to run the serverport more than oonce
+    private static boolean isPortAvailable(int port) { 
+        try (ServerSocket serverSocket = new ServerSocket(5000)) 
+        { return true; 
+        } catch (IOException e) { 
+            return false; 
+        } 
+        } 
     // Submitted jobs panel for Clients
     private JPanel createSubmittedJobsPanel() {
         JPanel submittedPanel = new JPanel();
