@@ -3,59 +3,50 @@ DROP TABLE IF EXISTS Job;
 DROP TABLE IF EXISTS VehicleOwner;
 DROP TABLE IF EXISTS JobSubmitter;
 DROP TABLE IF EXISTS CloudController;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS VehicleAssignment;
 
-CREATE TABLE VehicleOwner (
-    ownerID INT (10) NOT NULL,           
-    fullName VARCHAR(100) NOT NULL,         
-    email VARCHAR(100) NOT NULL UNIQUE,     
-    password VARCHAR(100) NOT NULL,         
-    address VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
-    country VARCHAR(100) NOT NULL,
-    phoneNumber VARCHAR(15) NOT NULL,                
-    PRIMARY KEY (ownerID)
+CREATE TABLE User (
+    userID VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    userType VARCHAR(20),
+    address VARCHAR(200),
+    balance DECIMAL(10,2),
+    phoneNumber VARCHAR(20),
+    password VARCHAR(100)
 );
-
-CREATE TABLE JobSubmitter (
-    clientID INT(10) NOT NULL,          
-    fullName VARCHAR(100) NOT NULL,         
-    email VARCHAR(100) NOT NULL UNIQUE,     
-    password VARCHAR(100) NOT NULL,         
-    subPlan VARCHAR(20) NOT NULL,
-    address VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
-    country VARCHAR(100) NOT NULL,
-    phoneNumber VARCHAR(15) NOT NULL,           
-    PRIMARY KEY (clientID)
-);
-
-CREATE TABLE CloudController (
-    username VARCHAR(50) NOT NULL,          
-    password VARCHAR(100) NOT NULL,         
-    PRIMARY KEY (username)
-);
-
-INSERT INTO CloudController (username, password)
-VALUES ('admin', 'admin123');
-
 
 CREATE TABLE Vehicle (
-    VIN VARCHAR(17) NOT NULL,
-    ownerID INT(10) NOT NULL,
-    residencyTime TIME NOT NULL,
-    compPower INT NOT NULL, 
-    notes TEXT,
-    PRIMARY KEY (VIN),
-    FOREIGN KEY (ownerID) REFERENCES VehicleOwner(ownerID)
+    VIN VARCHAR(50) PRIMARY KEY,
+    ownerID VARCHAR(50),
+    make VARCHAR(50),
+    model VARCHAR(50),
+    year INT,
+    compPower DECIMAL(10,2),
+    storageCapacity DECIMAL(10,2),
+    status VARCHAR(20),
+    FOREIGN KEY (ownerID) REFERENCES User(userID)
 );
 
 CREATE TABLE Job (
-    jobID INT (10) NOT NULL,
-    clientID INT(10) NOT NULL,
-    jobDuration TIME NOT NULL,
-    jobDeadline DATE NOT NULL,
-    purpose TEXT NOT NULL,
-    PRIMARY KEY (jobID),
-    FOREIGN KEY (clientID) REFERENCES JobSubmitter(clientID)
+    jobID VARCHAR(50) PRIMARY KEY,
+    clientID VARCHAR(50),
+    jobDuration INT,
+    jobDeadline DATE,
+    purpose VARCHAR(200),
+    status VARCHAR(20),
+    submissionTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estimatedCompletionTime INT,
+    FOREIGN KEY (clientID) REFERENCES User(userID)
+);
+
+CREATE TABLE VehicleAssignment (
+    jobID VARCHAR(50),
+    VIN VARCHAR(50),
+    assignmentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (jobID, VIN),
+    FOREIGN KEY (jobID) REFERENCES Job(jobID),
+    FOREIGN KEY (VIN) REFERENCES Vehicle(VIN)
 );
 

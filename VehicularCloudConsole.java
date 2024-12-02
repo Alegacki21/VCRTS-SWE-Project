@@ -657,54 +657,27 @@ public class VehicularCloudConsole extends JFrame {
 
         // Setting up submit button action
         submitButton.addActionListener(e -> {
-            try {
-                // Creating Vehicle object using builder pattern
-                Vehicle vehicle = new Vehicle.VehicleBuilder(
-                    fields[0].getText(),  // VIN
-                    fields[1].getText(),  // Model 
-                    fields[2].getText()   // Make
-                )
-                .year(Integer.parseInt(fields[3].getText()))
-                .computationalPower(Double.parseDouble(fields[4].getText()))
-                .storageCapacity(Double.parseDouble(fields[5].getText()))
-                .build();
+            try (Socket socket = new Socket("127.0.0.1", 5000)) {
+                PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                // Creating VehicleOwner and registering vehicle
-                VehicleOwner owner = new VehicleOwner(
-                    "OWNER_" + System.currentTimeMillis(),
-                    "", "", "Owner", "", 0.0, "",
-                    new ArrayList<>(), ""
-                );
-
-                // Registering the vehicle (this will write to the file)
-
-                owner.registerVehicle(vehicle);
-                // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
-                File resourcesFile = new File("resources/vehicle_resources.txt");
-                if (resourcesFile.exists()) {
-                    resourcesFile.delete();
-                }
-
-
-                owner.registerVehicle(vehicle);
-
-                // Showing success message
-                JOptionPane.showMessageDialog(vehiclePanel,
-                    "Vehicle registered successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
-                // Redirecting to owner home
-                mainPanel.removeAll();
-                mainPanel.add(createOwnerHomePanel("Owner")); 
-                mainPanel.revalidate();
-                mainPanel.repaint();
+                // Send vehicle data
+                String vehicleData = "VEHICLE_REGISTRATION\n" +
+                                   fields[0].getText() + "\n" +  // VIN
+                                   fields[1].getText() + "\n" +  // Owner ID
+                                   fields[2].getText() + "\n" +  // Residency Time
+                                   fields[3].getText();          // Computational Power
+                output.println(vehicleData);
                 
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(vehiclePanel,
-                    "Please enter valid numbers for Year, Computational Power, and Storage Capacity",
-                    "Input Error",
-                    JOptionPane.ERROR_MESSAGE);
+                // Wait for response
+                String response = input.readLine();
+                if ("ACCEPTED".equals(response)) {
+                    JOptionPane.showMessageDialog(null, "Vehicle registration accepted!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Vehicle registration rejected.");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
 
@@ -1003,95 +976,29 @@ public class VehicularCloudConsole extends JFrame {
         });
 
         submitButton.addActionListener(e -> {
-            boolean allFilled = true;
-            for (JTextField field : fields) {
-                if (field.getText().trim().isEmpty()) {
-                    allFilled = false;
-                    break;
-                }
-            }
+            try (Socket socket = new Socket("127.0.0.1", 5000)) {
+                PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            if (allFilled) {
-                try {
-                    String timestamp = java.time.LocalDateTime.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    // Ask the user for input
-                    Thread submitter = new Thread(() -> {
-                        // Show "Please wait" dialog
-                        // JDialog j = JobSubmitter.jobServerResponse(clientPanel);
-            
-                        // Connect to the server
-                        try (Socket socket = new Socket("127.0.0.1", 5000);
-                             PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-                             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            
-                            // Send the user input to the server
-                            String userInput = "Timestamp: " + timestamp + "\n" +
-                            "Client ID: " + fields[0].getText() + "\n" +
-                            "Subscription Plan: " + fields[1].getText() + "\n" +
-                            "Approximate Job Duration (in hh:mm): " + fields[2].getText() + "\n" +
-                            "Job Deadline (mm/dd/yyyy): " + fields[3].getText() + "\n" +
-                            "Purpose/Reason: " + fields[4].getText() + "\nEND";
-                            output.println(userInput);
-                            System.out.println("Message sent to the server: " + userInput);
-            
-                            // Wait for the server's response
-                            String serverResponse = input.readLine();
-                            System.out.println("Response from the server: " + serverResponse);
-            
-                            // Dispose of the "Please wait" dialog
-                            // SwingUtilities.invokeLater(j::dispose);
-            
-                            if (serverResponse.equals("Accepted")) {
-                                //Create jobs directory if it doesn't exist
-                                File directory = new File("jobs");
-                                if (!directory.exists()) {
-                                    directory.mkdir();
-                                }
- 
-                                // Write info to file // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
-                                FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
-                                writer.write("Timestamp: " + timestamp + "\n");
-                                writer.write("Client ID: " + fields[0].getText() + "\n");
-                                writer.write("Job ID: " + String.format("%03d", jobCounter - 1) + "\n");
-                                writer.write("Duration (hh:mm): " + fields[2].getText() + "\n");
-                                writer.write("Computational Power Needed: " + fields[3].getText() + "\n");
-                                writer.write("Status: Pending\n");
-                                writer.write("------------------------\n");
-                                writer.close();
-
-                                JOptionPane.showMessageDialog(clientPanel,
-                                    "Job submitted and saved successfully!",
-                                    "Success",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                                // Clear fields after successful submission
-                                for (JTextField field : fields) {
-                                    field.setText("");
-                                }
-                            } else if (serverResponse.equals("Rejected")) {
-                                JOptionPane.showMessageDialog(clientPanel,
-                                    "Job submission was rejected.",
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
-                                    for (JTextField field : fields) {
-                                        field.setText("");
-                                    }
-                            }
-                        } catch (IOException ex) {
-                            // Dispose of the "Please wait" dialog in case of error
-                            // SwingUtilities.invokeLater(j::dispose);
-                            JOptionPane.showMessageDialog(clientPanel,
-                                "Error connecting to the server: " + ex.getMessage(),
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                            ex.printStackTrace();
-                        }
-                    });
-                    submitter.start();
-                } finally {
+                // Send job data
+                String jobData = "JOB_SUBMISSION\n" +
+                                fields[0].getText() + "\n" +  // Client ID
+                                fields[1].getText() + "\n" +  // Duration
+                                fields[2].getText() + "\n" +  // Deadline
+                                fields[3].getText();          // Purpose
+                output.println(jobData);
+                
+                // Wait for response
+                String response = input.readLine();
+                if ("ACCEPTED".equals(response)) {
+                    JOptionPane.showMessageDialog(null, "Job submission accepted!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Job submission rejected.");
                 }
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            });
+        });
 
         // Add button functionality
         viewJobsButton.addActionListener(e -> {

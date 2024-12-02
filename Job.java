@@ -2,14 +2,18 @@ public class Job {
     private String jobId;
     private int duration;
     private int arrivalTime;
+    private String deadline;
+    private String purpose;
     private int completionTime;
     private double computationalPowerNeeded;
     private String status;
 
-    public Job(String jobId, int duration, int arrivalTime) {
+    public Job(String jobId, int duration, int arrivalTime, String deadline, String purpose) {
         this.jobId = jobId;
         this.duration = duration;
         this.arrivalTime = arrivalTime;
+        this.deadline = deadline;
+        this.purpose = purpose;
         this.status = "Pending";
     }
 
@@ -24,5 +28,11 @@ public class Job {
     public void setStatus(String status) { this.status = status; }
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+    public String getDeadline() {
+        return deadline;
+    }
+    public String getPurpose() {
+        return purpose;
     }
 }

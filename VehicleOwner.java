@@ -1,6 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JDialog;
@@ -14,7 +17,11 @@ private String paymentAccount;
 
     public VehicleOwner(String userId, String email, String username, String name, String password, double balance, 
     String paymentMethod, List<Vehicle> vehicleList, String paymentAccount) {
-        super(userId, email, username, name, password, balance, paymentMethod);
+        super(userId, name, email, "Owner",  // userType is "Owner"
+              "",  // address
+              balance, 
+              paymentMethod,  // using paymentMethod as phoneNumber
+              password);
         this.vehicleList = vehicleList;
         this.paymentAccount = paymentAccount;
     }
@@ -45,35 +52,28 @@ private String paymentAccount;
 
 
     public void registerVehicle(Vehicle vehicle) {
-        vehicleList.add(vehicle);
-        
-        try {
-            File directory = new File("resources");
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-
-            String timestamp = java.time.LocalDateTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true);
-            writer.write("Timestamp: " + timestamp + "\n");
-            writer.write("Owner ID: " + this.getUserId() + "\n");
-            writer.write("VIN: " + vehicle.getVIN() + "\n");
-            writer.write("Make: " + vehicle.getMake() + "\n");
-            writer.write("Model: " + vehicle.getModel() + "\n");
-            writer.write("Year: " + vehicle.getYear() + "\n");
-            writer.write("Computational Power: " + vehicle.getComputationalPower() + "\n");
-            writer.write("Storage Capacity: " + vehicle.getStorageCapacity() + "\n");
-            writer.write("------------------------\n");
-            writer.close();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // First add to vehicleList in memory
+            vehicleList.add(vehicle);
             
-            // Debug logging
-            System.out.println("Writing vehicle to file:");
-            System.out.println("Owner ID: " + this.getUserId());
-            System.out.println("VIN: " + vehicle.getVIN());
-        } catch (IOException ex) {
-            System.err.println("Error saving vehicle information: " + ex.getMessage());
+            // Then insert into database
+            String sql = "INSERT INTO Vehicle (VIN, ownerID, make, model, year, compPower, storageCapacity) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, vehicle.getVIN());
+                pstmt.setString(2, this.getUserId());
+                pstmt.setString(3, vehicle.getMake());
+                pstmt.setString(4, vehicle.getModel());
+                pstmt.setInt(5, vehicle.getYear());
+                pstmt.setDouble(6, vehicle.getComputationalPower());
+                pstmt.setDouble(7, vehicle.getStorageCapacity());
+                
+                pstmt.executeUpdate();
+                System.out.println("Vehicle registered in database successfully");
+            }
+        } catch (SQLException ex) {
+            System.err.println("Database error registering vehicle: " + ex.getMessage());
             ex.printStackTrace();
         }
     }

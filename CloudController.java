@@ -10,6 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
 
 public class CloudController {
     private static CloudController instance;
@@ -27,60 +31,36 @@ public class CloudController {
     }
     
     public void calculateCompletionTime() {
-        try {
-            File jobsFile = new File("jobs/submitted_jobs.txt");
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Get all pending jobs ordered by submission time
+            String sql = "SELECT jobID, jobDuration FROM Job WHERE status = 'Pending' ORDER BY submissionTime";
             
-            if (!jobsFile.exists()) {
-                System.out.println("File does not exist!");
-                return;
-            }
-            
-            List<String> lines = Files.readAllLines(jobsFile.toPath());
-            List<String> updatedLines = new ArrayList<>();
-            
-            int totalTime = 0;  // Running total of completion times
-            Job currentJob = null;
-            
-            for (String line : lines) {
-                if (line.startsWith("Job ID:")) {
-                    currentJob = new Job(
-                        line.split(":")[1].trim(),  // Job ID
-                        0,  // Duration will be set when we find it
-                        0   // Arrival time not needed for this calculation
-                    );
-                    updatedLines.add(line);
-                }
-                else if (line.startsWith("Duration:")) {
-                    if (currentJob != null) {
-                        int duration = Integer.parseInt(line.split(":")[1].trim().split(" ")[0]);
-                        currentJob.setDuration(duration);
-                        
-                        // Calculate completion time based on FIFO
-                        totalTime += duration;
-                        
-                        updatedLines.add(line);
-                        updatedLines.add("Estimated Completion Time: " + totalTime + " minutes");
-                        updatedLines.add("Status: Scheduled");
+            try (PreparedStatement pstmt = conn.prepareStatement(sql);
+                 ResultSet rs = pstmt.executeQuery()) {
+                
+                int totalTime = 0;
+                
+                while (rs.next()) {
+                    String jobId = rs.getString("jobID");
+                    int duration = rs.getInt("jobDuration");
+                    totalTime += duration;
+                    
+                    // Update job with estimated completion time
+                    String updateSql = "UPDATE Job SET estimatedCompletionTime = ?, status = 'Scheduled' WHERE jobID = ?";
+                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                        updateStmt.setInt(1, totalTime);
+                        updateStmt.setString(2, jobId);
+                        updateStmt.executeUpdate();
                     }
                 }
-                else if (!line.startsWith("Estimated") && !line.startsWith("Status:")) {
-                    updatedLines.add(line);
-                }
                 
-                if (line.equals("------------------------")) {
-                    currentJob = null;
-                    updatedLines.add(line);
-                }
+                JOptionPane.showMessageDialog(null, 
+                    "Job completion times have been calculated successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    
             }
-            
-            Files.write(jobsFile.toPath(), updatedLines);
-            
-            JOptionPane.showMessageDialog(null, 
-                "Job completion times have been calculated successfully!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-            
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, 
                 "Error calculating completion times: " + e.getMessage(),
@@ -175,6 +155,75 @@ public class CloudController {
             // Add other job details as needed
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean processJobSubmission(Job job, JobSubmitter client) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // First show popup to accept/reject
+            int response = JOptionPane.showOptionDialog(null,
+                "New Job Submission Request:\n" +
+                "Client ID: " + client.getUserId() + "\n" +
+                "Job Duration: " + job.getDuration() + "\n" +
+                "Purpose: " + job.getPurpose(),
+                "Job Submission Request",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Accept", "Reject"},
+                "Accept");
+
+            if (response == JOptionPane.YES_OPTION) {
+                String sql = "INSERT INTO Job (jobID, clientID, jobDuration, jobDeadline, purpose, status) VALUES (?, ?, ?, ?, ?, 'Pending')";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, job.getJobId());
+                    pstmt.setString(2, client.getUserId());
+                    pstmt.setInt(3, job.getDuration());
+                    pstmt.setDate(4, java.sql.Date.valueOf(job.getDeadline()));
+                    pstmt.setString(5, job.getPurpose());
+                    pstmt.executeUpdate();
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean processVehicleRegistration(Vehicle vehicle, VehicleOwner owner) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            int response = JOptionPane.showOptionDialog(null,
+                "New Vehicle Registration Request:\n" +
+                "Owner ID: " + owner.getUserId() + "\n" +
+                "VIN: " + vehicle.getVIN() + "\n" +
+                "Computational Power: " + vehicle.getComputationalPower(),
+                "Vehicle Registration Request",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Accept", "Reject"},
+                "Accept");
+
+            if (response == JOptionPane.YES_OPTION) {
+                String sql = "INSERT INTO Vehicle (VIN, ownerID, make, model, year, compPower, storageCapacity, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Available')";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, vehicle.getVIN());
+                    pstmt.setString(2, owner.getUserId());
+                    pstmt.setString(3, vehicle.getMake());
+                    pstmt.setString(4, vehicle.getModel());
+                    pstmt.setInt(5, vehicle.getYear());
+                    pstmt.setDouble(6, vehicle.getComputationalPower());
+                    pstmt.setDouble(7, vehicle.getStorageCapacity());
+                    pstmt.executeUpdate();
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

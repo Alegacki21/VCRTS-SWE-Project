@@ -1,5 +1,3 @@
-
-// Importing necessary libraries for GUI and file operations
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,6 +99,41 @@ public class VehicularCloudConsole2 extends JFrame {
         // Adding the main panel to the frame
         add(mainPanel);
 
+        // Start the server thread
+        if(isPortAvailable(5000)) {
+            Thread serverThread = new Thread(() -> {
+                try (ServerSocket serverSocket = new ServerSocket(5000)) {
+                    System.out.println("Server is running on port 5000...");
+
+                    while (true) {
+                        try (Socket clientSocket = serverSocket.accept()) {
+                            BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                            PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                            String requestType = input.readLine();
+                            if ("JOB_SUBMISSION".equals(requestType)) {
+                                // Read job data
+                                String clientId = input.readLine();
+                                String duration = input.readLine();
+                                String deadline = input.readLine();
+                                String purpose = input.readLine();
+
+                                Job job = new Job(clientId, Integer.parseInt(duration), 0, deadline, purpose);
+                                JobSubmitter client = new JobSubmitter(clientId, "", "", "Client", "", 0.0, "", new ArrayList<>(), "");
+
+                                boolean accepted = CloudController.getInstance().processJobSubmission(job, client);
+                                output.println(accepted ? "ACCEPTED" : "REJECTED");
+                            } else if ("VEHICLE_REGISTRATION".equals(requestType)) {
+                                // Similar handling for vehicle registration
+                            }
+                        }
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            serverThread.start();
+        }
     }
 
     // Method to create the account type selection panel
