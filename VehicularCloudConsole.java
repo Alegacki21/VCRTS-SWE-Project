@@ -8,11 +8,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 public class VehicularCloudConsole extends JFrame {
     private JPanel mainPanel;
     private Integer jobCounter = 0;
+    private Double storageCapacity;
+    private Double usedStorage;
+    private List<Job> completedJobs;
     
     // Hardcoded login credentials for different user types (for testing purposes)
     private static final String OWNER_USERNAME = "owner123";
@@ -24,6 +28,7 @@ public class VehicularCloudConsole extends JFrame {
     
     // Constructor for the main application window
     public VehicularCloudConsole() {
+        this.completedJobs = new ArrayList<>();
         // Setting up the main frame properties
         setTitle("Vehicular Cloud Real-Time System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1634,175 +1639,50 @@ public class VehicularCloudConsole extends JFrame {
         return submittedPanel;
     }
 
-    private JPanel createPendingPanel() {
-        JPanel pendingPanel = new JPanel();
-        pendingPanel.setLayout(new BoxLayout(pendingPanel, BoxLayout.Y_AXIS));
-        pendingPanel.setBackground(Color.WHITE);
-
-        // Title
-        JLabel titleLabel = new JLabel("Pending Jobs & Resources");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Create two columns panel
-        JPanel columnsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        columnsPanel.setBackground(Color.WHITE);
-        columnsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Left column - Pending Jobs
-        JPanel jobsPanel = new JPanel();
-        jobsPanel.setLayout(new BoxLayout(jobsPanel, BoxLayout.Y_AXIS));
-        jobsPanel.setBackground(Color.WHITE);
-        jobsPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
-        JLabel jobsTitle = new JLabel("Pending Jobs");
-        jobsTitle.setFont(new Font("Arial", Font.BOLD, 20));
-        jobsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // Jobs scroll pane
-        JPanel jobsListPanel = new JPanel();
-        jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
-        jobsListPanel.setBackground(Color.WHITE);
-
-        // Example pending job item
-        JPanel jobItem = createPendingJobItem("Pending Job #1");
-        jobsListPanel.add(jobItem);
-        jobsListPanel.add(Box.createVerticalStrut(10));
-
-        JScrollPane jobsScrollPane = new JScrollPane(jobsListPanel);
-        jobsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        jobsScrollPane.setBorder(null);
-
-        // Right column - Pending Resources
-        JPanel resourcesPanel = new JPanel();
-        resourcesPanel.setLayout(new BoxLayout(resourcesPanel, BoxLayout.Y_AXIS));
-        resourcesPanel.setBackground(Color.WHITE);
-        resourcesPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
-        JLabel resourcesTitle = new JLabel("Pending Resources");
-        resourcesTitle.setFont(new Font("Arial", Font.BOLD, 20));
-        resourcesTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Resources scroll pane
-        JPanel resourcesListPanel = new JPanel();
-        resourcesListPanel.setLayout(new BoxLayout(resourcesListPanel, BoxLayout.Y_AXIS));
-        resourcesListPanel.setBackground(Color.WHITE);
-
-        // Example pending resource item
-        JPanel resourceItem = createPendingResourceItem("Pending Resource #1");
-        resourcesListPanel.add(resourceItem);
-        resourcesListPanel.add(Box.createVerticalStrut(10));
-
-        JScrollPane resourcesScrollPane = new JScrollPane(resourcesListPanel);
-        resourcesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        resourcesScrollPane.setBorder(null);
-
-        // Add components to panels
-        jobsPanel.add(Box.createVerticalStrut(10));
-        jobsPanel.add(jobsTitle);
-        jobsPanel.add(Box.createVerticalStrut(10));
-        jobsPanel.add(jobsScrollPane);
-        jobsPanel.add(Box.createVerticalStrut(10));
-
-        resourcesPanel.add(Box.createVerticalStrut(10));
-        resourcesPanel.add(resourcesTitle);
-        resourcesPanel.add(Box.createVerticalStrut(10));
-        resourcesPanel.add(resourcesScrollPane);
-        resourcesPanel.add(Box.createVerticalStrut(10));
-
-        columnsPanel.add(jobsPanel);
-        columnsPanel.add(resourcesPanel);
-
-        // Back button
-        JButton backButton = createStyledButton("Back");
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.addActionListener(e -> {
-            mainPanel.removeAll();
-            mainPanel.add(createCloudControllerHomePanel(CONTROLLER_USERNAME));
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
-
-        // Add all components to main panel
-        pendingPanel.add(Box.createVerticalStrut(20));
-        pendingPanel.add(titleLabel);
-        pendingPanel.add(Box.createVerticalStrut(20));
-        pendingPanel.add(columnsPanel);
-        pendingPanel.add(Box.createVerticalStrut(20));
-        pendingPanel.add(backButton);
-        pendingPanel.add(Box.createVerticalStrut(20));
-
-        return pendingPanel;
+    // Getters and Setters
+    public Double getStorageCapacity() {
+        return storageCapacity;
     }
 
-    private JPanel createPendingJobItem(String jobTitle) {
-        JPanel itemPanel = new JPanel();
-        itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
-        itemPanel.setBackground(new Color(230, 230, 230));
-        itemPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-
-        JLabel titleLabel = new JLabel(jobTitle);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(new Color(230, 230, 230));
-
-        JButton acceptButton = createStyledButton("Accept Job");
-        JButton rejectButton = createStyledButton("Reject Job");
-
-        acceptButton.addActionListener(e -> {
-            // Add accept job logic here
-        });
-
-        rejectButton.addActionListener(e -> {
-            // Add reject job logic here
-        });
-
-        buttonPanel.add(acceptButton);
-        buttonPanel.add(rejectButton);
-
-        itemPanel.add(titleLabel);
-        itemPanel.add(Box.createVerticalStrut(10));
-        itemPanel.add(buttonPanel);
-
-        return itemPanel;
+    public void setStorageCapacity(Double storageCapacity) {
+        this.storageCapacity = storageCapacity;
     }
 
-    private JPanel createPendingResourceItem(String resourceTitle) {
-        JPanel itemPanel = new JPanel();
-        itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
-        itemPanel.setBackground(new Color(230, 230, 230));
-        itemPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+    public Double getUsedStorage() {
+        return usedStorage;
+    }
 
-        JLabel titleLabel = new JLabel(resourceTitle);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    public void setUsedStorage(Double usedStorage) {
+        this.usedStorage = usedStorage;
+    }
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(new Color(230, 230, 230));
+    public List<Job> getCompletedJobs() {
+        return completedJobs;
+    }
 
-        JButton acceptButton = createStyledButton("Accept Resource");
-        JButton rejectButton = createStyledButton("Reject Resource");
+    public void setCompletedJobs(List<Job> completedJobs) {
+        this.completedJobs = completedJobs;
+    }
 
-        acceptButton.addActionListener(e -> {
-            // Add accept resource logic here
-        });
+    // Methods
+    public void addCompletedJob(Job job) {
+        // Needs to be implemented 
+    }
 
-        rejectButton.addActionListener(e -> {
-            // Add reject resource logic here
-        });
+    public void eraseData() {
+        // Needs to be implemented 
+    }
 
-        buttonPanel.add(acceptButton);
-        buttonPanel.add(rejectButton);
+    public void acceptData(Job job) {
+        // Needs to be implemented 
+    }
 
-        itemPanel.add(titleLabel);
-        itemPanel.add(Box.createVerticalStrut(10));
-        itemPanel.add(buttonPanel);
+    public void rejectData(Job job) {
+        // Needs to be implemented 
+    }
 
-        return itemPanel;
+    public void sendMessageToClient(String message, User user) {
+        // Needs to be implemented 
     }
 
      // Main method to run the program
