@@ -7,12 +7,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import javax.swing.*;
 
 public class VehicularCloudConsole extends JFrame {
     private JPanel mainPanel;
     private Integer jobCounter = 0;
+
+    
     
     // Hardcoded login credentials for different user types (for testing purposes)
     private static final String OWNER_USERNAME = "owner123";
@@ -831,36 +838,56 @@ public class VehicularCloudConsole extends JFrame {
                             String serverResponse = input.readLine();
                             System.out.println("Response from the server: " + serverResponse);
                     
-                            // Dispose of the "Please wait" dialog
                            
                     
                             if (serverResponse.equals("Accepted")) {
-                              //  Create resources directory if it doesn't exist
-                                File directory = new File("resources");
-                                if (!directory.exists()) {
-                                    directory.mkdir();
+                                try {
+                                    // Load the MySQL driver
+                                    //Class.forName("com.mysql.cj.jdbc.Driver");
+                            
+                                    // Database connection parameters
+                                    String url = "jdbc:mysql://localhost:3306/vcrts";
+                                    String username = "bryan";
+                                    String password = ""; 
+                            
+                                    // Establish connection to the database
+                                    Connection connection = DriverManager.getConnection(url, username, password);
+                            
+                                    // SQL query to insert data
+                                    String sql = "INSERT INTO Vehicle (ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?)";
+                            
+                                    // Prepare statement
+                                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                                    preparedStatement.setInt(1, Integer.parseInt(fields[0].getText())); // ownerID
+                                    preparedStatement.setString(2, fields[1].getText()); // VIN
+                                    preparedStatement.setTime(3, Time.valueOf(fields[2].getText())); // residencyTime
+                                    preparedStatement.setInt(4, Integer.parseInt(fields[3].getText())); // compPower
+                                    preparedStatement.setString(5, fields[4].getText()); // notes
+                            
+                                    // Execute the statement
+                                    preparedStatement.executeUpdate();
+                            
+                                    // Close the connection
+                                    preparedStatement.close();
+                                    connection.close();
+                            
+                                    JOptionPane.showMessageDialog(ownerPanel,
+                                        "Vehicle resource submitted and saved successfully!",
+                                        "Success",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            
+                                    // Clear fields after successful submission
+                                    for (JTextField field : fields) {
+                                        field.setText("");
+                                    }
+                            
+                                } catch (SQLException ex) {
+                                    JOptionPane.showMessageDialog(ownerPanel,
+                                        "Error connecting to the database: " + ex.getMessage(),
+                                        "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                                    ex.printStackTrace();
                                 }
-                    
-                                // Write info to file
-                                FileWriter writer = new FileWriter("resources/vehicle_resources.txt", true); // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
-                                writer.write("Timestamp: " + timestamp + "\n");
-                                writer.write("Owner ID: " + fields[0].getText() + "\n");
-                                writer.write("Vehicle Info: " + fields[1].getText() + "\n");
-                                writer.write("Residency Time: " + fields[2].getText() + "\n");
-                                writer.write("Computational Power: " + fields[3].getText() + "\n");
-                                writer.write("Notes: " + fields[4].getText() + "\n");
-                                writer.write("------------------------\n");
-                                writer.close();
-                    
-                                JOptionPane.showMessageDialog(ownerPanel,
-                                    "Vehicle resource submitted and saved successfully!",
-                                    "Success",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                                // Clear fields after successful submission
-                                for (JTextField field : fields) {
-                                    field.setText("");
-                                }
-                    
                             } else if (serverResponse.equals("Rejected")) {
                                 JOptionPane.showMessageDialog(ownerPanel,
                                     "Vehicle resource was rejected and failed to submit.",

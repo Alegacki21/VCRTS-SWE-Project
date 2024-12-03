@@ -15,6 +15,9 @@ CREATE TABLE VehicleOwner (
     phoneNumber VARCHAR(15) NOT NULL,                
     PRIMARY KEY (ownerID)
 );
+-- Insert into VehicleOwner table
+INSERT INTO vehicleowner (ownerID, fullName, email, password, address, state, country, phoneNumber) 
+VALUES (123, 'Lee Everett', 'Santaclaus@gmail.com', 'password123', '123 main street', 'New York', 'USA', '555-123-0912');
 
 CREATE TABLE JobSubmitter (
     clientID INT(10) NOT NULL,          
@@ -40,8 +43,8 @@ VALUES ('admin', 'admin123');
 
 
 CREATE TABLE Vehicle (
-    VIN VARCHAR(17) NOT NULL,
     ownerID INT(10) NOT NULL,
+    VIN VARCHAR(17) NOT NULL,
     residencyTime TIME NOT NULL,
     compPower INT NOT NULL, 
     notes TEXT,
