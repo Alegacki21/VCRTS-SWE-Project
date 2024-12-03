@@ -2,7 +2,6 @@
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -745,7 +744,7 @@ public class VehicularCloudConsole extends JFrame {
         // Creating form fields
         String[] labels = {
             "Owner ID:",
-            "Vehicle Information:",
+            "Vehicle Identification Number:",
             "Approximate Residency Time (hh:mm):",
             "Available Computational Power:",
             "Notes:"
@@ -827,7 +826,7 @@ public class VehicularCloudConsole extends JFrame {
                             // Send the user input to the server
                             String userInput2 = "Timestamp: " + timestamp + "\n" +
                                                 "Owner ID: " + fields[0].getText() + "\n" +
-                                                "Vehicle Info: " + fields[1].getText() + "\n" +
+                                                "Vehicle Identification Number: " + fields[1].getText() + "\n" +
                                                 "Residency Time (hh:mm): " + fields[2].getText() + "\n" +
                                                 "Computational Power: " + fields[3].getText() + "\n" +
                                                 "Notes: " + fields[4].getText() + "\nEND";
@@ -848,7 +847,7 @@ public class VehicularCloudConsole extends JFrame {
                                     // Database connection parameters
                                     String url = "jdbc:mysql://localhost:3306/vcrts";
                                     String username = "bryan";
-                                    String password = ""; 
+                                    String password = "use your own password"; 
                             
                                     // Establish connection to the database
                                     Connection connection = DriverManager.getConnection(url, username, password);
@@ -976,7 +975,7 @@ public class VehicularCloudConsole extends JFrame {
             "Client ID:",
             "Subscription Plan:",
             "Approximate Job Duration (hh:mm):",
-            "Job Deadline:",
+            "Job Deadline (year-month-day):",
             "Purpose/Reason:"
         };
 
@@ -1057,7 +1056,7 @@ public class VehicularCloudConsole extends JFrame {
                             "Client ID: " + fields[0].getText() + "\n" +
                             "Subscription Plan: " + fields[1].getText() + "\n" +
                             "Approximate Job Duration (in hh:mm): " + fields[2].getText() + "\n" +
-                            "Job Deadline (mm/dd/yyyy): " + fields[3].getText() + "\n" +
+                            "Job Deadline (yyyy/mm/dd): " + fields[3].getText() + "\n" +
                             "Purpose/Reason: " + fields[4].getText() + "\nEND";
                             output.println(userInput);
                             System.out.println("Message sent to the server: " + userInput);
@@ -1070,30 +1069,54 @@ public class VehicularCloudConsole extends JFrame {
                             // SwingUtilities.invokeLater(j::dispose);
             
                             if (serverResponse.equals("Accepted")) {
-                                //Create jobs directory if it doesn't exist
-                                File directory = new File("jobs");
-                                if (!directory.exists()) {
-                                    directory.mkdir();
-                                }
- 
-                                // Write info to file // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
-                                FileWriter writer = new FileWriter("jobs/submitted_jobs.txt", true);
-                                writer.write("Timestamp: " + timestamp + "\n");
-                                writer.write("Client ID: " + fields[0].getText() + "\n");
-                                writer.write("Job ID: " + String.format("%03d", jobCounter - 1) + "\n");
-                                writer.write("Duration (hh:mm): " + fields[2].getText() + "\n");
-                                writer.write("Computational Power Needed: " + fields[3].getText() + "\n");
-                                writer.write("Status: Pending\n");
-                                writer.write("------------------------\n");
-                                writer.close();
+                                try {
+                                // Database connection parameters
+                                String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
+                                String username = "bryan"; //default user is root but I have mines bryan
+                                String password = "use your own password";
+                                
+                                
+                                Connection connection = DriverManager.getConnection(url, username, password);
 
-                                JOptionPane.showMessageDialog(clientPanel,
-                                    "Job submitted and saved successfully!",
-                                    "Success",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                                // Clear fields after successful submission
-                                for (JTextField field : fields) {
-                                    field.setText("");
+                                    // SQL query to insert data
+                                    String sql = "INSERT INTO Job (clientID, subscriptionPlan, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            
+                                    // Prepare statement
+                                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                            
+                                    // Set parameters
+                                    int clientID = Integer.parseInt(fields[0].getText()); 
+                                    preparedStatement.setInt(1, clientID);  // Set subscriptionPlan 
+                                    String subscriptionPlan = fields[1].getText(); 
+                                    preparedStatement.setString(2, subscriptionPlan); // Parse and set jobDuration 
+                                    preparedStatement.setTime(3, Time.valueOf(fields[2].getText()));
+                                    java.sql.Date jobDeadline = java.sql.Date.valueOf(fields[3].getText()); // Assuming input is YYYY-MM-DD 
+                                    preparedStatement.setDate(4, jobDeadline); // jobDeadline // Set purpose 
+                                    String purpose = fields[4].getText(); 
+                                    preparedStatement.setString(5, purpose);
+                            
+                                    // Execute the statement
+                                    preparedStatement.executeUpdate();
+                            
+                                    // Close the statement
+                                    preparedStatement.close();
+                            
+                                    JOptionPane.showMessageDialog(clientPanel,
+                                        "Job submitted and saved successfully!",
+                                        "Success",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            
+                                    // Clear fields after successful submission
+                                    for (JTextField field : fields) {
+                                        field.setText("");
+                                    }
+                                
+                                } catch (SQLException ext) {
+                                    JOptionPane.showMessageDialog(clientPanel,
+                                        "Error connecting to the database: " + ext.getMessage(),
+                                        "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                                    ext.printStackTrace();
                                 }
                             } else if (serverResponse.equals("Rejected")) {
                                 JOptionPane.showMessageDialog(clientPanel,

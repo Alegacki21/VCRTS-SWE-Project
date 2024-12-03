@@ -32,6 +32,9 @@ CREATE TABLE JobSubmitter (
     PRIMARY KEY (clientID)
 );
 
+INSERT INTO JobSubmitter (clientID, fullName, email, password, subPlan, address, state, country, phoneNumber) 
+VALUES (123, 'Carl Johnson', 'CJ@gmail.com', 'password123', 'Monthly', '123 Grove street', 'San Andreas', 'USA', '345-123-0112');
+
 CREATE TABLE CloudController (
     username VARCHAR(50) NOT NULL,          
     password VARCHAR(100) NOT NULL,         
@@ -43,6 +46,7 @@ VALUES ('admin', 'admin123');
 
 
 CREATE TABLE Vehicle (
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ownerID INT(10) NOT NULL,
     VIN VARCHAR(17) NOT NULL,
     residencyTime TIME NOT NULL,
@@ -53,8 +57,10 @@ CREATE TABLE Vehicle (
 );
 
 CREATE TABLE Job (
-    jobID INT (10) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    jobID INT (10) NOT NULL AUTO_INCREMENT,
     clientID INT(10) NOT NULL,
+    subscriptionPlan VARCHAR(50),
     jobDuration TIME NOT NULL,
     jobDeadline DATE NOT NULL,
     purpose TEXT NOT NULL,
