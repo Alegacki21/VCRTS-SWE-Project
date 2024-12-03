@@ -16,6 +16,8 @@ public class Vehicle {
     private LocalTime arrivalTime; // Broke residency Time into arrival time and departuretime
     private LocalTime departureTime;
     private boolean isAvailable;
+    private String residencyTime;
+    private String notes;
     
     public Vehicle() {
         name = "Toyota Corolla";
@@ -36,6 +38,8 @@ public class Vehicle {
         this.arrivalTime = builder.arrivalTime;
         this.departureTime = builder.departureTime;
         this.isAvailable = builder.isAvailable;
+        this.residencyTime = builder.residencyTime;
+        this.notes = builder.notes;
     }
 
     public static class VehicleBuilder {
@@ -53,6 +57,8 @@ public class Vehicle {
         private LocalTime arrivalTime;
         private LocalTime departureTime;
         private boolean isAvailable = true;
+        private String residencyTime;
+        private String notes;
 
         public VehicleBuilder(String VIN, String model, String make) {
             this.VIN = VIN;
@@ -71,6 +77,8 @@ public class Vehicle {
         public VehicleBuilder arrivalTime(LocalTime time) { this.arrivalTime = time; return this; }
         public VehicleBuilder departureTime(LocalTime time) { this.departureTime = time; return this; }
         public VehicleBuilder isAvailable(boolean available) { this.isAvailable = available; return this; }
+        public VehicleBuilder residencyTime(String residencyTime) { this.residencyTime = residencyTime; return this; }
+        public VehicleBuilder notes(String notes) { this.notes = notes; return this; }
 
         public Vehicle build() {
             return new Vehicle(this);
@@ -163,6 +171,14 @@ public class Vehicle {
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
+    public String getResidencyTime() {
+        return residencyTime;
+    }
+    public String getNotes() {
+        return notes;
+    }
+
+    //Methods
        
     public void startJob(Job j) {
     

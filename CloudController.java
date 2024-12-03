@@ -6,8 +6,14 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
 
 public class CloudController {
     private static CloudController instance;
@@ -29,10 +35,6 @@ public class CloudController {
             File jobsFile = new File("jobs/submitted_jobs.txt");
             
             if (!jobsFile.exists()) {
-                JOptionPane.showMessageDialog(null, 
-                    "No jobs in queue!",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
                 System.out.println("File does not exist!");
                 return;
             }
@@ -103,7 +105,26 @@ public class CloudController {
             job.setStatus("Running");
         }
     }
+    public static void handleCollectedValues(String ownerId, String vehicleInfo, String residencyTime, String computationalPower, String notes) { 
+        System.out.println("Owner ID: " + ownerId); 
+        System.out.println("Vehicle Info: " + vehicleInfo); 
+        System.out.println("Residency Time: " + residencyTime); 
+        System.out.println("Computational Power: " + computationalPower); 
+        System.out.println("Notes: " + notes); 
+    }
 
+    public static void showPopup(JPanel parentFrame, String ID, String vehicleInformation, String time, String power,  String requestDetails) { 
+        String message = "UserID  " +ID +"\n" + "Wants to register:  " + vehicleInformation + "\n" +"Approximate Residency Time:  "
+         + time + "\n" + "Available Computational Power:  "+ power + "\n" + "Notes:  " + requestDetails; 
+        int response = JOptionPane.showOptionDialog(null, message, "User Request", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Accept", "Reject"}, "Accept"); 
+            if (response == JOptionPane.YES_OPTION) { // Handle acceptance logic here 
+                System.out.println("Request Accepted"); 
+            } 
+            else if (response == JOptionPane.NO_OPTION) { 
+                System.out.println("Request Rejected");
+               
+             }
+    }
     public void authenticateUser(User u ) {
         //Implement this later
     }
@@ -158,6 +179,75 @@ public class CloudController {
             // Add other job details as needed
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean processJobSubmission(Job job, JobSubmitter client) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // First show popup to accept/reject
+            int response = JOptionPane.showOptionDialog(null,
+                "New Job Submission Request:\n" +
+                "Client ID: " + client.getUserId() + "\n" +
+                "Job Duration: " + job.getDuration() + "\n" +
+                "Purpose: " + job.getPurpose(),
+                "Job Submission Request",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Accept", "Reject"},
+                "Accept");
+
+            if (response == JOptionPane.YES_OPTION) {
+                String sql = "INSERT INTO Job (jobID, clientID, jobDuration, jobDeadline, purpose, status) VALUES (?, ?, ?, ?, ?, 'Pending')";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, job.getJobId());
+                    pstmt.setString(2, client.getUserId());
+                    pstmt.setInt(3, job.getDuration());
+                    pstmt.setDate(4, java.sql.Date.valueOf(job.getDeadline()));
+                    pstmt.setString(5, job.getPurpose());
+                    pstmt.executeUpdate();
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean processVehicleRegistration(Vehicle vehicle, VehicleOwner owner) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            int response = JOptionPane.showOptionDialog(null,
+                "New Vehicle Registration Request:\n" +
+                "Owner ID: " + owner.getUserId() + "\n" +
+                "VIN: " + vehicle.getVIN() + "\n" +
+                "Computational Power: " + vehicle.getComputationalPower(),
+                "Vehicle Registration Request",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Accept", "Reject"},
+                "Accept");
+
+            if (response == JOptionPane.YES_OPTION) {
+                String sql = "INSERT INTO Vehicle (VIN, ownerID, make, model, year, compPower, storageCapacity, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Available')";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, vehicle.getVIN());
+                    pstmt.setString(2, owner.getUserId());
+                    pstmt.setString(3, vehicle.getMake());
+                    pstmt.setString(4, vehicle.getModel());
+                    pstmt.setInt(5, vehicle.getYear());
+                    pstmt.setDouble(6, vehicle.getComputationalPower());
+                    pstmt.setDouble(7, vehicle.getStorageCapacity());
+                    pstmt.executeUpdate();
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
