@@ -9,7 +9,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.*;
 
 public class TheServerGUI extends JFrame {
@@ -1030,60 +1037,111 @@ public class TheServerGUI extends JFrame {
         jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
         jobsListPanel.setBackground(Color.WHITE);
 
-        try { // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
-            File jobsFile = new File("/submitted_jobs.txt"); // THIS ONE to display nothing on dashboard
-            if (jobsFile.exists()) {
-                java.util.Scanner scanner = new java.util.Scanner(jobsFile);
-                JPanel currentJobItem = null;
-
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-
-                    if (line.startsWith("Timestamp:")) {
-                        currentJobItem = new JPanel();
-                        currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
-                        currentJobItem.setBackground(Color.WHITE);
-                        currentJobItem.setBorder(BorderFactory.createCompoundBorder(
-                                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-
-                        // Center-aligned info panel
-                        JPanel infoPanel = new JPanel();
-                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-                        infoPanel.setBackground(Color.WHITE);
-                        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        currentJobItem.add(infoPanel);
-
-                        // Add assign button (centered)
-                        JButton assignButton = createStyledButton("Assign Job");
-                        assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                        // Add button to a panel to maintain centering
-                        JPanel buttonPanel = new JPanel();
-                        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-                        buttonPanel.setBackground(Color.WHITE);
-                        buttonPanel.add(Box.createHorizontalGlue());
-                        buttonPanel.add(assignButton);
-                        buttonPanel.add(Box.createHorizontalGlue());
-
-                        currentJobItem.add(buttonPanel);
-                        jobsListPanel.add(currentJobItem);
-                        jobsListPanel.add(Box.createVerticalStrut(5));
-                    }
-
-                    if (currentJobItem != null && !line.equals("------------------------")) {
-                        JLabel infoLabel = new JLabel(line);
-                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        // Add to the info panel instead of directly to currentJobItem
-                        ((JPanel) currentJobItem.getComponent(0)).add(infoLabel);
-                    }
-                }
-                scanner.close();
+        try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
+            // Database connection parameters
+            String url = "jdbc:mysql://localhost:3306/vcrts";
+            String sqlusername = "bryan";
+            String password = "your password";
+        
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection(url, sqlusername, password);
+        
+            // SQL query to retrieve job data
+            String sql = "SELECT timestamp, jobID, clientID, subscriptionPlan, jobDuration, jobDeadline, purpose FROM Job";
+        
+            // Execute the query
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+        
+            JPanel currentJobItem = null;
+        
+            while (resultSet.next()) {
+                // Read data from the result set
+                String timestamp = resultSet.getString("timestamp");
+                int jobID = resultSet.getInt("jobID");
+                int clientID = resultSet.getInt("clientID");
+                String subscriptionPlan = resultSet.getString("subscriptionPlan");
+                Time jobDuration = resultSet.getTime("jobDuration");
+                Date jobDeadline = resultSet.getDate("jobDeadline");
+                String purpose = resultSet.getString("purpose");
+        
+                // Create new job panel with adjusted height
+                currentJobItem = new JPanel();
+                currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
+                currentJobItem.setBackground(Color.WHITE);
+                currentJobItem.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        
+                // Center-aligned info panel
+                JPanel infoPanel = new JPanel();
+                infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                infoPanel.setBackground(Color.WHITE);
+                infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                currentJobItem.add(infoPanel);
+        
+                // Add the data with center alignment
+                JLabel timestampLabel = new JLabel("Timestamp: " + timestamp);
+                timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(timestampLabel);
+        
+                JLabel jobIDLabel = new JLabel("Job ID: " + jobID);
+                jobIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(jobIDLabel);
+        
+                JLabel clientIDLabel = new JLabel("Client ID: " + clientID);
+                clientIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                clientIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(clientIDLabel);
+        
+                JLabel subscriptionPlanLabel = new JLabel("Subscription Plan: " + subscriptionPlan);
+                subscriptionPlanLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                subscriptionPlanLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(subscriptionPlanLabel);
+        
+                JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString());
+                jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDurationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(jobDurationLabel);
+        
+                JLabel jobDeadlineLabel = new JLabel("Job Deadline: " + jobDeadline.toString());
+                jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(jobDeadlineLabel);
+        
+                JLabel purposeLabel = new JLabel("Purpose: " + purpose);
+                purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(purposeLabel);
+        
+                // Add assign button (centered)
+                JButton assignButton = new JButton("Assign Job");
+                assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+                // Add button to a panel to maintain centering
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+                buttonPanel.setBackground(Color.WHITE);
+                buttonPanel.add(Box.createHorizontalGlue());
+                buttonPanel.add(assignButton);
+                buttonPanel.add(Box.createHorizontalGlue());
+        
+                currentJobItem.add(buttonPanel);
+                jobsListPanel.add(currentJobItem);
+                jobsListPanel.add(Box.createVerticalStrut(5));
             }
-        } catch (IOException ex) {
-            System.err.println("Error reading jobs: " + ex.getMessage());
+        
+            // Close the result set, statement, and connection
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException ex) {
+            System.err.println("Error reading from database: " + ex.getMessage());
+            ex.printStackTrace();
         }
+        
 
         // Add components to jobs panel
         jobsPanel.add(jobsTitle);
@@ -1107,63 +1165,96 @@ public class TheServerGUI extends JFrame {
         resourcesListPanel.setLayout(new BoxLayout(resourcesListPanel, BoxLayout.Y_AXIS));
         resourcesListPanel.setBackground(Color.WHITE);
 
-        try { // Move this to a back-end class // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
-            File resourcesFile = new File("/vehicle_resources.txt"); // THIS ONE changed to not display anything
-            if (resourcesFile.exists()) {
-                java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
-                // StringBuilder currentContent = new StringBuilder();
-
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-
-                    if (line.startsWith("Timestamp:")) {
-                        // Create new resource panel with adjusted height
-                        JPanel resourceItemPanel = new JPanel(new BorderLayout());
-                        resourceItemPanel.setPreferredSize(new Dimension(400, 120));
-                        resourceItemPanel.setMaximumSize(new Dimension(400, 120));
-                        resourceItemPanel.setBackground(new Color(230, 230, 230));
-
-                        // Create info panel with GridBagLayout for centering
-                        JPanel infoPanel = new JPanel(new GridBagLayout());
-                        infoPanel.setBackground(new Color(230, 230, 230));
-
-                        // Create text panel with vertical BoxLayout
-                        JPanel textPanel = new JPanel();
-                        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-                        textPanel.setBackground(new Color(230, 230, 230));
-
-                        // Add the timestamp with center alignment
-                        JLabel infoLabel = new JLabel(line);
-                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        textPanel.add(infoLabel);
-
-                        // Add textPanel to infoPanel for centering
-                        infoPanel.add(textPanel);
-
-                        // Add panel to resource item
-                        resourceItemPanel.add(infoPanel, BorderLayout.CENTER);
-                        resourcesListPanel.add(resourceItemPanel);
-                        resourcesListPanel.add(Box.createVerticalStrut(10));
-
-                        // currentContent = new StringBuilder(); // Reset for next item
-                    } else if (!line.equals("------------------------")) {
-                        // Add content to the current resource panel
-                        JPanel currentPanel = (JPanel) ((JPanel) resourcesListPanel.getComponent(
-                                resourcesListPanel.getComponentCount() - 2)).getComponent(0);
-                        JPanel textPanel = (JPanel) currentPanel.getComponent(0);
-
-                        JLabel contentLabel = new JLabel(line);
-                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        contentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        textPanel.add(contentLabel);
-                    }
-                }
-                scanner.close();
+        try { //THIS ONE WAS USED TO READ FROM VEHICLES .txt
+            // Database connection parameters
+            String url = "jdbc:mysql://localhost:3306/vcrts";
+            String sqlusername = "bryan";
+            String password = "your password";
+        
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection(url, sqlusername, password);
+        
+            // SQL query to retrieve vehicle data
+            String sql = "SELECT timestamp, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
+        
+            // Execute the query
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+        
+            while (resultSet.next()) {
+                // Read data from the result set
+                String timestamp = resultSet.getString("timestamp");
+                int ownerID = resultSet.getInt("ownerID");
+                String VIN = resultSet.getString("VIN");
+                Time residencyTime = resultSet.getTime("residencyTime");
+                int compPower = resultSet.getInt("compPower");
+                String notes = resultSet.getString("notes");
+        
+                // Create new resource panel with adjusted height
+                JPanel resourceItemPanel = new JPanel(new BorderLayout());
+                resourceItemPanel.setPreferredSize(new Dimension(400, 120));
+                resourceItemPanel.setMaximumSize(new Dimension(400, 120));
+                resourceItemPanel.setBackground(new Color(230, 230, 230));
+        
+                // Create info panel with GridBagLayout for centering
+                JPanel infoPanel = new JPanel(new GridBagLayout());
+                infoPanel.setBackground(new Color(230, 230, 230));
+        
+                // Create text panel with vertical BoxLayout
+                JPanel textPanel = new JPanel();
+                textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+                textPanel.setBackground(new Color(230, 230, 230));
+        
+                // Add the data with center alignment
+                JLabel timestampLabel = new JLabel("Timestamp: " + timestamp);
+                timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(timestampLabel);
+        
+                JLabel ownerIDLabel = new JLabel("Owner ID: " + ownerID);
+                ownerIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                ownerIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(ownerIDLabel);
+        
+                JLabel VINLabel = new JLabel("VIN: " + VIN);
+                VINLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                VINLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(VINLabel);
+        
+                JLabel residencyTimeLabel = new JLabel("Residency Time: " + residencyTime.toString());
+                residencyTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                residencyTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(residencyTimeLabel);
+        
+                JLabel compPowerLabel = new JLabel("Computational Power: " + compPower);
+                compPowerLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                compPowerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(compPowerLabel);
+        
+                JLabel notesLabel = new JLabel("Notes: " + notes);
+                notesLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                notesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(notesLabel);
+        
+                // Add textPanel to infoPanel for centering
+                infoPanel.add(textPanel);
+        
+                // Add panel to resource item
+                resourceItemPanel.add(infoPanel, BorderLayout.CENTER);
+                resourcesListPanel.add(resourceItemPanel);
+                resourcesListPanel.add(Box.createVerticalStrut(10));
             }
-        } catch (IOException ex) {
-            System.err.println("Error reading resources: " + ex.getMessage());
+        
+            // Close the result set, statement, and connection
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException ex) {
+            System.err.println("Error reading from database: " + ex.getMessage());
+            ex.printStackTrace();
         }
+        
+
 
         JScrollPane resourcesScrollPane = new JScrollPane(resourcesListPanel);
         resourcesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
