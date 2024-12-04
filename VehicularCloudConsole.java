@@ -819,7 +819,7 @@ public class VehicularCloudConsole extends JFrame {
                        // JDialog j = VehicleOwner.vehicleServerResponse(ownerPanel);
                     
                         // Connect to the server
-                        try (Socket socket = new Socket("127.0.0.1", 5000);
+                        try (Socket socket = new Socket("127.0.0.1", 5001);
                              PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
                              BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                     
@@ -841,16 +841,16 @@ public class VehicularCloudConsole extends JFrame {
                     
                             if (serverResponse.equals("Accepted")) {
                                 try {
-                                    // Load the MySQL driver
-                                    //Class.forName("com.mysql.cj.jdbc.Driver");
                             
-                                    // Database connection parameters
-                                    String url = "jdbc:mysql://localhost:3306/vcrts";
-                                    String username = "bryan";
-                                    String password = "use your own password"; 
-                            
+                                    // Get database configuration
+                                    DatabaseConfig dbConfig = DatabaseConfig.getInstance();
+                                    
                                     // Establish connection to the database
-                                    Connection connection = DriverManager.getConnection(url, username, password);
+                                    Connection connection = DriverManager.getConnection(
+                                        dbConfig.getUrl(),
+                                        dbConfig.getUsername(),
+                                        dbConfig.getPassword()
+                                    );
                             
                                     // SQL query to insert data
                                     String sql = "INSERT INTO Vehicle (ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?)";
@@ -904,7 +904,6 @@ public class VehicularCloudConsole extends JFrame {
                     
                         } catch (IOException ex) {
                             // Dispose of the "Please wait" dialog in case of error
-                           // SwingUtilities.invokeLater(j::dispose);
                             JOptionPane.showMessageDialog(ownerPanel,
                                 "Error connecting to the server: " + ex.getMessage(),
                                 "Error",
@@ -1047,7 +1046,7 @@ public class VehicularCloudConsole extends JFrame {
                         // JDialog j = JobSubmitter.jobServerResponse(clientPanel);
             
                         // Connect to the server
-                        try (Socket socket = new Socket("127.0.0.1", 5000);
+                        try (Socket socket = new Socket("127.0.0.1", 5001);
                              PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
                              BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             
@@ -1070,13 +1069,15 @@ public class VehicularCloudConsole extends JFrame {
             
                             if (serverResponse.equals("Accepted")) {
                                 try {
-                                // Database connection parameters
-                                String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
-                                String username = "bryan"; //default user is root but I have mines bryan
-                                String password = "use your own password";
+                                // Get database configuration
+                                DatabaseConfig dbConfig = DatabaseConfig.getInstance();
                                 
-                                
-                                Connection connection = DriverManager.getConnection(url, username, password);
+                                // Establish connection to the database
+                                Connection connection = DriverManager.getConnection(
+                                    dbConfig.getUrl(),
+                                    dbConfig.getUsername(),
+                                    dbConfig.getPassword()
+                                );
 
                                     // SQL query to insert data
                                     String sql = "INSERT INTO Job (clientID, subscriptionPlan, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";

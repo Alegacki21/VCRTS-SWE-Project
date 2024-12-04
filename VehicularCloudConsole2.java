@@ -1189,10 +1189,10 @@ public class VehicularCloudConsole2 extends JFrame {
         viewPendingButton.setPreferredSize(new Dimension(250, 40));
 
         //Scanner scanner = new Scanner(System.in);
-        if(isPortAvailable(5000)) {
+        if(isPortAvailable(5001)) {
         Thread serverThread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(5000)) {
-                System.out.println("Server is running on port 5000...");
+            try (ServerSocket serverSocket = new ServerSocket(5001)) {
+                System.out.println("Server is running on port 5001...");
 
                 while (true) {
                     try (Socket clientSocket = serverSocket.accept();
@@ -1284,7 +1284,7 @@ public class VehicularCloudConsole2 extends JFrame {
     }
     // Used when refresh button is clicked + makes sure it doesnt try to run the serverport more than oonce
     private static boolean isPortAvailable(int port) { 
-        try (ServerSocket serverSocket = new ServerSocket(5000)) 
+        try (ServerSocket serverSocket = new ServerSocket(5001)) 
         { return true; 
         } catch (IOException e) { 
             return false; 
@@ -1728,9 +1728,16 @@ public class VehicularCloudConsole2 extends JFrame {
 
     // Main method to run the program
     public static void main(String[] args) {
+        System.out.println("\n=== STARTING VEHICULAR CLOUD CONSOLE (SERVER) ===");
         SwingUtilities.invokeLater(() -> {
-            VehicularCloudConsole2 frame = new VehicularCloudConsole2();
-            frame.setVisible(true);
+            try {
+                VehicularCloudConsole2 frame = new VehicularCloudConsole2();
+                frame.setVisible(true);
+                System.out.println("✓ GUI initialized successfully\n");
+            } catch (Exception e) {
+                System.err.println("✗ Error initializing GUI: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
 }
