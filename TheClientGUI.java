@@ -28,6 +28,9 @@ public class TheClientGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
     
+    String url = "jdbc:mysql://localhost:3306/vcrts";
+    String username = "bryan";
+    String password = "password"; 
     // Constructor for the main application window
     public TheClientGUI() {
         // Setting up the main frame properties
@@ -844,10 +847,10 @@ public class TheClientGUI extends JFrame {
                                     // Load the MySQL driver
                                     //Class.forName("com.mysql.cj.jdbc.Driver");
                             
-                                    // Database connection parameters
-                                    String url = "jdbc:mysql://localhost:3306/vcrts";
-                                    String username = "bryan";
-                                    String password = "password"; 
+                                    // Database connection parameters Moved next to the hardcoded logins at the top
+                                    // String url = "jdbc:mysql://localhost:3306/vcrts";
+                                    // String username = "bryan";
+                                    // String password = "password"; 
                             
                                     // Establish connection to the database
                                     Connection connection = DriverManager.getConnection(url, username, password);
@@ -1070,10 +1073,10 @@ public class TheClientGUI extends JFrame {
             
                             if (serverResponse.equals("Accepted")) {
                                 try {
-                                // Database connection parameters
-                                String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
-                                String username = "bryan"; //default user is root but I have mines bryan
-                                String password = "password";
+                                // // Database connection parameters //moved to the hardcoded logins at the top
+                                // String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
+                                // String username = "bryan"; //default user is root but I have bryan
+                                // String password = "password"; //your password
                                 
                                 
                                 Connection connection = DriverManager.getConnection(url, username, password);

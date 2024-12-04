@@ -31,6 +31,9 @@ public class TheServerGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
 
+    String url = "jdbc:mysql://localhost:3306/vcrts";
+    String sqlusername = "bryan";
+    String password = "password";
     // Constructor for the main application window
     public TheServerGUI() {
         // Setting up the main frame properties
@@ -1038,10 +1041,10 @@ public class TheServerGUI extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
-            // Database connection parameters
-            String url = "jdbc:mysql://localhost:3306/vcrts";
-            String sqlusername = "bryan";
-            String password = "your password";
+            // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
+            // String url = "jdbc:mysql://localhost:3306/vcrts";
+            // String sqlusername = "bryan";
+            // String password = "password";
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
@@ -1166,10 +1169,10 @@ public class TheServerGUI extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED TO READ FROM VEHICLES .txt
-            // Database connection parameters
-            String url = "jdbc:mysql://localhost:3306/vcrts";
-            String sqlusername = "bryan";
-            String password = "your password";
+            // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
+            // String url = "jdbc:mysql://localhost:3306/vcrts";
+            // String sqlusername = "bryan";
+            // String password = "password";
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
