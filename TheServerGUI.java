@@ -31,6 +31,10 @@ public class TheServerGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
 
+    Authentication auth = new Authentication();
+    String url = "jdbc:mysql://localhost:3306/vcrts";
+    String sqlusername = "root";
+    String password = "doyoubelieveinlove";
     // Constructor for the main application window
     public TheServerGUI() {
         // Setting up the main frame properties
@@ -281,7 +285,7 @@ public class TheServerGUI extends JFrame {
 
             // Checking credentials and redirecting to appropriate home panel
             if (userType.equals("Owner")) {
-                if (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD)) {
+                if (auth.authenticateVehicleOwner(username, password) ||  (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD))) {
                     mainPanel.removeAll();
                     mainPanel.add(createOwnerHomePanel(username));
                     mainPanel.revalidate();
@@ -293,7 +297,7 @@ public class TheServerGUI extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userType.equals("Client")) {
-                if (username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
+                if (auth.authenticateClient(username, password) || username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
                     mainPanel.removeAll();
                     mainPanel.add(createClientHomePanel(username));
                     mainPanel.revalidate();
@@ -305,9 +309,9 @@ public class TheServerGUI extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userType.equals("Cloud Controller")) {
-                if (username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
+                if (auth.authenticateCloudController(username, password) || username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
                     mainPanel.removeAll();
-                    mainPanel.add(createCloudControllerHomePanel(CONTROLLER_USERNAME));
+                    mainPanel.add(createCloudControllerHomePanel(username));
                     mainPanel.revalidate();
                     mainPanel.repaint();
                 } else {
@@ -907,7 +911,7 @@ public class TheServerGUI extends JFrame {
         // Form fields
         String[] labels = {
                 "Client ID:",
-                "Subscription Plan:",
+                "Priority Level:",
                 "Approximate Job Duration (hh:mm):",
                 "Job Deadline:",
                 "Purpose/Reason:"
@@ -1047,7 +1051,7 @@ public class TheServerGUI extends JFrame {
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
         
             // SQL query to retrieve job data
-            String sql = "SELECT timestamp, jobID, clientID, subscriptionPlan, jobDuration, jobDeadline, purpose FROM Job";
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose FROM Job";
         
             // Execute the query
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1059,8 +1063,9 @@ public class TheServerGUI extends JFrame {
                 // Read data from the result set
                 String timestamp = resultSet.getString("timestamp");
                 int jobID = resultSet.getInt("jobID");
+                String username2 = resultSet.getString("USERNAME");
                 int clientID = resultSet.getInt("clientID");
-                String subscriptionPlan = resultSet.getString("subscriptionPlan");
+                String priorityLevel = resultSet.getString("priorityLevel");
                 Time jobDuration = resultSet.getTime("jobDuration");
                 Date jobDeadline = resultSet.getDate("jobDeadline");
                 String purpose = resultSet.getString("purpose");
@@ -1090,16 +1095,21 @@ public class TheServerGUI extends JFrame {
                 jobIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 jobIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(jobIDLabel);
+
+                JLabel usernameLabel2 = new JLabel("From User: " + username2);
+                usernameLabel2.setFont(new Font("Arial", Font.PLAIN, 12));
+                usernameLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(usernameLabel2);
         
                 JLabel clientIDLabel = new JLabel("Client ID: " + clientID);
                 clientIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 clientIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(clientIDLabel);
         
-                JLabel subscriptionPlanLabel = new JLabel("Subscription Plan: " + subscriptionPlan);
-                subscriptionPlanLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                subscriptionPlanLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                infoPanel.add(subscriptionPlanLabel);
+                JLabel priorityLevelLabel = new JLabel("Priority Level: " + priorityLevel);
+                priorityLevelLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(priorityLevelLabel);
         
                 JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString());
                 jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1166,16 +1176,12 @@ public class TheServerGUI extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED TO READ FROM VEHICLES .txt
-            // Database connection parameters
-            String url = "jdbc:mysql://localhost:3306/vcrts";
-            String sqlusername = "bryan";
-            String password = "your password";
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
         
             // SQL query to retrieve vehicle data
-            String sql = "SELECT timestamp, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
         
             // Execute the query
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1184,6 +1190,7 @@ public class TheServerGUI extends JFrame {
             while (resultSet.next()) {
                 // Read data from the result set
                 String timestamp = resultSet.getString("timestamp");
+                String username3 = resultSet.getString("USERNAME");
                 int ownerID = resultSet.getInt("ownerID");
                 String VIN = resultSet.getString("VIN");
                 Time residencyTime = resultSet.getTime("residencyTime");
@@ -1210,6 +1217,11 @@ public class TheServerGUI extends JFrame {
                 timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 textPanel.add(timestampLabel);
+
+                JLabel username3Label = new JLabel("From User: " + username3);
+                username3Label.setFont(new Font("Arial", Font.PLAIN, 12));
+                username3Label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(username3Label);
         
                 JLabel ownerIDLabel = new JLabel("Owner ID: " + ownerID);
                 ownerIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
