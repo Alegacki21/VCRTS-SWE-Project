@@ -883,7 +883,7 @@ public class TheServerGUI extends JFrame {
 
         return ownerPanel;
     }
-
+    
     // Client home panel (post login & registration)
     private JPanel createClientHomePanel(String clientName) {
         JPanel clientPanel = new JPanel();
@@ -1042,10 +1042,7 @@ public class TheServerGUI extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
-            // Database connection parameters
-            String url = "jdbc:mysql://localhost:3306/vcrts";
-            String sqlusername = "bryan";
-            String password = "your password";
+            // String url = "jdbc:mysql://localhost:3306/vcrts";
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
@@ -1070,6 +1067,14 @@ public class TheServerGUI extends JFrame {
                 Date jobDeadline = resultSet.getDate("jobDeadline");
                 String purpose = resultSet.getString("purpose");
         
+
+                JPanel jobPanel = new JPanel();
+                 jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS));
+                  jobPanel.setBackground(Color.WHITE); 
+                  jobPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(new Color(200, 200, 200)), 
+                  BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                  )
+                  );
                 // Create new job panel with adjusted height
                 currentJobItem = new JPanel();
                 currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
@@ -1107,7 +1112,14 @@ public class TheServerGUI extends JFrame {
                 infoPanel.add(clientIDLabel);
         
                 JLabel priorityLevelLabel = new JLabel("Priority Level: " + priorityLevel);
-                priorityLevelLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                priorityLevelLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                if("high".equalsIgnoreCase(priorityLevel)) {
+                    priorityLevelLabel.setForeground(Color.RED);
+                } else if("medium".equalsIgnoreCase(priorityLevel) || "med".equalsIgnoreCase(priorityLevel)  ) {
+                    priorityLevelLabel.setForeground(new Color(150,150,0));
+                } else {
+                    priorityLevelLabel.setForeground(Color.green);
+                }
                 priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(priorityLevelLabel);
         
@@ -1120,6 +1132,14 @@ public class TheServerGUI extends JFrame {
                 jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(jobDeadlineLabel);
+
+                Date currentDate = new Date(System.currentTimeMillis()); 
+                if (jobDeadline.before(currentDate)) { 
+                    JLabel deadlinePassedLabel = new JLabel("Deadline has passed!"); 
+                    deadlinePassedLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+                    deadlinePassedLabel.setForeground(Color.RED); 
+                    deadlinePassedLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    infoPanel.add(deadlinePassedLabel); }
         
                 JLabel purposeLabel = new JLabel("Purpose: " + purpose);
                 purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1129,19 +1149,49 @@ public class TheServerGUI extends JFrame {
                 // Add assign button (centered)
                 JButton assignButton = new JButton("Assign Job");
                 assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                assignButton.setFocusable(false);
         
+                JButton removeJob = new JButton("Remove Job");
+                assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                removeJob.setFocusable(false);
+                removeJob.addActionListener(e -> {
+                    int confirm = JOptionPane.showConfirmDialog(infoPanel, "Are you sure you want to delete this job?",
+                     "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                     if(confirm == JOptionPane.YES_NO_OPTION)  {
+                    try (Connection conn = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String sql2 = "DELETE FROM Job WHERE jobID = ?"; 
+                        PreparedStatement ps = conn.prepareStatement(sql2); 
+                        ps.setInt(1, jobID); 
+                        int affectedRows = ps.executeUpdate(); 
+                        ps.close(); 
+                        if (affectedRows > 0) { // Remove job panel from UI 
+                            jobsListPanel.remove(jobPanel); 
+                            jobsListPanel.revalidate(); 
+                            jobsListPanel.repaint(); 
+                            JOptionPane.showMessageDialog(infoPanel, "Job " + jobID + " removed successfully!"); 
+                        } else { 
+                            JOptionPane.showMessageDialog(infoPanel, "Error: Job not found in the database!", "Error", JOptionPane.ERROR_MESSAGE); 
+                        } 
+                    } catch (SQLException ex) { 
+                        JOptionPane.showMessageDialog(infoPanel, "Error removing job from database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+                    } }
+                });
+
                 // Add button to a panel to maintain centering
                 JPanel buttonPanel = new JPanel();
                 buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
                 buttonPanel.setBackground(Color.WHITE);
                 buttonPanel.add(Box.createHorizontalGlue());
                 buttonPanel.add(assignButton);
+                buttonPanel.add(removeJob);   
                 buttonPanel.add(Box.createHorizontalGlue());
-        
+                
+
                 currentJobItem.add(buttonPanel);
                 jobsListPanel.add(currentJobItem);
                 jobsListPanel.add(Box.createVerticalStrut(5));
             }
+           
         
             // Close the result set, statement, and connection
             resultSet.close();

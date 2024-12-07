@@ -83,16 +83,16 @@ public class Authentication {
         return isAuthenticated;
     }
 
-    // public static void main(String[] args) {
-    //     String inputUsername = "Lee Everett"; // Example username
-    //     String inputPassword = "password123"; // Example password
-    //     Authentication auth = Authentication();
-    //     boolean isAuthenticated = auth.authenticateVehicleOwner(inputUsername, inputPassword);
+    public static void main(String[] args) {
+        String inputUsername = "Lee Everett"; // Example username
+        String inputPassword = "password123"; // Example password
+        Authentication auth =  new Authentication();
+        boolean isAuthenticated = auth.authenticateVehicleOwner(inputUsername, inputPassword);
 
-    //     if (isAuthenticated) {
-    //         System.out.println("Authentication successful!");
-    //     } else {
-    //         System.out.println("Authentication failed. Please check your username and password.");
-    //     }
-    // }
+        if (isAuthenticated) {
+            System.out.println("Authentication successful!");
+        } else {
+            System.out.println("Authentication failed. Please check your username and password.");
+        }
+    }
 }

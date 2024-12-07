@@ -36,6 +36,7 @@ public class TheClientGUI extends JFrame {
     String url = "jdbc:mysql://localhost:3306/vcrts";
     String sqlusername = "root";
     String password = "doyoubelieveinlove"; 
+    
     // Constructor for the main application window
     public TheClientGUI() {
         // Setting up the main frame properties
@@ -852,13 +853,7 @@ public class TheClientGUI extends JFrame {
                     
                             if (serverResponse.equals("Accepted")) {
                                 try {
-                                    // Load the MySQL driver
-                                    //Class.forName("com.mysql.cj.jdbc.Driver");
-                            
-                                    // Database connection parameters
-                                    String url = "jdbc:mysql://localhost:3306/vcrts";
-                                    String username = "bryan";
-                                    String password = "password"; 
+                                
                             
                                     // Establish connection to the database
                                     Connection connection = DriverManager.getConnection(url, sqlusername, password);
@@ -1083,9 +1078,6 @@ public class TheClientGUI extends JFrame {
                             if (serverResponse.equals("Accepted")) {
                                 try {
                                 // Database connection parameters
-                                String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
-                                String username = "bryan"; //default user is root but I have mines bryan
-                                String password = "password";
                                 
                                 
                                 Connection connection = DriverManager.getConnection(url, sqlusername, password);
