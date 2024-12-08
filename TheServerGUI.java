@@ -31,6 +31,9 @@ public class TheServerGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
 
+    
+  
+
     Authentication auth = new Authentication();
     String url = "jdbc:mysql://localhost:3306/vcrts";
     String sqlusername = "root";
@@ -1067,14 +1070,14 @@ public class TheServerGUI extends JFrame {
                 Date jobDeadline = resultSet.getDate("jobDeadline");
                 String purpose = resultSet.getString("purpose");
         
-
+                //Might be a duplicate variable of currentJobItem but it works and currentJobItem doesnt in remove job button
                 JPanel jobPanel = new JPanel();
                  jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS));
                   jobPanel.setBackground(Color.WHITE); 
                   jobPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(new Color(200, 200, 200)), 
-                  BorderFactory.createEmptyBorder(5, 5, 5, 5)
-                  )
-                  );
+                  BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+
                 // Create new job panel with adjusted height
                 currentJobItem = new JPanel();
                 currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
@@ -1150,7 +1153,56 @@ public class TheServerGUI extends JFrame {
                 JButton assignButton = new JButton("Assign Job");
                 assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                 assignButton.setFocusable(false);
-        
+                assignButton.addActionListener(e -> {
+                    JFrame vehicleFrame = new JFrame("Select Vehicle"); 
+                    vehicleFrame.setSize(400, 300); 
+                    vehicleFrame.setLayout(new BorderLayout()); // Panel to list available vehicles 
+                    vehicleFrame.setLocationRelativeTo(jobPanel);
+                    JPanel vehiclePanel = new JPanel(new GridLayout(0, 1)); 
+                    try (Connection vehicleConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle"; 
+                        PreparedStatement vehiclePreparedStatement = vehicleConnection.prepareStatement(vehicleSql); 
+                        ResultSet vehicleResultSet = vehiclePreparedStatement.executeQuery(); 
+                        while (vehicleResultSet.next()) { 
+                            //String vehicleUsername = vehicleResultSet.getString("USERNAME");
+                            String vin = vehicleResultSet.getString("VIN"); 
+                            String ownerID = vehicleResultSet.getString("ownerID"); 
+                            int compPower = vehicleResultSet.getInt("compPower");
+                            JButton vehicleButton = createStyledButton("VIN: " + vin + ", Owner ID: " + ownerID + ", Comp Power: " + compPower);
+                            vehicleButton.setPreferredSize(new Dimension(120, 30));
+                            vehicleButton.setFont(new Font("Arial", Font.BOLD, 14)); 
+                         //   vehicleButton.setBackground(new Color(70, 130, 180)); // Steel Blue color 
+                            vehicleButton.setForeground(Color.WHITE); 
+                            vehicleButton.setFocusPainted(false); 
+                            vehicleButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), // Black border 
+                            BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                            vehicleButton.addActionListener(event -> { 
+                                try (Connection assignConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                                    String assignSql = "UPDATE Job SET ownerID = ?, vehicleVIN = ?, computationPower = ? WHERE jobID = ?"; 
+                                    PreparedStatement assignPreparedStatement = assignConnection.prepareStatement(assignSql); 
+                                    assignPreparedStatement.setString(1, ownerID); 
+                                    assignPreparedStatement.setString(2, vin); 
+                                    assignPreparedStatement.setInt(3,compPower);
+                                    assignPreparedStatement.setInt(4, jobID);
+                                    assignPreparedStatement.executeUpdate(); 
+                                    assignPreparedStatement.close(); 
+                                    JOptionPane.showMessageDialog(vehicleFrame, "Vehicle " + vin + " assigned to job " + jobID + " successfully!"); 
+                                    vehicleFrame.dispose(); // Close the vehicle selection frame 
+                                    } catch (SQLException assignEx) { 
+                                        JOptionPane.showMessageDialog(vehicleFrame, "Error assigning vehicle to job: " + assignEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                                     } 
+                                    }); 
+                                    vehiclePanel.add(vehicleButton); 
+                                    } vehicleResultSet.close(); 
+                                    vehiclePreparedStatement.close(); 
+                                } catch (SQLException vehicleEx) { 
+                                    vehicleEx.printStackTrace(); 
+                                } 
+                                vehicleFrame.add(new JScrollPane(vehiclePanel), BorderLayout.CENTER); vehicleFrame.setVisible(true);
+                }
+                );
+
+
                 JButton removeJob = new JButton("Remove Job");
                 assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                 removeJob.setFocusable(false);
@@ -1174,7 +1226,8 @@ public class TheServerGUI extends JFrame {
                         } 
                     } catch (SQLException ex) { 
                         JOptionPane.showMessageDialog(infoPanel, "Error removing job from database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
-                    } }
+                    } 
+                }
                 });
 
                 // Add button to a panel to maintain centering
@@ -1247,6 +1300,8 @@ public class TheServerGUI extends JFrame {
                 int compPower = resultSet.getInt("compPower");
                 String notes = resultSet.getString("notes");
         
+
+                
                 // Create new resource panel with adjusted height
                 JPanel resourceItemPanel = new JPanel(new BorderLayout());
                 resourceItemPanel.setPreferredSize(new Dimension(400, 120));
