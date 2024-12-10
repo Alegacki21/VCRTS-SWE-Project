@@ -1030,11 +1030,47 @@ public class VehicularCloudConsole2 extends JFrame {
         jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
         jobsListPanel.setBackground(Color.WHITE);
 
+<<<<<<< HEAD:VehicularCloudConsole2.java
         try { // If that somehow doesn't work again do ("VCRTS-SWE-Project/jobs/submitted_jobs.txt");
             File jobsFile = new File("jobs/submitted_jobs.txt");
             if (jobsFile.exists()) {
                 java.util.Scanner scanner = new java.util.Scanner(jobsFile);
                 JPanel currentJobItem = null;
+=======
+        try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
+            // String url = "jdbc:mysql://localhost:3306/vcrts";
+        
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection(url, sqlusername, password);
+        
+            // SQL query to retrieve job data
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime FROM Job";
+        
+            // Execute the query
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+        
+            JPanel currentJobItem = null;
+        
+            while (resultSet.next()) {
+                // Read data from the result set
+                String timestamp = resultSet.getString("timestamp");
+                int jobID = resultSet.getInt("jobID");
+                String username2 = resultSet.getString("USERNAME");
+                int clientID = resultSet.getInt("clientID");
+                String priorityLevel = resultSet.getString("priorityLevel");
+                Time jobDuration = resultSet.getTime("jobDuration");
+                Date jobDeadline = resultSet.getDate("jobDeadline");
+                String purpose = resultSet.getString("purpose");
+                Time completionTime = resultSet.getTime("completionTime");
+        
+                //Might be a duplicate variable of currentJobItem but it works and currentJobItem doesnt in remove job button
+                JPanel jobPanel = new JPanel();
+                 jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS));
+                  jobPanel.setBackground(Color.WHITE); 
+                  jobPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(new Color(200, 200, 200)), 
+                  BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+>>>>>>> 3b734e0 (Add completion time and DB functionality to ClientGUI and ServerGUI):TheServerGUI.java
 
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
@@ -1079,7 +1115,138 @@ public class VehicularCloudConsole2 extends JFrame {
                         ((JPanel) currentJobItem.getComponent(0)).add(infoLabel);
                     }
                 }
+<<<<<<< HEAD:VehicularCloudConsole2.java
                 scanner.close();
+=======
+                priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(priorityLevelLabel);
+        
+                JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString());
+                jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDurationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(jobDurationLabel);
+        
+                JLabel jobDeadlineLabel = new JLabel("Job Deadline: " + jobDeadline.toString());
+                jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(jobDeadlineLabel);
+
+                Date currentDate = new Date(System.currentTimeMillis()); 
+                if (jobDeadline.before(currentDate)) { 
+                    JLabel deadlinePassedLabel = new JLabel("Deadline has passed!"); 
+                    deadlinePassedLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+                    deadlinePassedLabel.setForeground(Color.RED); 
+                    deadlinePassedLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    infoPanel.add(deadlinePassedLabel); }
+        
+                JLabel purposeLabel = new JLabel("Purpose: " + purpose);
+                purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(purposeLabel);
+                
+                JLabel completionTimeLabel = new JLabel("Completion Time: " + completionTime);
+                completionTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                completionTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(completionTimeLabel);
+                
+                jobsListPanel.add(jobPanel);
+                jobsListPanel.add(Box.createVerticalStrut(5));
+        
+                // Add assign button (centered)
+                JButton assignButton = new JButton("Assign Job");
+                assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                assignButton.setFocusable(false);
+                assignButton.addActionListener(e -> {
+                    JFrame vehicleFrame = new JFrame("Select Vehicle"); 
+                    vehicleFrame.setSize(400, 300); 
+                    vehicleFrame.setLayout(new BorderLayout()); // Panel to list available vehicles 
+                    vehicleFrame.setLocationRelativeTo(jobPanel);
+                    JPanel vehiclePanel = new JPanel(new GridLayout(0, 1)); 
+                    try (Connection vehicleConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle"; 
+                        PreparedStatement vehiclePreparedStatement = vehicleConnection.prepareStatement(vehicleSql); 
+                        ResultSet vehicleResultSet = vehiclePreparedStatement.executeQuery(); 
+                        while (vehicleResultSet.next()) { 
+                            //String vehicleUsername = vehicleResultSet.getString("USERNAME");
+                            String vin = vehicleResultSet.getString("VIN"); 
+                            String ownerID = vehicleResultSet.getString("ownerID"); 
+                            int compPower = vehicleResultSet.getInt("compPower");
+                            JButton vehicleButton = createStyledButton("VIN: " + vin + ", Owner ID: " + ownerID + ", Comp Power: " + compPower);
+                            vehicleButton.setPreferredSize(new Dimension(120, 30));
+                            vehicleButton.setFont(new Font("Arial", Font.BOLD, 14)); 
+                         //   vehicleButton.setBackground(new Color(70, 130, 180)); // Steel Blue color 
+                            vehicleButton.setForeground(Color.WHITE); 
+                            vehicleButton.setFocusPainted(false); 
+                            vehicleButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), // Black border 
+                            BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                            vehicleButton.addActionListener(event -> { 
+                                try (Connection assignConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                                    String assignSql = "UPDATE Job SET ownerID = ?, vehicleVIN = ?, computationPower = ? WHERE jobID = ?"; 
+                                    PreparedStatement assignPreparedStatement = assignConnection.prepareStatement(assignSql); 
+                                    assignPreparedStatement.setString(1, ownerID); 
+                                    assignPreparedStatement.setString(2, vin); 
+                                    assignPreparedStatement.setInt(3,compPower);
+                                    assignPreparedStatement.setInt(4, jobID);
+                                    assignPreparedStatement.executeUpdate(); 
+                                    assignPreparedStatement.close(); 
+                                    JOptionPane.showMessageDialog(vehicleFrame, "Vehicle " + vin + " assigned to job " + jobID + " successfully!"); 
+                                    vehicleFrame.dispose(); // Close the vehicle selection frame 
+                                    } catch (SQLException assignEx) { 
+                                        JOptionPane.showMessageDialog(vehicleFrame, "Error assigning vehicle to job: " + assignEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                                     } 
+                                    }); 
+                                    vehiclePanel.add(vehicleButton); 
+                                    } vehicleResultSet.close(); 
+                                    vehiclePreparedStatement.close(); 
+                                } catch (SQLException vehicleEx) { 
+                                    vehicleEx.printStackTrace(); 
+                                } 
+                                vehicleFrame.add(new JScrollPane(vehiclePanel), BorderLayout.CENTER); vehicleFrame.setVisible(true);
+                }
+                );
+
+
+                JButton removeJob = new JButton("Remove Job");
+                assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                removeJob.setFocusable(false);
+                removeJob.addActionListener(e -> {
+                    int confirm = JOptionPane.showConfirmDialog(infoPanel, "Are you sure you want to delete this job?",
+                     "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                     if(confirm == JOptionPane.YES_NO_OPTION)  {
+                    try (Connection conn = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String sql2 = "DELETE FROM Job WHERE jobID = ?"; 
+                        PreparedStatement ps = conn.prepareStatement(sql2); 
+                        ps.setInt(1, jobID); 
+                        int affectedRows = ps.executeUpdate(); 
+                        ps.close(); 
+                        if (affectedRows > 0) { // Remove job panel from UI 
+                            jobsListPanel.remove(jobPanel); 
+                            jobsListPanel.revalidate(); 
+                            jobsListPanel.repaint(); 
+                            JOptionPane.showMessageDialog(infoPanel, "Job " + jobID + " removed successfully!"); 
+                        } else { 
+                            JOptionPane.showMessageDialog(infoPanel, "Error: Job not found in the database!", "Error", JOptionPane.ERROR_MESSAGE); 
+                        } 
+                    } catch (SQLException ex) { 
+                        JOptionPane.showMessageDialog(infoPanel, "Error removing job from database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+                    } 
+                }
+                });
+
+                // Add button to a panel to maintain centering
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+                buttonPanel.setBackground(Color.WHITE);
+                buttonPanel.add(Box.createHorizontalGlue());
+                buttonPanel.add(assignButton);
+                buttonPanel.add(removeJob);   
+                buttonPanel.add(Box.createHorizontalGlue());
+                
+
+                currentJobItem.add(buttonPanel);
+                jobsListPanel.add(currentJobItem);
+                jobsListPanel.add(Box.createVerticalStrut(5));
+>>>>>>> 3b734e0 (Add completion time and DB functionality to ClientGUI and ServerGUI):TheServerGUI.java
             }
         } catch (IOException ex) {
             System.err.println("Error reading jobs: " + ex.getMessage());

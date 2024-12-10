@@ -63,4 +63,39 @@ CREATE TABLE CloudController (
 );
 
 INSERT INTO CloudController (username, password)
+<<<<<<< HEAD
 VALUES ('admin', 'admin123');
+=======
+VALUES ('admin', 'admin123');
+
+
+CREATE TABLE Vehicle (
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    username VARCHAR (100) NOT NULL,
+    ownerID VARCHAR(100) NOT NULL,
+    VIN VARCHAR(17) NOT NULL,
+    residencyTime TIME NOT NULL,
+    compPower INT NOT NULL, 
+    notes TEXT,
+    PRIMARY KEY (VIN),
+    FOREIGN KEY (USERNAME) REFERENCES VehicleOwner(username)
+);
+
+CREATE TABLE Job (
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    jobID INT (10) NOT NULL AUTO_INCREMENT,
+    username VARCHAR (100) NOT NULL,
+    clientID VARCHAR(100) NOT NULL,
+    priorityLevel VARCHAR(50),
+    jobDuration TIME NOT NULL,
+    jobDeadline DATE NOT NULL,
+    purpose TEXT NOT NULL,
+    ownerID VARCHAR(100),
+    vehicleVIN VARCHAR(17),
+    computationPower INT, 
+    completionTime TIME,
+    PRIMARY KEY (jobID),
+    FOREIGN KEY (USERNAME) REFERENCES JobSubmitter(username)
+);
+
+>>>>>>> 3b734e0 (Add completion time and DB functionality to ClientGUI and ServerGUI)
