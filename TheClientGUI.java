@@ -28,9 +28,21 @@ public class TheClientGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
     
+<<<<<<< HEAD
     String url = "jdbc:mysql://localhost:3306/vcrts";
     String username = "bryan";
     String password = "password"; 
+=======
+    private String loggedInOwner;
+    private String loggedInClient;
+    private String loggedInController;
+
+    Authentication auth = new Authentication();
+    String url = "jdbc:mysql://localhost:3306/vcrts";
+    String sqlusername = "root";
+    String password = "doyoubelieveinlove"; 
+    
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
     // Constructor for the main application window
     public TheClientGUI() {
         // Setting up the main frame properties
@@ -282,11 +294,12 @@ public class TheClientGUI extends JFrame {
             
             // Checking credentials and redirecting to appropriate home panel
             if (userType.equals("Owner")) {
-                if (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD)) {
+                if (auth.authenticateVehicleOwner(username, password) ||  (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD))) { //if (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD)) {
                     mainPanel.removeAll();
                     mainPanel.add(createOwnerHomePanel(username));
                     mainPanel.revalidate();
                     mainPanel.repaint();
+                    loggedInOwner = username;
                 } else {
                     JOptionPane.showMessageDialog(loginPanel, 
                         "Invalid credentials", 
@@ -294,23 +307,25 @@ public class TheClientGUI extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userType.equals("Client")) {
-                if (username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
+                if (auth.authenticateClient(username, password) || username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) { //  (username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
                     mainPanel.removeAll();
                     mainPanel.add(createClientHomePanel(username));
                     mainPanel.revalidate();
                     mainPanel.repaint();
+                    loggedInClient = username;
                 } else {
                     JOptionPane.showMessageDialog(loginPanel, 
                         "Invalid credentials", 
                         "Login Error", 
                         JOptionPane.ERROR_MESSAGE);
                 }
-            } else if (userType.equals("Cloud Controller")) {
-                if (username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
+            } else if (userType.equals("Cloud Controller")) { 
+                if (auth.authenticateCloudController(username, password) || username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) { //username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)
                     mainPanel.removeAll();
-                    mainPanel.add(createCloudControllerHomePanel(CONTROLLER_USERNAME));
+                    mainPanel.add(createCloudControllerHomePanel(username));
                     mainPanel.revalidate();
                     mainPanel.repaint();
+                    loggedInController = username;
                 } else {
                     JOptionPane.showMessageDialog(loginPanel, 
                         "Invalid credentials", 
@@ -844,6 +859,7 @@ public class TheClientGUI extends JFrame {
                     
                             if (serverResponse.equals("Accepted")) {
                                 try {
+<<<<<<< HEAD
                                     // Load the MySQL driver
                                     //Class.forName("com.mysql.cj.jdbc.Driver");
                             
@@ -851,20 +867,24 @@ public class TheClientGUI extends JFrame {
                                     // String url = "jdbc:mysql://localhost:3306/vcrts";
                                     // String username = "bryan";
                                     // String password = "password"; 
+=======
+                                
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
                             
                                     // Establish connection to the database
-                                    Connection connection = DriverManager.getConnection(url, username, password);
+                                    Connection connection = DriverManager.getConnection(url, sqlusername, password);
                             
                                     // SQL query to insert data
-                                    String sql = "INSERT INTO Vehicle (ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?)";
+                                    String sql = "INSERT INTO Vehicle (USERNAME, ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?, ?)";
                             
                                     // Prepare statement
                                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                                    preparedStatement.setInt(1, Integer.parseInt(fields[0].getText())); // ownerID
-                                    preparedStatement.setString(2, fields[1].getText()); // VIN
-                                    preparedStatement.setTime(3, Time.valueOf(fields[2].getText())); // residencyTime
-                                    preparedStatement.setInt(4, Integer.parseInt(fields[3].getText())); // compPower
-                                    preparedStatement.setString(5, fields[4].getText()); // notes
+                                    preparedStatement.setString(1, loggedInOwner); // USERNAME
+                                    preparedStatement.setString(2,  fields[0].getText()); // ownerID
+                                    preparedStatement.setString(3, fields[1].getText()); // VIN
+                                    preparedStatement.setTime(4, Time.valueOf(fields[2].getText())); // residencyTime
+                                    preparedStatement.setInt(5, Integer.parseInt(fields[3].getText())); // compPower
+                                    preparedStatement.setString(6, fields[4].getText()); // notes
                             
                                     // Execute the statement
                                     preparedStatement.executeUpdate();
@@ -976,7 +996,7 @@ public class TheClientGUI extends JFrame {
         // Form fields
         String[] labels = {
             "Client ID:",
-            "Subscription Plan:",
+            "Priority Level:",
             "Approximate Job Duration (hh:mm):",
             "Job Deadline (year-month-day):",
             "Purpose/Reason:"
@@ -1057,7 +1077,7 @@ public class TheClientGUI extends JFrame {
                             // Send the user input to the server
                             String userInput = "Timestamp: " + timestamp + "\n" +
                             "Client ID: " + fields[0].getText() + "\n" +
-                            "Subscription Plan: " + fields[1].getText() + "\n" +
+                            "Priority Level " + fields[1].getText() + "\n" +
                             "Approximate Job Duration (in hh:mm): " + fields[2].getText() + "\n" +
                             "Job Deadline (yyyy/mm/dd): " + fields[3].getText() + "\n" +
                             "Purpose/Reason: " + fields[4].getText() + "\nEND";
@@ -1073,30 +1093,32 @@ public class TheClientGUI extends JFrame {
             
                             if (serverResponse.equals("Accepted")) {
                                 try {
+<<<<<<< HEAD
                                 // // Database connection parameters //moved to the hardcoded logins at the top
                                 // String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
                                 // String username = "bryan"; //default user is root but I have bryan
                                 // String password = "password"; //your password
+=======
+                                // Database connection parameters
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
                                 
                                 
-                                Connection connection = DriverManager.getConnection(url, username, password);
+                                Connection connection = DriverManager.getConnection(url, sqlusername, password);
 
                                     // SQL query to insert data
-                                    String sql = "INSERT INTO Job (clientID, subscriptionPlan, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                                    String sql = "INSERT INTO Job (USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
                             
                                     // Prepare statement
                                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
                             
                                     // Set parameters
-                                    int clientID = Integer.parseInt(fields[0].getText()); 
-                                    preparedStatement.setInt(1, clientID);  
-                                    String subscriptionPlan = fields[1].getText(); 
-                                    preparedStatement.setString(2, subscriptionPlan); // Parse and set jobDuration 
-                                    preparedStatement.setTime(3, Time.valueOf(fields[2].getText()));
+                                    preparedStatement.setString(1,loggedInClient); //logged in User
+                                    preparedStatement.setString(2,fields[0].getText());  // clientID
+                                    preparedStatement.setString(3, fields[1].getText()); // set Priority Level
+                                    preparedStatement.setTime(4, Time.valueOf(fields[2].getText())); // job duration
                                     java.sql.Date jobDeadline = java.sql.Date.valueOf(fields[3].getText()); // Assuming input is YYYY-MM-DD 
-                                    preparedStatement.setDate(4, jobDeadline); // jobDeadline 
-                                    String purpose = fields[4].getText(); 
-                                    preparedStatement.setString(5, purpose);
+                                    preparedStatement.setDate(5, jobDeadline); // jobDeadline 
+                                    preparedStatement.setString(6, fields[4].getText());//purpose
                             
                                     // Execute the statement
                                     preparedStatement.executeUpdate();
@@ -1207,62 +1229,6 @@ public class TheClientGUI extends JFrame {
         JPanel jobsListPanel = new JPanel();
         jobsListPanel.setLayout(new BoxLayout(jobsListPanel, BoxLayout.Y_AXIS));
         jobsListPanel.setBackground(Color.WHITE);
-
-        try {
-            File jobsFile = new File("jobs/submitted_jobs.txt");
-            if (jobsFile.exists()) {
-                java.util.Scanner scanner = new java.util.Scanner(jobsFile);
-                JPanel currentJobItem = null;
-                
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    
-                    if (line.startsWith("Timestamp:")) {
-                        currentJobItem = new JPanel();
-                        currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
-                        currentJobItem.setBackground(Color.WHITE);
-                        currentJobItem.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                            BorderFactory.createEmptyBorder(5, 5, 5, 5)
-                        ));
-                        
-                        // Center-aligned info panel
-                        JPanel infoPanel = new JPanel();
-                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-                        infoPanel.setBackground(Color.WHITE);
-                        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        currentJobItem.add(infoPanel);
-                        
-                        // Add assign button (centered)
-                        JButton assignButton = createStyledButton("Assign Job");
-                        assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        
-                        // Add button to a panel to maintain centering
-                        JPanel buttonPanel = new JPanel();
-                        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-                        buttonPanel.setBackground(Color.WHITE);
-                        buttonPanel.add(Box.createHorizontalGlue());
-                        buttonPanel.add(assignButton);
-                        buttonPanel.add(Box.createHorizontalGlue());
-                        
-                        currentJobItem.add(buttonPanel);
-                        jobsListPanel.add(currentJobItem);
-                        jobsListPanel.add(Box.createVerticalStrut(5));
-                    }
-                    
-                    if (currentJobItem != null && !line.equals("------------------------")) {
-                        JLabel infoLabel = new JLabel(line);
-                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        // Add to the info panel instead of directly to currentJobItem
-                        ((JPanel)currentJobItem.getComponent(0)).add(infoLabel);
-                    }
-                }
-                scanner.close();
-            }
-        } catch (IOException ex) {
-            System.err.println("Error reading jobs: " + ex.getMessage());
-        }
 
         // Add components to jobs panel
         jobsPanel.add(jobsTitle);

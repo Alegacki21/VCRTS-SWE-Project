@@ -31,9 +31,19 @@ public class TheServerGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
 
+<<<<<<< HEAD
     String url = "jdbc:mysql://localhost:3306/vcrts";
     String sqlusername = "bryan";
     String password = "password";
+=======
+    
+  
+
+    Authentication auth = new Authentication();
+    String url = "jdbc:mysql://localhost:3306/vcrts";
+    String sqlusername = "root";
+    String password = "doyoubelieveinlove";
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
     // Constructor for the main application window
     public TheServerGUI() {
         // Setting up the main frame properties
@@ -284,7 +294,7 @@ public class TheServerGUI extends JFrame {
 
             // Checking credentials and redirecting to appropriate home panel
             if (userType.equals("Owner")) {
-                if (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD)) {
+                if (auth.authenticateVehicleOwner(username, password) ||  (username.equals(OWNER_USERNAME) && password.equals(OWNER_PASSWORD))) {
                     mainPanel.removeAll();
                     mainPanel.add(createOwnerHomePanel(username));
                     mainPanel.revalidate();
@@ -296,7 +306,7 @@ public class TheServerGUI extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userType.equals("Client")) {
-                if (username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
+                if (auth.authenticateClient(username, password) || username.equals(CLIENT_USERNAME) && password.equals(CLIENT_PASSWORD)) {
                     mainPanel.removeAll();
                     mainPanel.add(createClientHomePanel(username));
                     mainPanel.revalidate();
@@ -308,9 +318,9 @@ public class TheServerGUI extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userType.equals("Cloud Controller")) {
-                if (username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
+                if (auth.authenticateCloudController(username, password) || username.equals(CONTROLLER_USERNAME) && password.equals(CONTROLLER_PASSWORD)) {
                     mainPanel.removeAll();
-                    mainPanel.add(createCloudControllerHomePanel(CONTROLLER_USERNAME));
+                    mainPanel.add(createCloudControllerHomePanel(username));
                     mainPanel.revalidate();
                     mainPanel.repaint();
                 } else {
@@ -882,7 +892,7 @@ public class TheServerGUI extends JFrame {
 
         return ownerPanel;
     }
-
+    
     // Client home panel (post login & registration)
     private JPanel createClientHomePanel(String clientName) {
         JPanel clientPanel = new JPanel();
@@ -910,7 +920,7 @@ public class TheServerGUI extends JFrame {
         // Form fields
         String[] labels = {
                 "Client ID:",
-                "Subscription Plan:",
+                "Priority Level:",
                 "Approximate Job Duration (hh:mm):",
                 "Job Deadline:",
                 "Purpose/Reason:"
@@ -1041,16 +1051,20 @@ public class TheServerGUI extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
+<<<<<<< HEAD
             // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
             // String url = "jdbc:mysql://localhost:3306/vcrts";
             // String sqlusername = "bryan";
             // String password = "password";
+=======
+            // String url = "jdbc:mysql://localhost:3306/vcrts";
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
         
             // SQL query to retrieve job data
-            String sql = "SELECT timestamp, jobID, clientID, subscriptionPlan, jobDuration, jobDeadline, purpose FROM Job";
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose FROM Job";
         
             // Execute the query
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1062,12 +1076,21 @@ public class TheServerGUI extends JFrame {
                 // Read data from the result set
                 String timestamp = resultSet.getString("timestamp");
                 int jobID = resultSet.getInt("jobID");
+                String username2 = resultSet.getString("USERNAME");
                 int clientID = resultSet.getInt("clientID");
-                String subscriptionPlan = resultSet.getString("subscriptionPlan");
+                String priorityLevel = resultSet.getString("priorityLevel");
                 Time jobDuration = resultSet.getTime("jobDuration");
                 Date jobDeadline = resultSet.getDate("jobDeadline");
                 String purpose = resultSet.getString("purpose");
         
+                //Might be a duplicate variable of currentJobItem but it works and currentJobItem doesnt in remove job button
+                JPanel jobPanel = new JPanel();
+                 jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS));
+                  jobPanel.setBackground(Color.WHITE); 
+                  jobPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(new Color(200, 200, 200)), 
+                  BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+
                 // Create new job panel with adjusted height
                 currentJobItem = new JPanel();
                 currentJobItem.setLayout(new BoxLayout(currentJobItem, BoxLayout.Y_AXIS));
@@ -1093,16 +1116,28 @@ public class TheServerGUI extends JFrame {
                 jobIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 jobIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(jobIDLabel);
+
+                JLabel usernameLabel2 = new JLabel("From User: " + username2);
+                usernameLabel2.setFont(new Font("Arial", Font.PLAIN, 12));
+                usernameLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(usernameLabel2);
         
                 JLabel clientIDLabel = new JLabel("Client ID: " + clientID);
                 clientIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 clientIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(clientIDLabel);
         
-                JLabel subscriptionPlanLabel = new JLabel("Subscription Plan: " + subscriptionPlan);
-                subscriptionPlanLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                subscriptionPlanLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                infoPanel.add(subscriptionPlanLabel);
+                JLabel priorityLevelLabel = new JLabel("Priority Level: " + priorityLevel);
+                priorityLevelLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                if("high".equalsIgnoreCase(priorityLevel)) {
+                    priorityLevelLabel.setForeground(Color.RED);
+                } else if("medium".equalsIgnoreCase(priorityLevel) || "med".equalsIgnoreCase(priorityLevel)  ) {
+                    priorityLevelLabel.setForeground(new Color(150,150,0));
+                } else {
+                    priorityLevelLabel.setForeground(Color.green);
+                }
+                priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(priorityLevelLabel);
         
                 JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString());
                 jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1113,6 +1148,14 @@ public class TheServerGUI extends JFrame {
                 jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(jobDeadlineLabel);
+
+                Date currentDate = new Date(System.currentTimeMillis()); 
+                if (jobDeadline.before(currentDate)) { 
+                    JLabel deadlinePassedLabel = new JLabel("Deadline has passed!"); 
+                    deadlinePassedLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+                    deadlinePassedLabel.setForeground(Color.RED); 
+                    deadlinePassedLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    infoPanel.add(deadlinePassedLabel); }
         
                 JLabel purposeLabel = new JLabel("Purpose: " + purpose);
                 purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1122,19 +1165,99 @@ public class TheServerGUI extends JFrame {
                 // Add assign button (centered)
                 JButton assignButton = new JButton("Assign Job");
                 assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+                assignButton.setFocusable(false);
+                assignButton.addActionListener(e -> {
+                    JFrame vehicleFrame = new JFrame("Select Vehicle"); 
+                    vehicleFrame.setSize(400, 300); 
+                    vehicleFrame.setLayout(new BorderLayout()); // Panel to list available vehicles 
+                    vehicleFrame.setLocationRelativeTo(jobPanel);
+                    JPanel vehiclePanel = new JPanel(new GridLayout(0, 1)); 
+                    try (Connection vehicleConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle"; 
+                        PreparedStatement vehiclePreparedStatement = vehicleConnection.prepareStatement(vehicleSql); 
+                        ResultSet vehicleResultSet = vehiclePreparedStatement.executeQuery(); 
+                        while (vehicleResultSet.next()) { 
+                            //String vehicleUsername = vehicleResultSet.getString("USERNAME");
+                            String vin = vehicleResultSet.getString("VIN"); 
+                            String ownerID = vehicleResultSet.getString("ownerID"); 
+                            int compPower = vehicleResultSet.getInt("compPower");
+                            JButton vehicleButton = createStyledButton("VIN: " + vin + ", Owner ID: " + ownerID + ", Comp Power: " + compPower);
+                            vehicleButton.setPreferredSize(new Dimension(120, 30));
+                            vehicleButton.setFont(new Font("Arial", Font.BOLD, 14)); 
+                         //   vehicleButton.setBackground(new Color(70, 130, 180)); // Steel Blue color 
+                            vehicleButton.setForeground(Color.WHITE); 
+                            vehicleButton.setFocusPainted(false); 
+                            vehicleButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), // Black border 
+                            BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                            vehicleButton.addActionListener(event -> { 
+                                try (Connection assignConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                                    String assignSql = "UPDATE Job SET ownerID = ?, vehicleVIN = ?, computationPower = ? WHERE jobID = ?"; 
+                                    PreparedStatement assignPreparedStatement = assignConnection.prepareStatement(assignSql); 
+                                    assignPreparedStatement.setString(1, ownerID); 
+                                    assignPreparedStatement.setString(2, vin); 
+                                    assignPreparedStatement.setInt(3,compPower);
+                                    assignPreparedStatement.setInt(4, jobID);
+                                    assignPreparedStatement.executeUpdate(); 
+                                    assignPreparedStatement.close(); 
+                                    JOptionPane.showMessageDialog(vehicleFrame, "Vehicle " + vin + " assigned to job " + jobID + " successfully!"); 
+                                    vehicleFrame.dispose(); // Close the vehicle selection frame 
+                                    } catch (SQLException assignEx) { 
+                                        JOptionPane.showMessageDialog(vehicleFrame, "Error assigning vehicle to job: " + assignEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                                     } 
+                                    }); 
+                                    vehiclePanel.add(vehicleButton); 
+                                    } vehicleResultSet.close(); 
+                                    vehiclePreparedStatement.close(); 
+                                } catch (SQLException vehicleEx) { 
+                                    vehicleEx.printStackTrace(); 
+                                } 
+                                vehicleFrame.add(new JScrollPane(vehiclePanel), BorderLayout.CENTER); vehicleFrame.setVisible(true);
+                }
+                );
+
+
+                JButton removeJob = new JButton("Remove Job");
+                assignButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                removeJob.setFocusable(false);
+                removeJob.addActionListener(e -> {
+                    int confirm = JOptionPane.showConfirmDialog(infoPanel, "Are you sure you want to delete this job?",
+                     "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                     if(confirm == JOptionPane.YES_NO_OPTION)  {
+                    try (Connection conn = DriverManager.getConnection(url, sqlusername, password)) { 
+                        String sql2 = "DELETE FROM Job WHERE jobID = ?"; 
+                        PreparedStatement ps = conn.prepareStatement(sql2); 
+                        ps.setInt(1, jobID); 
+                        int affectedRows = ps.executeUpdate(); 
+                        ps.close(); 
+                        if (affectedRows > 0) { // Remove job panel from UI 
+                            jobsListPanel.remove(jobPanel); 
+                            jobsListPanel.revalidate(); 
+                            jobsListPanel.repaint(); 
+                            JOptionPane.showMessageDialog(infoPanel, "Job " + jobID + " removed successfully!"); 
+                        } else { 
+                            JOptionPane.showMessageDialog(infoPanel, "Error: Job not found in the database!", "Error", JOptionPane.ERROR_MESSAGE); 
+                        } 
+                    } catch (SQLException ex) { 
+                        JOptionPane.showMessageDialog(infoPanel, "Error removing job from database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+                    } 
+                }
+                });
+
                 // Add button to a panel to maintain centering
                 JPanel buttonPanel = new JPanel();
                 buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
                 buttonPanel.setBackground(Color.WHITE);
                 buttonPanel.add(Box.createHorizontalGlue());
                 buttonPanel.add(assignButton);
+                buttonPanel.add(removeJob);   
                 buttonPanel.add(Box.createHorizontalGlue());
-        
+                
+
                 currentJobItem.add(buttonPanel);
                 jobsListPanel.add(currentJobItem);
                 jobsListPanel.add(Box.createVerticalStrut(5));
             }
+           
         
             // Close the result set, statement, and connection
             resultSet.close();
@@ -1169,16 +1292,19 @@ public class TheServerGUI extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED TO READ FROM VEHICLES .txt
+<<<<<<< HEAD
             // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
             // String url = "jdbc:mysql://localhost:3306/vcrts";
             // String sqlusername = "bryan";
             // String password = "password";
+=======
+>>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
         
             // Establish connection to the database
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
         
             // SQL query to retrieve vehicle data
-            String sql = "SELECT timestamp, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
         
             // Execute the query
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1187,12 +1313,15 @@ public class TheServerGUI extends JFrame {
             while (resultSet.next()) {
                 // Read data from the result set
                 String timestamp = resultSet.getString("timestamp");
+                String username3 = resultSet.getString("USERNAME");
                 int ownerID = resultSet.getInt("ownerID");
                 String VIN = resultSet.getString("VIN");
                 Time residencyTime = resultSet.getTime("residencyTime");
                 int compPower = resultSet.getInt("compPower");
                 String notes = resultSet.getString("notes");
         
+
+                
                 // Create new resource panel with adjusted height
                 JPanel resourceItemPanel = new JPanel(new BorderLayout());
                 resourceItemPanel.setPreferredSize(new Dimension(400, 120));
@@ -1213,6 +1342,11 @@ public class TheServerGUI extends JFrame {
                 timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 textPanel.add(timestampLabel);
+
+                JLabel username3Label = new JLabel("From User: " + username3);
+                username3Label.setFont(new Font("Arial", Font.PLAIN, 12));
+                username3Label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                textPanel.add(username3Label);
         
                 JLabel ownerIDLabel = new JLabel("Owner ID: " + ownerID);
                 ownerIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
