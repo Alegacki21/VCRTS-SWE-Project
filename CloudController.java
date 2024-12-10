@@ -1,20 +1,23 @@
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class CloudController {
     private static CloudController instance;
     private List<Vehicle> vehicleList = new ArrayList<>();
     private Queue<Job> jobQueue = new LinkedList<>();
+    private Authentication auth = new Authentication();
     
     // Private constructor to ensure singleton pattern 
     private CloudController() {}
@@ -57,10 +60,14 @@ public class CloudController {
                         
                         // Calculate completion time based on FIFO
                         totalTime += duration;
+                        currentJob.setCompletionTime(totalTime);
                         
                         updatedLines.add(line);
                         updatedLines.add("Estimated Completion Time: " + totalTime + " minutes");
                         updatedLines.add("Status: Scheduled");
+
+                        // Update the completion time in the database
+                        updateCompletionTime(currentJob.getJobId(), totalTime);
                     }
                 }
                 else if (!line.startsWith("Estimated") && !line.startsWith("Status:")) {
@@ -89,6 +96,17 @@ public class CloudController {
         }
     }
 
+    private void updateCompletionTime(String jobId, int completionTime) {
+        String sql = "UPDATE Job SET completionTime = ? WHERE jobID = ?";
+        try (Connection conn = DriverManager.getConnection(auth.url, auth.sqlUsername, auth.password);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setTime(1, Time.valueOf(String.format("%02d:%02d:00", completionTime / 60, completionTime % 60)));
+            pstmt.setString(2, jobId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public void assignJob(Job job) {
         List<Vehicle> availableVehicleList = vehicleList.stream()
             .filter(Vehicle::isAvailable)

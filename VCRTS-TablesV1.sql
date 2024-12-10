@@ -69,7 +69,7 @@ VALUES ('admin', 'admin123');
 
 CREATE TABLE Vehicle (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    USERNAME VARCHAR (100) NOT NULL,
+    username VARCHAR (100) NOT NULL,
     ownerID VARCHAR(100) NOT NULL,
     VIN VARCHAR(17) NOT NULL,
     residencyTime TIME NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE Vehicle (
 CREATE TABLE Job (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     jobID INT (10) NOT NULL AUTO_INCREMENT,
-    USERNAME VARCHAR (100) NOT NULL,
+    username VARCHAR (100) NOT NULL,
     clientID VARCHAR(100) NOT NULL,
     priorityLevel VARCHAR(50),
     jobDuration TIME NOT NULL,
@@ -91,6 +91,7 @@ CREATE TABLE Job (
     ownerID VARCHAR(100),
     vehicleVIN VARCHAR(17),
     computationPower INT, 
+    completionTime TIME,
     PRIMARY KEY (jobID),
     FOREIGN KEY (USERNAME) REFERENCES JobSubmitter(username)
 );

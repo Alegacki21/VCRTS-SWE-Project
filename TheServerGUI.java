@@ -1051,7 +1051,7 @@ public class TheServerGUI extends JFrame {
             Connection connection = DriverManager.getConnection(url, sqlusername, password);
         
             // SQL query to retrieve job data
-            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose FROM Job";
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime FROM Job";
         
             // Execute the query
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1069,6 +1069,7 @@ public class TheServerGUI extends JFrame {
                 Time jobDuration = resultSet.getTime("jobDuration");
                 Date jobDeadline = resultSet.getDate("jobDeadline");
                 String purpose = resultSet.getString("purpose");
+                Time completionTime = resultSet.getTime("completionTime");
         
                 //Might be a duplicate variable of currentJobItem but it works and currentJobItem doesnt in remove job button
                 JPanel jobPanel = new JPanel();
@@ -1148,6 +1149,14 @@ public class TheServerGUI extends JFrame {
                 purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 infoPanel.add(purposeLabel);
+                
+                JLabel completionTimeLabel = new JLabel("Completion Time: " + completionTime);
+                completionTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                completionTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                infoPanel.add(completionTimeLabel);
+                
+                jobsListPanel.add(jobPanel);
+                jobsListPanel.add(Box.createVerticalStrut(5));
         
                 // Add assign button (centered)
                 JButton assignButton = new JButton("Assign Job");

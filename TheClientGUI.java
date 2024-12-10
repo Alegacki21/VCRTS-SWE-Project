@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -1392,76 +1394,110 @@ public class TheClientGUI extends JFrame {
         scrollPane.setPreferredSize(new Dimension(450, 400));
         scrollPane.setMaximumSize(new Dimension(450, 400));
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        try {
-            File jobsFile = new File("jobs/submitted_jobs.txt");
-            if (jobsFile.exists()) {
-                java.util.Scanner scanner = new java.util.Scanner(jobsFile);
-                
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    
-                    if (line.startsWith("Timestamp:")) {
-                        // Create new job panel with adjusted height
-                        JPanel jobItemPanel = new JPanel(new BorderLayout());
-                        jobItemPanel.setPreferredSize(new Dimension(400, 120));
-                        jobItemPanel.setMaximumSize(new Dimension(400, 120));
-                        jobItemPanel.setBackground(new Color(230, 230, 230));
-                        
-                        // Create info panel with vertical layout
-                        JPanel infoPanel = new JPanel();
-                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-                        infoPanel.setBackground(new Color(230, 230, 230));
-                        infoPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                        
-                        // Add the client ID
-                        JLabel infoLabel = new JLabel(line);
-                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        infoPanel.add(infoLabel);
-                        
-                        // Create button panel with GridBagLayout
-                        JPanel buttonPanel = new JPanel(new GridBagLayout());
-                        buttonPanel.setBackground(new Color(230, 230, 230));
-                        
-                        // Add View Status button
-                        JButton viewStatusButton = createStyledButton("View Status");
-                        viewStatusButton.setPreferredSize(new Dimension(120, 30));
-                        
-                        // Add the action listener
-                        final String jobDetails = line;
-                        viewStatusButton.addActionListener(e -> {
-                            String status = "Pending";
-                            JOptionPane.showMessageDialog(
-                                jobItemPanel,
-                                "Job Status: " + status + "\n\n" +
-                                "Waiting for Cloud Controller assignment.\n" +
-                                jobDetails,
-                                "Job Status",
-                                JOptionPane.INFORMATION_MESSAGE
-                            );
-                        });
-                        
-                        buttonPanel.add(viewStatusButton);
-                        
-                        // Add panels to job item
-                        jobItemPanel.add(infoPanel, BorderLayout.CENTER);
-                        jobItemPanel.add(buttonPanel, BorderLayout.EAST);
-                        jobsListPanel.add(jobItemPanel);
-                        jobsListPanel.add(Box.createVerticalStrut(10));
-                        
-                    } else if (!line.equals("------------------------")) {
-                        // Add content to the current job panel
-                        JPanel currentPanel = (JPanel)((JPanel)jobsListPanel.getComponent(
-                            jobsListPanel.getComponentCount() - 2)).getComponent(0);
-                        JLabel contentLabel = new JLabel(line);
-                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        currentPanel.add(contentLabel);
-                    }
+       try (Connection connection = DriverManager.getConnection(url, sqlusername, password)) {
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime FROM Job";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                // Fetch job details from the result set
+                String timestamp = resultSet.getString("timestamp");
+                int jobID = resultSet.getInt("jobID");
+                String username = resultSet.getString("USERNAME");
+                int clientID = resultSet.getInt("clientID");
+                String priorityLevel = resultSet.getString("priorityLevel");
+                Time jobDuration = resultSet.getTime("jobDuration");
+                Date jobDeadline = resultSet.getDate("jobDeadline");
+                String purpose = resultSet.getString("purpose");
+                Time completionTime = resultSet.getTime("completionTime");
+            
+                // Create a panel for each job
+                JPanel jobPanel = new JPanel();
+                jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS));
+                jobPanel.setBackground(Color.WHITE);
+                jobPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            
+                // Add timestamp label to the job panel
+                JLabel timestampLabel = new JLabel("Timestamp: " + timestamp);
+                timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(timestampLabel);
+            
+                // Add job ID label to the job panel
+                JLabel jobIDLabel = new JLabel("Job ID: " + jobID);
+                jobIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(jobIDLabel);
+            
+                // Add username label to the job panel
+                JLabel usernameLabel = new JLabel("From User: " + username);
+                usernameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                usernameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(usernameLabel);
+            
+                // Add client ID label to the job panel
+                JLabel clientIDLabel = new JLabel("Client ID: " + clientID);
+                clientIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                clientIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(clientIDLabel);
+            
+                // Add priority level label to the job panel
+                JLabel priorityLevelLabel = new JLabel("Priority Level: " + priorityLevel);
+                priorityLevelLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                if ("high".equalsIgnoreCase(priorityLevel)) {
+                    priorityLevelLabel.setForeground(Color.RED);
+                } else if ("medium".equalsIgnoreCase(priorityLevel) || "med".equalsIgnoreCase(priorityLevel)) {
+                    priorityLevelLabel.setForeground(new Color(150, 150, 0));
+                } else {
+                    priorityLevelLabel.setForeground(Color.GREEN);
                 }
-                scanner.close();
+                priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(priorityLevelLabel);
+            
+                // Add job duration label to the job panel
+                JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString());
+                jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDurationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(jobDurationLabel);
+            
+                // Add job deadline label to the job panel
+                JLabel jobDeadlineLabel = new JLabel("Job Deadline: " + jobDeadline.toString());
+                jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(jobDeadlineLabel);
+            
+                // Check if the job deadline has passed and add a label if it has
+                Date currentDate = new Date(System.currentTimeMillis());
+                if (jobDeadline.before(currentDate)) {
+                    JLabel deadlinePassedLabel = new JLabel("Deadline has passed!");
+                    deadlinePassedLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                    deadlinePassedLabel.setForeground(Color.RED);
+                    deadlinePassedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    jobPanel.add(deadlinePassedLabel);
+                }
+            
+                // Add purpose label to the job panel
+                JLabel purposeLabel = new JLabel("Purpose: " + purpose);
+                purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(purposeLabel);
+            
+                // Add completion time label to the job panel
+                JLabel completionTimeLabel = new JLabel("Completion Time: " + completionTime);
+                completionTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                completionTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jobPanel.add(completionTimeLabel);
+            
+                // Add the job panel to the jobs list panel
+                jobsListPanel.add(jobPanel);
+                jobsListPanel.add(Box.createVerticalStrut(10));
             }
-        } catch (IOException ex) {
-            System.err.println("Error reading jobs: " + ex.getMessage());
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            System.err.println("Error reading from database: " + ex.getMessage());
+            ex.printStackTrace();
         }
 
         // Button panel
