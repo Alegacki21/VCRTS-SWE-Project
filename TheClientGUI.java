@@ -28,9 +28,9 @@ public class TheClientGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
     
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String username = "bryan";
-    String password = "password"; 
+    String url = System.getenv("url");
+    String username = System.getenv("username");
+    String password = System.getenv("password"); 
     // Constructor for the main application window
     public TheClientGUI() {
         // Setting up the main frame properties
@@ -436,7 +436,7 @@ public class TheClientGUI extends JFrame {
                 mainPanel.revalidate();
                 mainPanel.repaint();
             }
-        });
+        });        
         
         return registrationTypePanel;
     }
@@ -469,71 +469,124 @@ public class TheClientGUI extends JFrame {
         JPanel registrationPanel = new JPanel();
         registrationPanel.setLayout(new BoxLayout(registrationPanel, BoxLayout.Y_AXIS));
         registrationPanel.setBackground(Color.WHITE);
-
-        // Adding title
+    
         JLabel titleLabel = new JLabel(userType + " Registration");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+    
         JLabel subtitleLabel = new JLabel("Personal Information");
         subtitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Creating form panel
+    
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-
-        // Creating form fields
-        final String[] labels = {"Name:", "Email:", "Create Password:", "Confirm Password:", 
-                          "Address:", "State/Territory:", "Country:", "Phone Number:"};
+    
+        // Create form fields
+        String[] labels = userType.equals("Owner") ?
+                new String[]{"Owner ID:", "Full Name:", "Email:", "Password:", "Confirm Password:", 
+                             "Address:", "State:", "Country:", "Phone Number:"} :
+                new String[]{"Client ID:", "Full Name:", "Email:", "Password:", "Confirm Password:", 
+                             "Subscription Plan:", "Address:", "State:", "Country:", "Phone Number:"};
         JTextField[] fields = new JTextField[labels.length];
-        
-        // Adding labels and fields to the form
+    
         for (int i = 0; i < labels.length; i++) {
             JLabel label = new JLabel(labels[i]);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
-            
             fields[i] = new JTextField(20);
             fields[i].setPreferredSize(new Dimension(300, 30));
-            
-            // Making password fields secure
-            if (i == 2 || i == 3) {
-                fields[i] = new JPasswordField(20);
+            if (labels[i].contains("Password")) {
+                fields[i] = new JPasswordField(20); // Password fields
             }
-
             gbc.gridx = 0;
             gbc.gridy = i;
-            gbc.anchor = GridBagConstraints.WEST;
             formPanel.add(label, gbc);
-
+    
             gbc.gridx = 1;
             gbc.gridy = i;
             formPanel.add(fields[i], gbc);
         }
-
-        // Creating button panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setBackground(Color.WHITE);
-
+    
         JButton backButton = createStyledButton("Back");
         JButton actionButton = createStyledButton(userType.equals("Owner") ? "Next" : "Submit");
-
-        // Setting up back button action
+    
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
             mainPanel.add(createRegistrationTypePanel());
             mainPanel.revalidate();
             mainPanel.repaint();
         });
-
+    
+        actionButton.addActionListener(e -> {
+            for (int i = 0; i < fields.length; i++) {
+                if (fields[i].getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "All fields are required. Please fill in " + labels[i],
+                            "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+    
+            try {
+                int id = Integer.parseInt(fields[0].getText());
+                String fullName = fields[1].getText();
+                String email = fields[2].getText();
+                String password = new String(((JPasswordField) fields[3]).getPassword());
+                String confirmPassword = new String(((JPasswordField) fields[4]).getPassword());
+                String subPlan = userType.equals("Client") ? fields[5].getText() : ""; // Subscription Plan only for clients
+                String address = userType.equals("Client") ? fields[6].getText() : fields[5].getText();
+                String state = userType.equals("Client") ? fields[7].getText() : fields[6].getText();
+                String country = userType.equals("Client") ? fields[8].getText() : fields[7].getText();
+                String phoneNumber = userType.equals("Client") ? fields[9].getText() : fields[8].getText();
+    
+                if (!password.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Passwords do not match!",
+                            "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+    
+                Authentication auth = new Authentication();
+                boolean success;
+                if (userType.equals("Owner")) {
+                    success = auth.registerVehicleOwner(id, fullName, email, password, address, state, country, phoneNumber);
+                } else {
+                    success = auth.registerJobSubmitter(id, fullName, email, password, subPlan, address, state, country, phoneNumber);
+                }
+    
+                if (success) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration successful!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    mainPanel.removeAll();
+                    mainPanel.add(createClientHomePanel(fullName)); // Redirect to home
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration failed. Please try again.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(registrationPanel,
+                        "Invalid ID format. Please enter a numeric value.",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(backButton);
         buttonPanel.add(actionButton);
-
-        // Adding components to the registration panel
+    
         registrationPanel.add(Box.createVerticalStrut(20));
         registrationPanel.add(titleLabel);
         registrationPanel.add(Box.createVerticalStrut(10));
@@ -542,46 +595,10 @@ public class TheClientGUI extends JFrame {
         registrationPanel.add(formPanel);
         registrationPanel.add(Box.createVerticalStrut(20));
         registrationPanel.add(buttonPanel);
-        registrationPanel.add(Box.createVerticalStrut(20));
-
-        // Setting up action button functionality
-        actionButton.addActionListener(e -> {
-            // Validating all fields
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(registrationPanel,
-                        "All fields are required. Please fill in " + labels[i],
-                        "Validation Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-            
-            // Handling different user types
-            if (userType.equals("Owner")) {
-                mainPanel.removeAll();
-                mainPanel.add(createVehicleRegistrationPanel());
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            } else {
-                // Showing success message for client registration
-                JOptionPane.showMessageDialog(registrationPanel,
-                    "Registration successful!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
-                // Redirecting to client home page
-                mainPanel.removeAll();
-                if (userType.equals("Client")) {
-                    mainPanel.add(createClientHomePanel(fields[0].getText())); // Using Name field as username
-                } 
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            }
-        });
-
+    
         return registrationPanel;
     }
+    
 
     // Method to create vehicle registration panel for Owners
     private JPanel createVehicleRegistrationPanel() {
