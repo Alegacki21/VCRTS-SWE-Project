@@ -28,21 +28,18 @@ public class TheClientGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
     
-<<<<<<< HEAD
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String username = "bryan";
-    String password = "password"; 
-=======
     private String loggedInOwner;
     private String loggedInClient;
     private String loggedInController;
 
     Authentication auth = new Authentication();
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String sqlusername = "root";
-    String password = "doyoubelieveinlove"; 
+    private static final String DB_URL = System.getenv("url");
+    private static final String DB_USERNAME = System.getenv("sqlusername");
+    private static final String DB_PASSWORD =   System.getenv("password");
+    // String url = "jdbc:mysql://localhost:3306/vcrts";
+    // String sqlusername = "bryan";
+    // String password = "littenissocool1"; 
     
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
     // Constructor for the main application window
     public TheClientGUI() {
         // Setting up the main frame properties
@@ -502,7 +499,7 @@ public class TheClientGUI extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         // Creating form fields
-        final String[] labels = {"Name:", "Email:", "Create Password:", "Confirm Password:", 
+        final String[] labels = {"Username:", "Email:", "Create Password:", "Confirm Password:", 
                           "Address:", "State/Territory:", "Country:", "Phone Number:"};
         JTextField[] fields = new JTextField[labels.length];
         
@@ -573,28 +570,72 @@ public class TheClientGUI extends JFrame {
             }
             
             // Handling different user types
-            if (userType.equals("Owner")) {
-                mainPanel.removeAll();
-                mainPanel.add(createVehicleRegistrationPanel());
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            } else {
-                // Showing success message for client registration
+            try {
+                String username = fields[0].getText();
+                String email = fields[1].getText();
+                String password = new String(((JPasswordField) fields[2]).getPassword());
+                String confirmPassword = new String(((JPasswordField) fields[3]).getPassword());
+                String address = fields[4].getText();
+                String state = fields[5].getText();
+                String country = fields[6].getText();
+                String phoneNumber = fields[7].getText();
+        
+                if (!password.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Passwords do not match!",
+                            "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+        
+                boolean ownersucess = false;
+                boolean clientsucess = false;
+                if (userType.equals("Owner")) {
+                    ownersucess = auth.registerVehicleOwner(username, email, password, address, state, country, phoneNumber);
+                } else {
+                    clientsucess = auth.registerJobSubmitter(username, email, password, address, state, country, phoneNumber);
+                }
+        
+                if (ownersucess) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration successful!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    mainPanel.removeAll();
+                    mainPanel.add(createOwnerHomePanel(username)); // Redirect to home
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                    loggedInOwner = username;
+                } else if (clientsucess) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration successful!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    mainPanel.removeAll();
+                    mainPanel.add(createClientHomePanel(username)); // Redirect to home
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                    loggedInClient = username;
+                }else {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration failed. Please try again.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(registrationPanel,
-                    "Registration successful!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
-                // Redirecting to client home page
-                mainPanel.removeAll();
-                if (userType.equals("Client")) {
-                    mainPanel.add(createClientHomePanel(fields[0].getText())); // Using Name field as username
-                } 
-                mainPanel.revalidate();
-                mainPanel.repaint();
+                        "Invalid input format. Please check your entries.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(registrationPanel,
+                        "An unexpected error occurred. Please try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
+            
         });
-
         return registrationPanel;
     }
 
@@ -859,20 +900,10 @@ public class TheClientGUI extends JFrame {
                     
                             if (serverResponse.equals("Accepted")) {
                                 try {
-<<<<<<< HEAD
-                                    // Load the MySQL driver
-                                    //Class.forName("com.mysql.cj.jdbc.Driver");
-                            
-                                    // Database connection parameters Moved next to the hardcoded logins at the top
-                                    // String url = "jdbc:mysql://localhost:3306/vcrts";
-                                    // String username = "bryan";
-                                    // String password = "password"; 
-=======
                                 
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
                             
-                                    // Establish connection to the database
-                                    Connection connection = DriverManager.getConnection(url, sqlusername, password);
+                                    // Establish connection to the database // url, sqlusername, password
+                                    Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
                             
                                     // SQL query to insert data
                                     String sql = "INSERT INTO Vehicle (USERNAME, ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?, ?)";
@@ -1093,24 +1124,12 @@ public class TheClientGUI extends JFrame {
             
                             if (serverResponse.equals("Accepted")) {
                                 try {
-<<<<<<< HEAD
-                                // // Database connection parameters //moved to the hardcoded logins at the top
-                                // String url = "jdbc:mysql://localhost:3306/vcrts"; // use your scehma instead of vcrts
-                                // String username = "bryan"; //default user is root but I have bryan
-                                // String password = "password"; //your password
-=======
                                 // Database connection parameters
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
-                                
-                                
-                                Connection connection = DriverManager.getConnection(url, sqlusername, password);
+                                        //url, sqlusername, password
+                                    Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME,DB_PASSWORD);
+                                    String sql = "INSERT INTO JOB (USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, timestamp) VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)";
 
-                                    // SQL query to insert data
-                                    String sql = "INSERT INTO Job (USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-                            
-                                    // Prepare statement
                                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                            
                                     // Set parameters
                                     preparedStatement.setString(1,loggedInClient); //logged in User
                                     preparedStatement.setString(2,fields[0].getText());  // clientID

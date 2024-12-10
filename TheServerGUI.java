@@ -31,19 +31,18 @@ public class TheServerGUI extends JFrame {
     private static final String CONTROLLER_USERNAME = "admin";
     private static final String CONTROLLER_PASSWORD = "admin123";
 
-<<<<<<< HEAD
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String sqlusername = "bryan";
-    String password = "password";
-=======
+
     
   
 
     Authentication auth = new Authentication();
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String sqlusername = "root";
-    String password = "doyoubelieveinlove";
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
+    private static final String DB_URL = System.getenv("url");
+    private static final String DB_USERNAME = System.getenv("sqlusername");
+    private static final String DB_PASSWORD =   System.getenv("password");
+    // String url = "jdbc:mysql://localhost:3306/vcrts";
+    // String sqlusername = "bryan";
+    // String password = "littenissocool1";
+
     // Constructor for the main application window
     public TheServerGUI() {
         // Setting up the main frame properties
@@ -1051,17 +1050,10 @@ public class TheServerGUI extends JFrame {
         jobsListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED BEFORE TO READ FROM JOBS.TXT
-<<<<<<< HEAD
-            // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
             // String url = "jdbc:mysql://localhost:3306/vcrts";
-            // String sqlusername = "bryan";
-            // String password = "password";
-=======
-            // String url = "jdbc:mysql://localhost:3306/vcrts";
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
         
             // Establish connection to the database
-            Connection connection = DriverManager.getConnection(url, sqlusername, password);
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
         
             // SQL query to retrieve job data
             String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose FROM Job";
@@ -1172,7 +1164,7 @@ public class TheServerGUI extends JFrame {
                     vehicleFrame.setLayout(new BorderLayout()); // Panel to list available vehicles 
                     vehicleFrame.setLocationRelativeTo(jobPanel);
                     JPanel vehiclePanel = new JPanel(new GridLayout(0, 1)); 
-                    try (Connection vehicleConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                    try (Connection vehicleConnection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
                         String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle"; 
                         PreparedStatement vehiclePreparedStatement = vehicleConnection.prepareStatement(vehicleSql); 
                         ResultSet vehicleResultSet = vehiclePreparedStatement.executeQuery(); 
@@ -1190,7 +1182,7 @@ public class TheServerGUI extends JFrame {
                             vehicleButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), // Black border 
                             BorderFactory.createEmptyBorder(5, 10, 5, 10)));
                             vehicleButton.addActionListener(event -> { 
-                                try (Connection assignConnection = DriverManager.getConnection(url, sqlusername, password)) { 
+                                try (Connection assignConnection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
                                     String assignSql = "UPDATE Job SET ownerID = ?, vehicleVIN = ?, computationPower = ? WHERE jobID = ?"; 
                                     PreparedStatement assignPreparedStatement = assignConnection.prepareStatement(assignSql); 
                                     assignPreparedStatement.setString(1, ownerID); 
@@ -1223,7 +1215,7 @@ public class TheServerGUI extends JFrame {
                     int confirm = JOptionPane.showConfirmDialog(infoPanel, "Are you sure you want to delete this job?",
                      "Confirm Deletion", JOptionPane.YES_NO_OPTION);
                      if(confirm == JOptionPane.YES_NO_OPTION)  {
-                    try (Connection conn = DriverManager.getConnection(url, sqlusername, password)) { 
+                    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
                         String sql2 = "DELETE FROM Job WHERE jobID = ?"; 
                         PreparedStatement ps = conn.prepareStatement(sql2); 
                         ps.setInt(1, jobID); 
@@ -1292,21 +1284,16 @@ public class TheServerGUI extends JFrame {
         resourcesListPanel.setBackground(Color.WHITE);
 
         try { //THIS ONE WAS USED TO READ FROM VEHICLES .txt
-<<<<<<< HEAD
+
             // Database connection parameters moved next to the HARDCODED CREDENTIALS at the top
             // String url = "jdbc:mysql://localhost:3306/vcrts";
             // String sqlusername = "bryan";
             // String password = "password";
-=======
->>>>>>> 684477a64f0b9d9684b13e56feb5091b3e653a31
-        
-            // Establish connection to the database
-            Connection connection = DriverManager.getConnection(url, sqlusername, password);
-        
-            // SQL query to retrieve vehicle data
-            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
-        
+
             // Execute the query
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
+
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
         
