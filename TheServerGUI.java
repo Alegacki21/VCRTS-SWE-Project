@@ -41,7 +41,7 @@ public class TheServerGUI extends JFrame {
     private static final String DB_PASSWORD =   System.getenv("password");
     // String url = "jdbc:mysql://localhost:3306/vcrts";
     // String sqlusername = "bryan";
-    // String password = "littenissocool1";
+    // String password = "passwod";
 
     // Constructor for the main application window
     public TheServerGUI() {
@@ -1487,7 +1487,8 @@ public class TheServerGUI extends JFrame {
         calculateAllButton.addActionListener(e -> {
             System.out.println("Button clicked"); // Debug print
             CloudController controller = CloudController.getInstance(); // Use getInstance instead of new
-            controller.calculateCompletionTime();
+            //controller.calculateCompletionTime();
+            auth.updateCompletionTimeFIFO();
             // Refresh the panel to show updated times
             mainPanel.removeAll();
             mainPanel.add(createCloudControllerHomePanel(username));

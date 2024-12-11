@@ -1,20 +1,18 @@
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.nio.file.Files;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class CloudController {
     private static CloudController instance;
     private List<Vehicle> vehicleList = new ArrayList<>();
     private Queue<Job> jobQueue = new LinkedList<>();
+    private Authentication auth = new Authentication();
     
     // Private constructor to ensure singleton pattern 
     private CloudController() {}
@@ -26,6 +24,7 @@ public class CloudController {
         return instance;
     }
     
+  
     public void calculateCompletionTime() {
         try {
             File jobsFile = new File("jobs/submitted_jobs.txt");
