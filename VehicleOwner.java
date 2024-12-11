@@ -77,14 +77,5 @@ private String paymentAccount;
             ex.printStackTrace();
         }
     }
-    public void specifyResources() {
-        //need to implement
-    }
-    public void adjustResources() {
-        //need to implement
-    }
-    public void viewIncome() {
-        //need to implement
-    }
 
 }

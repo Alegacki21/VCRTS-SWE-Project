@@ -9,7 +9,6 @@ private double balance;
 private String paymentMethod;
 
     //Constructor
-
     public User(String userId, String email, String username, String name, String password, double balance, String paymentMethod) {
         this.userId = userId;
         this.email = email;
@@ -21,7 +20,6 @@ private String paymentMethod;
     }
 
     //Getters and Setters
-
     public String getUserId() { 
         return userId; 
     } 
@@ -60,29 +58,5 @@ private String paymentMethod;
     }
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod; 
-    }
-
-    //Methods
-
-    public void updateProfile() {
-
-    }
-    public void changePassword(String oldPassword, String newPassword) {
-
-    }
-    public void addFunds(double amount) {
-
-    }
-    public void withdrawFunds(double amount) {
-
-    }
-    public void viewBalance() {
-
-    }
-    public void login() {
-
-    }
-    public void logout() {
-
     }
 }

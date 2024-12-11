@@ -120,46 +120,6 @@ public class CloudController {
                
              }
     }
-    public void authenticateUser(User u ) {
-        //Implement this later
-    }
-    public void scheduleJobs() {
-        //Implement this later
-    }
-    public void monitorResources() { // Dont know if we need this
-        //Implement this later
-    }
-    public void handleVehicleDeparture(Vehicle v) {
-        //Implement this later
-    }
-    public void generateReports() {
-        //Implement this later
-
-    }
-    public void assignCheckpoint(Vehicle v) {
-        //Implement this later
-
-    }
-    public void chargeUser(double amount) {
-       //System.out.println(getUserId() + amount);
-       //Implement this later
-    }
-    public void payOwner(double amount) {
-        //System.out.println(getUserId() + amount);
-        //Implement this later
-    }
-    public void returnReceipt(int transactioID) {
-        //Implement this later
-    }
-    public void allocateResources(Job j) {
-        //Implement this later
-    }
-    public void redistributeJob(Job j) {
-        //Implement this later
-    }
-    public void monitorVehicles() {
-        //Implement this later
-    }
 
     public void submitJob(Job job) {
         job.setStatus("Pending");

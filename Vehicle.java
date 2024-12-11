@@ -163,20 +163,10 @@ public class Vehicle {
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
-
-    //Methods
-       
-    public void startJob(Job j) {
     
+    public void startJob(Job job) {
+        this.isAvailable = false;
+        this.status = "Running";
+        // Additional job starting logic can be added here
     }
-    public void stopJob(Job j) {
-    
-    }
-    public void checkpoint() {
-    
-    }
-    public void clearData() {
-    
-    }
-    
-    }
+}
