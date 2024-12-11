@@ -1056,6 +1056,7 @@ public class TheServerGUI extends JFrame {
             Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
         
             // SQL query to retrieve job data
+            
             String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose FROM Job";
         
             // Execute the query
@@ -1160,12 +1161,12 @@ public class TheServerGUI extends JFrame {
                 assignButton.setFocusable(false);
                 assignButton.addActionListener(e -> {
                     JFrame vehicleFrame = new JFrame("Select Vehicle"); 
-                    vehicleFrame.setSize(400, 300); 
+                    vehicleFrame.setSize(500, 400); 
                     vehicleFrame.setLayout(new BorderLayout()); // Panel to list available vehicles 
                     vehicleFrame.setLocationRelativeTo(jobPanel);
                     JPanel vehiclePanel = new JPanel(new GridLayout(0, 1)); 
                     try (Connection vehicleConnection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
-                        String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle"; 
+                        String vehicleSql = "SELECT VIN, ownerID, compPower FROM Vehicle ORDER by timestamp ASC"; 
                         PreparedStatement vehiclePreparedStatement = vehicleConnection.prepareStatement(vehicleSql); 
                         ResultSet vehicleResultSet = vehiclePreparedStatement.executeQuery(); 
                         while (vehicleResultSet.next()) { 
@@ -1176,7 +1177,7 @@ public class TheServerGUI extends JFrame {
                             JButton vehicleButton = createStyledButton("VIN: " + vin + ", Owner ID: " + ownerID + ", Comp Power: " + compPower);
                             vehicleButton.setPreferredSize(new Dimension(120, 30));
                             vehicleButton.setFont(new Font("Arial", Font.BOLD, 14)); 
-                         //   vehicleButton.setBackground(new Color(70, 130, 180)); // Steel Blue color 
+                         
                             vehicleButton.setForeground(Color.WHITE); 
                             vehicleButton.setFocusPainted(false); 
                             vehicleButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), // Black border 
@@ -1203,7 +1204,8 @@ public class TheServerGUI extends JFrame {
                                 } catch (SQLException vehicleEx) { 
                                     vehicleEx.printStackTrace(); 
                                 } 
-                                vehicleFrame.add(new JScrollPane(vehiclePanel), BorderLayout.CENTER); vehicleFrame.setVisible(true);
+                                vehicleFrame.add(new JScrollPane(vehiclePanel), BorderLayout.CENTER); 
+                                vehicleFrame.setVisible(true);
                 }
                 );
 
@@ -1292,7 +1294,8 @@ public class TheServerGUI extends JFrame {
 
             // Execute the query
             Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle";
+        //    String fetchJobsSql = "SELECT jobID, timestamp, jobDuration FROM Job ORDER BY timestamp ASC";
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle ORDER BY timestamp ASC";
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -1307,7 +1310,6 @@ public class TheServerGUI extends JFrame {
                 int compPower = resultSet.getInt("compPower");
                 String notes = resultSet.getString("notes");
         
-
                 
                 // Create new resource panel with adjusted height
                 JPanel resourceItemPanel = new JPanel(new BorderLayout());
@@ -1400,8 +1402,8 @@ public class TheServerGUI extends JFrame {
 
         JButton logoutButton = createStyledButton("Logout");
         JButton refreshButton = createStyledButton("Refresh");
-        JButton viewPendingButton = createStyledButton("View Pending Jobs & Resources");
-        viewPendingButton.setPreferredSize(new Dimension(250, 40));
+      //  JButton viewPendingButton = createStyledButton("View Pending Jobs & Resources");
+      //  viewPendingButton.setPreferredSize(new Dimension(250, 40));
 
         //Scanner scanner = new Scanner(System.in);
         if(isPortAvailable(5000)) {
@@ -1461,18 +1463,18 @@ public class TheServerGUI extends JFrame {
             mainPanel.repaint();
         });
 
-        viewPendingButton.addActionListener(e -> {
-            mainPanel.removeAll();
-            mainPanel.add(createPendingPanel());
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
+        // viewPendingButton.addActionListener(e -> {
+        //     mainPanel.removeAll();
+        //     mainPanel.add(createPendingPanel());
+        //     mainPanel.revalidate();
+        //     mainPanel.repaint();
+        // });
 
         // Adding view jobs & resources button functionality later (Client-Server)
 
         buttonPanel.add(logoutButton);
         buttonPanel.add(refreshButton);
-        buttonPanel.add(viewPendingButton);
+       // buttonPanel.add(viewPendingButton);
 
         // Add all components to main panel
         controllerPanel.add(Box.createVerticalStrut(20));

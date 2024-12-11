@@ -1440,7 +1440,7 @@ public class TheClientGUI extends JFrame {
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
             String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime " + 
-            "FROM Job WHERE USERNAME = ?";            
+            "FROM Job WHERE USERNAME = ? ORDER by timestamp ASC";            
              PreparedStatement preparedStatement = connection.prepareStatement(sql); 
              preparedStatement.setString(1, loggedInClient); // Set the specific username parameter
             ResultSet resultSet = preparedStatement.executeQuery(); 
@@ -1541,7 +1541,7 @@ public class TheClientGUI extends JFrame {
 
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
-            mainPanel.add(createClientHomePanel("Client")); // Pass actual username
+            mainPanel.add(createClientHomePanel(loggedInClient)); // Pass actual username
             mainPanel.revalidate();
             mainPanel.repaint();
         });
@@ -1590,7 +1590,7 @@ public class TheClientGUI extends JFrame {
 
         //OPPPP
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
-            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle WHERE USERNAME = ?";
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle WHERE USERNAME = ? ORDER by timestamp ASC";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, loggedInOwner); // Set the specific username parameter
 
@@ -1599,7 +1599,7 @@ public class TheClientGUI extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.isBeforeFirst()) {
-                System.out.println("No vehicles found for username: " + loggedInOwner);
+               // System.out.println("No vehicles found for username: " + loggedInOwner);
             } else {
                 while (resultSet.next()) {
                     // Fetch vehicle details from the result set
@@ -1612,7 +1612,7 @@ public class TheClientGUI extends JFrame {
                     String notes = resultSet.getString("notes");
 
                     // Debugging output
-                    System.out.println("Vehicle found - VIN: " + VIN);
+                  //  System.out.println("Vehicle found - VIN: " + VIN);
 
                     // Convert residencyTime to LocalTime
                     LocalTime residencyTime = LocalTime.parse(residencyTimeStr, DateTimeFormatter.ofPattern("HH:mm:ss"));

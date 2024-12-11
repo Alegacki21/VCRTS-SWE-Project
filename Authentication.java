@@ -128,7 +128,7 @@ public class Authentication {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD); 
         PreparedStatement fetchPstmt = conn.prepareStatement(fetchJobsSql); 
         ResultSet rs = fetchPstmt.executeQuery()) { 
-            int totalProcessingTime = 0; // Accumulator for total processing time 
+            int totalProcessingTime = 0; // for total processing time 
             StringBuilder completionTimesMessage = new StringBuilder(); 
             completionTimesMessage.append("Completion Times for All Jobs:\n\n"); 
             while (rs.next()) { 

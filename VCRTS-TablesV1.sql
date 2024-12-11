@@ -91,7 +91,7 @@ CREATE TABLE Job (
     ownerID VARCHAR(100),
     vehicleVIN VARCHAR(17),
     computationPower INT, 
-    completionTime TIME, 
+    completionTime INT, 
     PRIMARY KEY (jobID),
     FOREIGN KEY (USERNAME) REFERENCES JobSubmitter(username)
 );
