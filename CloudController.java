@@ -3,11 +3,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+<<<<<<< HEAD
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
+=======
+>>>>>>> 0f84f982cd6e4696c3daa6b6950faad73575d91f
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
@@ -29,6 +32,7 @@ public class CloudController {
         return instance;
     }
     
+  
     public void calculateCompletionTime() {
         try {
             File jobsFile = new File("jobs/submitted_jobs.txt");

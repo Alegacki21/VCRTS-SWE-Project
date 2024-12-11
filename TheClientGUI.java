@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+<<<<<<< HEAD
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,6 +14,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+=======
+import java.sql.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+>>>>>>> 0f84f982cd6e4696c3daa6b6950faad73575d91f
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -35,9 +41,12 @@ public class TheClientGUI extends JFrame {
     private String loggedInController;
 
     Authentication auth = new Authentication();
-    String url = "jdbc:mysql://localhost:3306/vcrts";
-    String sqlusername = "root";
-    String password = "doyoubelieveinlove"; 
+    private static final String DB_URL = System.getenv("url");
+    private static final String DB_USERNAME = System.getenv("sqlusername");
+    private static final String DB_PASSWORD =   System.getenv("password");
+    // String url = "jdbc:mysql://localhost:3306/vcrts";
+    // String sqlusername = "bryan";
+    // String password = "password"; 
     
     // Constructor for the main application window
     public TheClientGUI() {
@@ -498,7 +507,7 @@ public class TheClientGUI extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         // Creating form fields
-        final String[] labels = {"Name:", "Email:", "Create Password:", "Confirm Password:", 
+        final String[] labels = {"Username:", "Email:", "Create Password:", "Confirm Password:", 
                           "Address:", "State/Territory:", "Country:", "Phone Number:"};
         JTextField[] fields = new JTextField[labels.length];
         
@@ -569,28 +578,72 @@ public class TheClientGUI extends JFrame {
             }
             
             // Handling different user types
-            if (userType.equals("Owner")) {
-                mainPanel.removeAll();
-                mainPanel.add(createVehicleRegistrationPanel());
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            } else {
-                // Showing success message for client registration
+            try {
+                String username = fields[0].getText();
+                String email = fields[1].getText();
+                String password = new String(((JPasswordField) fields[2]).getPassword());
+                String confirmPassword = new String(((JPasswordField) fields[3]).getPassword());
+                String address = fields[4].getText();
+                String state = fields[5].getText();
+                String country = fields[6].getText();
+                String phoneNumber = fields[7].getText();
+        
+                if (!password.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Passwords do not match!",
+                            "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+        
+                boolean ownersucess = false;
+                boolean clientsucess = false;
+                if (userType.equals("Owner")) {
+                    ownersucess = auth.registerVehicleOwner(username, email, password, address, state, country, phoneNumber);
+                } else {
+                    clientsucess = auth.registerJobSubmitter(username, email, password, address, state, country, phoneNumber);
+                }
+        
+                if (ownersucess) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration successful!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    mainPanel.removeAll();
+                    mainPanel.add(createOwnerHomePanel(username)); // Redirect to home
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                    loggedInOwner = username;
+                } else if (clientsucess) {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration successful!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    mainPanel.removeAll();
+                    mainPanel.add(createClientHomePanel(username)); // Redirect to home
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                    loggedInClient = username;
+                }else {
+                    JOptionPane.showMessageDialog(registrationPanel,
+                            "Registration failed. Please try again.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(registrationPanel,
-                    "Registration successful!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
-                // Redirecting to client home page
-                mainPanel.removeAll();
-                if (userType.equals("Client")) {
-                    mainPanel.add(createClientHomePanel(fields[0].getText())); // Using Name field as username
-                } 
-                mainPanel.revalidate();
-                mainPanel.repaint();
+                        "Invalid input format. Please check your entries.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(registrationPanel,
+                        "An unexpected error occurred. Please try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
+            
         });
-
         return registrationPanel;
     }
 
@@ -716,7 +769,7 @@ public class TheClientGUI extends JFrame {
                     
                 // Redirecting to owner home
                 mainPanel.removeAll();
-                mainPanel.add(createOwnerHomePanel("Owner")); 
+                mainPanel.add(createOwnerHomePanel(loggedInOwner)); 
                 mainPanel.revalidate();
                 mainPanel.repaint();
                 
@@ -759,7 +812,7 @@ public class TheClientGUI extends JFrame {
         String[] labels = {
             "Owner ID:",
             "Vehicle Identification Number:",
-            "Approximate Residency Time (hh:mm):",
+            "Approximate Residency Time (hh:mm:ss):",
             "Available Computational Power:",
             "Notes:"
         };
@@ -841,7 +894,7 @@ public class TheClientGUI extends JFrame {
                             String userInput2 = "Timestamp: " + timestamp + "\n" +
                                                 "Owner ID: " + fields[0].getText() + "\n" +
                                                 "Vehicle Identification Number: " + fields[1].getText() + "\n" +
-                                                "Residency Time (hh:mm): " + fields[2].getText() + "\n" +
+                                                "Residency Time (hh:mm:ss): " + fields[2].getText() + "\n" +
                                                 "Computational Power: " + fields[3].getText() + "\n" +
                                                 "Notes: " + fields[4].getText() + "\nEND";
                             output.println(userInput2);
@@ -857,8 +910,8 @@ public class TheClientGUI extends JFrame {
                                 try {
                                 
                             
-                                    // Establish connection to the database
-                                    Connection connection = DriverManager.getConnection(url, sqlusername, password);
+                                    // Establish connection to the database // url, sqlusername, password
+                                    Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
                             
                                     // SQL query to insert data
                                     String sql = "INSERT INTO Vehicle (USERNAME, ownerID, VIN, residencyTime, compPower, notes) VALUES (?, ?, ?, ?, ?, ?)";
@@ -930,7 +983,7 @@ public class TheClientGUI extends JFrame {
         );
 
         // Add this new action listener for viewJobsButton
-        viewJobsButton.addActionListener(e -> {
+        viewJobsButton.addActionListener(e -> { //TYPE FOR CTRL-F later
             mainPanel.removeAll();
             mainPanel.add(createSubmittedResourcesPanel());
             mainPanel.revalidate();
@@ -983,7 +1036,7 @@ public class TheClientGUI extends JFrame {
         String[] labels = {
             "Client ID:",
             "Priority Level:",
-            "Approximate Job Duration (hh:mm):",
+            "Approximate Job Duration (hh:mm:ss):",
             "Job Deadline (year-month-day):",
             "Purpose/Reason:"
         };
@@ -1064,7 +1117,7 @@ public class TheClientGUI extends JFrame {
                             String userInput = "Timestamp: " + timestamp + "\n" +
                             "Client ID: " + fields[0].getText() + "\n" +
                             "Priority Level " + fields[1].getText() + "\n" +
-                            "Approximate Job Duration (in hh:mm): " + fields[2].getText() + "\n" +
+                            "Approximate Job Duration (in hh:mm:ss): " + fields[2].getText() + "\n" +
                             "Job Deadline (yyyy/mm/dd): " + fields[3].getText() + "\n" +
                             "Purpose/Reason: " + fields[4].getText() + "\nEND";
                             output.println(userInput);
@@ -1080,16 +1133,11 @@ public class TheClientGUI extends JFrame {
                             if (serverResponse.equals("Accepted")) {
                                 try {
                                 // Database connection parameters
-                                
-                                
-                                Connection connection = DriverManager.getConnection(url, sqlusername, password);
+                                        //url, sqlusername, password
+                                    Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME,DB_PASSWORD);
+                                    String sql = "INSERT INTO JOB (USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, timestamp) VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)";
 
-                                    // SQL query to insert data
-                                    String sql = "INSERT INTO Job (USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, timestamp) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-                            
-                                    // Prepare statement
                                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                            
                                     // Set parameters
                                     preparedStatement.setString(1,loggedInClient); //logged in User
                                     preparedStatement.setString(2,fields[0].getText());  // clientID
@@ -1324,7 +1372,12 @@ public class TheClientGUI extends JFrame {
 
         refreshButton.addActionListener(e -> {
             mainPanel.removeAll();
-            mainPanel.add(createCloudControllerHomePanel(username));
+            if(loggedInClient !=null) {
+            mainPanel.add(createCloudControllerHomePanel(loggedInClient));
+            }
+            if(loggedInOwner !=null) {
+                mainPanel.add(createCloudControllerHomePanel(loggedInOwner));
+                }
             mainPanel.revalidate();
             mainPanel.repaint();
         });
@@ -1394,6 +1447,7 @@ public class TheClientGUI extends JFrame {
         scrollPane.setPreferredSize(new Dimension(450, 400));
         scrollPane.setMaximumSize(new Dimension(450, 400));
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+<<<<<<< HEAD
        try (Connection connection = DriverManager.getConnection(url, sqlusername, password)) {
             String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime FROM Job";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1499,6 +1553,93 @@ public class TheClientGUI extends JFrame {
             System.err.println("Error reading from database: " + ex.getMessage());
             ex.printStackTrace();
         }
+=======
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) { 
+            String sql = "SELECT timestamp, jobID, USERNAME, clientID, priorityLevel, jobDuration, jobDeadline, purpose, completionTime " + 
+            "FROM Job WHERE USERNAME = ? ORDER by timestamp ASC";            
+             PreparedStatement preparedStatement = connection.prepareStatement(sql); 
+             preparedStatement.setString(1, loggedInClient); // Set the specific username parameter
+            ResultSet resultSet = preparedStatement.executeQuery(); 
+            while (resultSet.next()) { 
+                // Fetch job details from the result set 
+                String timestamp = resultSet.getString("timestamp"); 
+                int jobID = resultSet.getInt("jobID"); 
+                String username = resultSet.getString("USERNAME"); 
+                int clientID = resultSet.getInt("clientID"); 
+                String priorityLevel = resultSet.getString("priorityLevel"); 
+                String jobDurationStr = resultSet.getString("jobDuration"); 
+                Date jobDeadline = resultSet.getDate("jobDeadline"); 
+                String purpose = resultSet.getString("purpose"); 
+                int completionTime = resultSet.getInt("completionTime"); // Convert jobDuration to LocalTime 
+                LocalTime jobDuration = LocalTime.parse(jobDurationStr, DateTimeFormatter.ofPattern("HH:mm:ss")); 
+                // Create a panel for each job 
+                JPanel jobPanel = new JPanel(); 
+                jobPanel.setLayout(new BoxLayout(jobPanel, BoxLayout.Y_AXIS)); 
+                jobPanel.setBackground(Color.WHITE); 
+                jobPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(5, 5, 5, 5))); 
+                // Add timestamp label to the job panel 
+                JLabel timestampLabel = new JLabel("Timestamp: " + timestamp); 
+                timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                jobPanel.add(timestampLabel); // Add job ID label to the job panel 
+                JLabel jobIDLabel = new JLabel("Job ID: " + jobID); 
+                jobIDLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                jobIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                jobPanel.add(jobIDLabel); // Add username label to the job panel 
+                JLabel usernameLabel = new JLabel("From User: " + username); 
+                usernameLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                usernameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                jobPanel.add(usernameLabel); // Add client ID label to the job panel 
+                JLabel clientIDLabel = new JLabel("Client ID: " + clientID); 
+                clientIDLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                clientIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                jobPanel.add(clientIDLabel); // Add priority level label to the job panel 
+                JLabel priorityLevelLabel = new JLabel("Priority Level: " + priorityLevel); 
+                priorityLevelLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+                if ("high".equalsIgnoreCase(priorityLevel)) { 
+                    priorityLevelLabel.setForeground(Color.RED); 
+                } 
+                    else if ("medium".equalsIgnoreCase(priorityLevel) || "med".equalsIgnoreCase(priorityLevel)) { 
+                        priorityLevelLabel.setForeground(new Color(150, 150, 0)); 
+                    } else { 
+                        priorityLevelLabel.setForeground(Color.GREEN); 
+                    } 
+                    priorityLevelLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    jobPanel.add(priorityLevelLabel); // Add job duration label to the job panel 
+                    JLabel jobDurationLabel = new JLabel("Job Duration: " + jobDuration.toString()); 
+                    jobDurationLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                    jobDurationLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    jobPanel.add(jobDurationLabel); // Add job deadline label to the job panel 
+                    JLabel jobDeadlineLabel = new JLabel("Job Deadline: " + jobDeadline.toString()); 
+                    jobDeadlineLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                    jobDeadlineLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                    jobPanel.add(jobDeadlineLabel); // Check if the job deadline has passed and add a label if it has 
+                    Date currentDate = new Date(System.currentTimeMillis()); 
+                    if (jobDeadline.before(currentDate)) { 
+                        JLabel deadlinePassedLabel = new JLabel("Deadline has passed!"); 
+                        deadlinePassedLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+                        deadlinePassedLabel.setForeground(Color.RED); 
+                        deadlinePassedLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                        jobPanel.add(deadlinePassedLabel); } // Add purpose label to the job panel 
+                        JLabel purposeLabel = new JLabel("Purpose: " + purpose); 
+                        purposeLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                        purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                        jobPanel.add(purposeLabel); // Add completion time label to the job panel 
+                        JLabel completionTimeLabel = new JLabel("Completion Time: " + completionTime + " minutes"); 
+                        completionTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+                        completionTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT); 
+                        jobPanel.add(completionTimeLabel); // Add the job panel to the jobs list panel 
+                        jobsListPanel.add(jobPanel); 
+                        jobsListPanel.add(Box.createVerticalStrut(10)); 
+                    } 
+                    resultSet.close(); 
+                    preparedStatement.close(); 
+                } catch (SQLException ex) { 
+                    System.err.println("Error reading from database: " + ex.getMessage());
+                     ex.printStackTrace(); 
+                } 
+>>>>>>> 0f84f982cd6e4696c3daa6b6950faad73575d91f
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -1518,7 +1659,7 @@ public class TheClientGUI extends JFrame {
 
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
-            mainPanel.add(createClientHomePanel("Client")); // Pass actual username
+            mainPanel.add(createClientHomePanel(loggedInClient)); // Pass actual username
             mainPanel.revalidate();
             mainPanel.repaint();
         });
@@ -1565,69 +1706,95 @@ public class TheClientGUI extends JFrame {
         scrollPane.setMaximumSize(new Dimension(450, 400));
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        try { // If that somehow doesn't work again do ("VCRTS-SWE-Project/resources/vehicle_resources.txt");
-            File resourcesFile = new File("resources/vehicle_resources.txt");
-            System.out.println("Reading resources file: " + resourcesFile.getAbsolutePath());
-            
-            if (resourcesFile.exists()) {
-                java.util.Scanner scanner = new java.util.Scanner(resourcesFile);
-                StringBuilder currentContent = new StringBuilder();
-                
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    System.out.println("Processing line: " + line);
-                    
-                    if (line.startsWith("Timestamp:")) {
-                        // Create new resource panel with adjusted height
-                        JPanel resourceItemPanel = new JPanel(new BorderLayout());
-                        resourceItemPanel.setPreferredSize(new Dimension(400, 120));
-                        resourceItemPanel.setMaximumSize(new Dimension(400, 120));
-                        resourceItemPanel.setBackground(new Color(230, 230, 230));
-                        
-                        // Create info panel with GridBagLayout for centering
-                        JPanel infoPanel = new JPanel(new GridBagLayout());
-                        infoPanel.setBackground(new Color(230, 230, 230));
-                        
-                        // Create text panel with vertical BoxLayout
-                        JPanel textPanel = new JPanel();
-                        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-                        textPanel.setBackground(new Color(230, 230, 230));
-                        
-                        // Add the timestamp with center alignment
-                        JLabel infoLabel = new JLabel(line);
-                        infoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        textPanel.add(infoLabel);
-                        
-                        // Add textPanel to infoPanel for centering
-                        infoPanel.add(textPanel);
-                        
-                        // Add panel to resource item
-                        resourceItemPanel.add(infoPanel, BorderLayout.CENTER);
-                        resourcesListPanel.add(resourceItemPanel);
-                        resourcesListPanel.add(Box.createVerticalStrut(10));
-                        
-                        currentContent = new StringBuilder();  // Reset for next item
-                    } else if (!line.equals("------------------------")) {
-                        // Add content to the current resource panel
-                        JPanel currentPanel = (JPanel)((JPanel)resourcesListPanel.getComponent(
-                            resourcesListPanel.getComponentCount() - 2)).getComponent(0);
-                        JPanel textPanel = (JPanel)currentPanel.getComponent(0);
-                        
-                        JLabel contentLabel = new JLabel(line);
-                        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-                        contentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        textPanel.add(contentLabel);
-                    }
-                }
-                scanner.close();
+        //OPPPP
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "SELECT timestamp, USERNAME, ownerID, VIN, residencyTime, compPower, notes FROM Vehicle WHERE USERNAME = ? ORDER by timestamp ASC";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, loggedInOwner); // Set the specific username parameter
+
+            System.out.println("Executing query for owner: " + loggedInOwner);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.isBeforeFirst()) {
+               // System.out.println("No vehicles found for username: " + loggedInOwner);
             } else {
-                System.out.println("Resources file does not exist!");
+                while (resultSet.next()) {
+                    // Fetch vehicle details from the result set
+                    String timestamp = resultSet.getString("timestamp");
+                    String username = resultSet.getString("USERNAME");
+                    String ownerID = resultSet.getString("ownerID");
+                    String VIN = resultSet.getString("VIN");
+                    String residencyTimeStr = resultSet.getString("residencyTime");
+                    int compPower = resultSet.getInt("compPower");
+                    String notes = resultSet.getString("notes");
+
+                    // Debugging output
+                  //  System.out.println("Vehicle found - VIN: " + VIN);
+
+                    // Convert residencyTime to LocalTime
+                    LocalTime residencyTime = LocalTime.parse(residencyTimeStr, DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+                    // Create a panel for each vehicle
+                    JPanel vehiclePanel = new JPanel();
+                    vehiclePanel.setLayout(new BoxLayout(vehiclePanel, BoxLayout.Y_AXIS));
+                    vehiclePanel.setBackground(Color.WHITE);
+                    vehiclePanel.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+                    // Add timestamp label to the vehicle panel
+                    JLabel timestampLabel = new JLabel("Timestamp: " + timestamp);
+                    timestampLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    timestampLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(timestampLabel);
+
+                    // Add username label to the vehicle panel
+                    JLabel usernameLabel = new JLabel("From Vehicle Owner: " + username);
+                    usernameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    usernameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(usernameLabel);
+
+                    // Add owner ID label to the vehicle panel
+                    JLabel ownerIDLabel = new JLabel("Owner ID: " + ownerID);
+                    ownerIDLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    ownerIDLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(ownerIDLabel);
+
+                    // Add VIN label to the vehicle panel
+                    JLabel vinLabel = new JLabel("VIN: " + VIN);
+                    vinLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    vinLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(vinLabel);
+
+                    // Add residency time label to the vehicle panel
+                    JLabel residencyTimeLabel = new JLabel("Residency Time: " + residencyTime.toString());
+                    residencyTimeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    residencyTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(residencyTimeLabel);
+
+                    // Add comp power label to the vehicle panel
+                    JLabel compPowerLabel = new JLabel("Computation Power: " + compPower + " units");
+                    compPowerLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    compPowerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(compPowerLabel);
+
+                    // Add notes label to the vehicle panel
+                    JLabel notesLabel = new JLabel("Notes: " + notes);
+                    notesLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                    notesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    vehiclePanel.add(notesLabel);
+                    resourcesListPanel.add(vehiclePanel);
+                }
             }
-        } catch (IOException ex) {
-            System.err.println("Error reading resources: " + ex.getMessage());
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            System.err.println("Error reading from database: " + ex.getMessage());
             ex.printStackTrace();
         }
+       
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -1647,7 +1814,7 @@ public class TheClientGUI extends JFrame {
 
         backButton.addActionListener(e -> {
             mainPanel.removeAll();
-            mainPanel.add(createOwnerHomePanel("Owner"));
+            mainPanel.add(createOwnerHomePanel(loggedInOwner));
             mainPanel.revalidate();
             mainPanel.repaint();
         });
